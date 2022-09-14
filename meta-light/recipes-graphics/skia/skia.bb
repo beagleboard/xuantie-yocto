@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=d25bb58a1be2e1af9b58d31565a206dc"
 THEAD_LINUX_TAG ?= "${AUTOREV}"
 SRCREV = "${THEAD_LINUX_TAG}"
 
-SRC_URI = "git://git@gitee.com/thead-yocto/skia.git;branch=master;protocol=ssh;"
+SRC_URI = "git://git@gitee.com/thead-yocto/skia.git;branch=master;protocol=http;"
 S = "${WORKDIR}/git"
 
 DEPENDS = " llvm-native fontconfig freetype zlib libjpeg-turbo icu python3-native libxkbcommon wayland wayland-protocols wayland-native virtual/mesa vulkan-loader vulkan-headers "

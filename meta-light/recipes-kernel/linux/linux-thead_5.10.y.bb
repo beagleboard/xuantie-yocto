@@ -3,7 +3,7 @@ require recipes-kernel/linux/linux-yocto.inc
 DEPENDS = "e2fsprogs-native opensbi"
 
 SRC_URI = " \
-            git://git@gitee.com/thead-yocto/kernel.git;branch=master;protocol=ssh \
+            git://git@gitee.com/thead-yocto/kernel.git;branch=master;protocol=http \
 "
 # crop the kernel based on the defconfig
 # FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"

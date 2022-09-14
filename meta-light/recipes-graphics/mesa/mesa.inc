@@ -17,7 +17,7 @@ THEAD_LINUX_TAG ?= "${AUTOREV}"
 SRCREV = "${THEAD_LINUX_TAG}"
 # SRCREV = "320f07c9e1aa42ec1d78f52825379b3f0e5fe8da"
 
-SRC_URI = "git://git@gitee.com/thead-yocto/mesa3d.git;branch=master;protocol=ssh"
+SRC_URI = "git://git@gitee.com/thead-yocto/mesa3d-proprietary.git;branch=master;protocol=http"
 S = "${WORKDIR}/git"
 
 UPSTREAM_CHECK_GITTAGREGEX = "mesa-(?P<pver>\d+(\.\d+)+)"

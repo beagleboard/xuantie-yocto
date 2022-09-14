@@ -7,7 +7,7 @@ DEPENDS = "e2fsprogs-native linux-thead"
 COMPATIBLE_MACHINE = "light-*"
 
 SRC_URI = " \
-        git://git@gitee.com/thead-yocto/xuantie-secure-system-image-release.git;branch=master;protocol=ssh \
+        git://git@gitee.com/thead-yocto/xuantie-secure-system-image-release.git;branch=master;protocol=http \
           "
 THEAD_LINUX_TAG ?= "${AUTOREV}"
 SRCREV = "${THEAD_LINUX_TAG}"

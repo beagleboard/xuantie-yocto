@@ -5,7 +5,7 @@ DEPENDS = " dbus update-rc.d-native "
 RDEPENDS_${PN} += " dbus-lib glib-2.0 bluez5 zlib bash u-boot util-linux-blkid e2fsprogs-mke2fs initscripts-readonly-rootfs-overlay "
 
 SRC_URI = " \
-            git://git@gitee.com/thead-yocto/fota.git;branch=master;protocol=ssh \
+            git://git@gitee.com/thead-yocto/fota.git;branch=master;protocol=http \
             file://0001-fota.patch \
             file://thead_fota.service \
             file://thead_fota.sh \

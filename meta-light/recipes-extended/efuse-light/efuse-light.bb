@@ -4,7 +4,7 @@ LICENSE = "CLOSED"
 COMPATIBLE_MACHINE = "light-*"
 
 SRC_URI = " \
-            git://git@gitee.com/thead-yocto/light-libs.git;branch=master;protocol=ssh \
+            git://git@gitee.com/thead-yocto/light-libs.git;branch=master;protocol=http \
           "
 THEAD_BSP_TAG ?= "${AUTOREV}"
 SRCREV = "${THEAD_BSP_TAG}"
