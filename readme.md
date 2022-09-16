@@ -18,8 +18,8 @@ source openembedded-core/oe-init-build-env build/light-fm
 MACHINE=light-a-public-release bitbake light-fm-image-linux --runall=fetch
 ```
 
-# Backup
+# Builds
 
 ```
-rsync -av /home/voodoo/Linux_SDK/xuantie-yocto/build/downloads/ /home/voodoo/Linux_SDK/downloads/
+MACHINE=light-a-public-release bitbake light-fm-image-linux
 ```
