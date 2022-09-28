@@ -28,6 +28,10 @@ SRC_URI = " \
             file://light-ant-discrete/light_aon_fpga.elf;md5=2da373f3e1950c9a9464be8c490cb25e \
             file://light-ant-discrete/light_c906_audio.bin;md5=3c5d2ccb84c98fb1dbcacec72e49ee96 \
             file://light-ant-discrete/light_c906_audio.elf;md5=b4206da84148852df208088c96e4b2b3 \
+            file://light-beagle/light_aon_fpga.bin;md5=6486aed6f815af4118e4e4a840ec5482 \
+            file://light-beagle/light_aon_fpga.elf;md5=f447400d1df5ab59f23c738fe147260a \
+            file://light-beagle/light_c906_audio.bin;md5=9124f7306370eb0d9e3f6178da1fa4fd \
+            file://light-beagle/light_c906_audio.elf;md5=b4206da84148852df208088c96e4b2b3 \
           "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"
@@ -62,6 +66,12 @@ do_deploy () {
 		install -m 0755 ${WORKDIR}/light-ant-discrete/light_aon_fpga.elf ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light-ant-discrete/light_c906_audio.bin ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light-ant-discrete/light_c906_audio.elf ${DEPLOYDIR}/
+	elif echo "${MACHINE}" | grep -q "light-beagle"; then
+		echo "Firmware INFO: light ant-evt  opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
+		install -m 0755 ${WORKDIR}/light-beagle/light_aon_fpga.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-beagle/light_aon_fpga.elf ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-beagle/light_c906_audio.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-beagle/light_c906_audio.elf ${DEPLOYDIR}/
 	elif echo "${MACHINE}" | grep -q "light-ant-evt"; then
 		echo "Firmware INFO: light ant-evt  opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
 		install -m 0755 ${WORKDIR}/light-ant-evt/light_aon_fpga.bin ${DEPLOYDIR}/
