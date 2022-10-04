@@ -34,6 +34,12 @@ MACHINE=light-beagle bitbake light-fm-image-linux
 
 # install (android fastboot tools)
 
+```
+fastboot --version
+fastboot version 28.0.2-debian
+Installed as /usr/lib/android-sdk/platform-tools/fastboot
+```
+
 Insert USB Cable, hold reset button, hold USB, lift up reset button..
 
 
