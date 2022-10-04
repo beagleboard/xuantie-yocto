@@ -15,8 +15,7 @@ source openembedded-core/oe-init-build-env build/light-fm
 # Pre Download mirror:
 
 ```
-mkdir ../downloads
-rsync -av /mnt/ti-processor-sdk/thead/downloads/ ../downloads/
+mkdir ../downloads ; rsync -av /mnt/ti-processor-sdk/thead/downloads/ ../downloads/
 ```
 
 # Download
