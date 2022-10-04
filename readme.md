@@ -1,5 +1,15 @@
 # Use Ubuntu 20.04 (Debian 11.x issues..)
 
+# Install
+
+```
+sudo apt install build-essential chrpath diffstat gawk git python3-distutils rsync
+```
+
+# No Dash...
+```
+sudo dpkg-reconfigure dash
+```
 
 # Yocto
 
