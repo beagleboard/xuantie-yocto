@@ -103,3 +103,21 @@ Part	Start LBA	End LBA		Name
 	type:	linux
 	guid:	ca3a1b1a-0bc9-4ad5-9e0c-5609b8bf78d1
 ```
+
+```
+console=ttyS0,115200 root=PARTUUID=80a5a8e9-c744-491a-93c1-4f4194fd690a rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=7 eth= rootrw=PARTLABEL=data init=/init rootinit=/sbin/init rootrwoptions=rw,noatime rootrwreset=yes crashkernel=500M
+```
+
+```
+root@light-beagle:~# lsblk
+NAME         MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+mmcblk0      179:0    0 14.6G  0 disk 
+|-mmcblk0p1  179:1    0    2M  0 part 
+|-mmcblk0p2  179:2    0  200M  0 part 
+|-mmcblk0p3  179:3    0  3.9G  0 part /media/rfs/ro
+|-mmcblk0p4  179:4    0  200M  0 part 
+|-mmcblk0p5  179:5    0  3.9G  0 part 
+`-mmcblk0p6  179:6    0  6.4G  0 part /media/rfs/rw
+mmcblk0boot0 179:8    0    4M  1 disk 
+mmcblk0boot1 179:16   0    4M  1 disk 
+```
