@@ -12,20 +12,20 @@ cd ./xuantie-yocto
 source openembedded-core/oe-init-build-env build/light-fm
 ```
 
-# Pre Download mirror:
+# Copy mirrored downloads:
 
 ```
 mkdir ../downloads ; rsync -av /mnt/ti-processor-sdk/thead/downloads/ ../downloads/
 ```
 
-# Download
+# Download missing files:
 
 ```
 MACHINE=light-beagle bitbake light-fm-image-linux --runall=fetch
 rsync -av ../downloads/ /mnt/ti-processor-sdk/thead/downloads/ --delete
 ```
 
-# Builds
+# Start Build
 
 ```
 MACHINE=light-beagle bitbake light-fm-image-linux
