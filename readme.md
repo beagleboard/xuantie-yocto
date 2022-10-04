@@ -32,7 +32,18 @@ MACHINE=light-beagle bitbake light-fm-image-linux
 ```
 
 
-# install (android)
+# install (android fastboot tools)
+
+Insert USB Cable, hold reset button, hold USB, lift up reset button..
+
+
+Serial should show:
+```
+brom_ver 7
+[APP][E] protocol_connect failed, exit.
+```
+
+Then run:
 
 ```
 sudo fastboot flash ram ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin
@@ -41,4 +52,5 @@ sleep 10
 sudo fastboot flash uboot ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin
 sudo fastboot flash boot ./tmp-glibc/deploy/images/light-beagle/boot.ext4
 sudo fastboot flash root ./tmp-glibc/deploy/images/light-beagle/light-fm-image-linux-light-beagle-*.rootfs.ext4
+sudo fastboot reboot
 ```
