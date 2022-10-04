@@ -1,13 +1,10 @@
 # Yocto
 
 ```
-git clone -b light-beagle-wip-20221003 git@git.beagleboard.org:RobertCNelson/xuantie-yocto.git xuantie-yocto
+git clone -b light-beagle-wip-20221003 git@git.beagleboard.org:RobertCNelson/xuantie-yocto.git xuantie-yocto ; cd ./xuantie-yocto
 ```
 
-```
-cd ./xuantie-yocto
-```
-
+# Configure Build
 ```
 source openembedded-core/oe-init-build-env build/light-fm
 ```
