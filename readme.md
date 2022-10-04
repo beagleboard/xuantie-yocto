@@ -121,3 +121,30 @@ mmcblk0      179:0    0 14.6G  0 disk
 mmcblk0boot0 179:8    0    4M  1 disk 
 mmcblk0boot1 179:16   0    4M  1 disk 
 ```
+
+```
+root@light-beagle:~# mount
+devtmpfs on /dev type devtmpfs (rw,relatime,size=582728k,nr_inodes=145682,mode=755)
+proc on /proc type proc (rw,relatime)
+sysfs on /sys type sysfs (rw,relatime)
+/dev/mmcblk0p3 on /media/rfs/ro type ext4 (rw,noatime,nodiratime)
+/dev/mmcblk0p6 on /media/rfs/rw type ext4 (rw,noatime)
+overlay on / type overlay (rw,relatime,lowerdir=/media/rfs/ro,upperdir=/media/rfs/rw/upperdir,workdir=/media/rfs/rw/work)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev)
+devpts on /dev/pts type devpts (rw,relatime,gid=5,mode=620,ptmxmode=666)
+tmpfs on /run type tmpfs (rw,nosuid,nodev,size=358900k,nr_inodes=819200,mode=755)
+tmpfs on /sys/fs/cgroup type tmpfs (ro,nosuid,nodev,noexec,size=4096k,nr_inodes=1024,mode=755)
+cgroup2 on /sys/fs/cgroup/unified type cgroup2 (rw,nosuid,nodev,noexec,relatime,nsdelegate)
+cgroup on /sys/fs/cgroup/systemd type cgroup (rw,nosuid,nodev,noexec,relatime,xattr,name=systemd)
+none on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
+hugetlbfs on /dev/hugepages type hugetlbfs (rw,relatime,pagesize=2M)
+mqueue on /dev/mqueue type mqueue (rw,nosuid,nodev,noexec,relatime)
+debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
+tracefs on /sys/kernel/tracing type tracefs (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /tmp type tmpfs (rw,nosuid,nodev,nr_inodes=409600)
+tmpfs on /var/volatile type tmpfs (rw,relatime)
+fusectl on /sys/fs/fuse/connections type fusectl (rw,nosuid,nodev,noexec,relatime)
+configfs on /sys/kernel/config type configfs (rw,nosuid,nodev,noexec,relatime)
+adb on /dev/usb-ffs/adb type functionfs (rw,relatime)
+tmpfs on /run/user/0 type tmpfs (rw,nosuid,nodev,relatime,size=179448k,nr_inodes=44862,mode=700)
+```
