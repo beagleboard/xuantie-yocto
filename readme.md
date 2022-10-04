@@ -123,6 +123,17 @@ mmcblk0boot1 179:16   0    4M  1 disk
 ```
 
 ```
+root@light-beagle:~# partx -s /dev/mmcblk0
+NR    START      END  SECTORS SIZE NAME  UUID
+ 1       34     4095     4062   2M table acfdc713-3579-4362-9f28-aeafad5c1a3e
+ 2     4096   413695   409600 200M boot  beeb5861-89a0-4df9-876a-48f66b160698
+ 3   413696  8605695  8192000 3.9G root  80a5a8e9-c744-491a-93c1-4f4194fd690a
+ 4  8605696  9015295   409600 200M bootB 217b61a1-4398-464e-9464-7828493ba4bb
+ 5  9015296 17207295  8192000 3.9G rootB 80a5a8e9-c744-491a-93c1-4f4194fd690b
+ 6 17207296 30621662 13414367 6.4G data  f0050e0c-a816-4c5a-9c29-46d5ee84d11c
+ ```
+
+```
 root@light-beagle:~# mount
 devtmpfs on /dev type devtmpfs (rw,relatime,size=582728k,nr_inodes=145682,mode=755)
 proc on /proc type proc (rw,relatime)
