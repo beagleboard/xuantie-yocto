@@ -5,9 +5,6 @@ DEPENDS = "e2fsprogs-native opensbi"
 SRC_URI = " \
             git://git@git.beagleboard.org/RobertCNelson/beaglev-thead-linux.git;branch=beaglev-thead-v5.10.113-0.9.5;protocol=ssh \
 "
-
-KERNEL_DEFCONFIG = "arch/riscv/configs/beaglev_defconfig"
-
 # crop the kernel based on the defconfig
 # FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 # SRC_URI += "file://cvl1.cfg"
@@ -65,4 +62,5 @@ do_install_append() {
 }
 
 do_install[nostamp] = "1"
-KCONFIG_MODE="--alldefconfig"
+#KCONFIG_MODE="--alldefconfig"
+KBUILD_DEFCONFIG = "arch/riscv/configs/beaglev_defconfig"
