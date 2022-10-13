@@ -62,5 +62,3 @@ do_install_append() {
 }
 
 do_install[nostamp] = "1"
-#KCONFIG_MODE="--alldefconfig"
-KBUILD_DEFCONFIG = "arch/riscv/configs/beaglev_defconfig"
