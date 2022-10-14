@@ -7,12 +7,12 @@ before_script:
     - chmod 700 ~/.ssh
     - ssh-keyscan git.beagleboard.org >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
+    - git config --global --add safe.directory /mnt/yocto-cache/thead/downloads/*
 
 build:
   stage: build
   script:
     - ls -lha /mnt/yocto-cache/
-    - echo 'SOURCE_MIRROR_URL = "http://192.168.3.192/downloads/"' >> ./build/light-fm/conf/local.conf
     - echo 'DL_DIR = "/mnt/yocto-cache/thead/downloads"' >> ./build/light-fm/conf/local.conf
     - echo 'SSTATE_DIR = "/mnt/yocto-cache/thead/sstate-cache"' >> ./build/light-fm/conf/local.conf
     - source openembedded-core/oe-init-build-env build/light-fm
