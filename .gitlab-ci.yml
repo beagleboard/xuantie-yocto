@@ -13,7 +13,7 @@ build:
   script:
     - ls -lha /mnt/yocto-cache/
     - source openembedded-core/oe-init-build-env build/light-fm
-    - mkdir ../downloads ; rsync -av /mnt/yocto-cache/thead/downloads/ ../downloads/
+    - mkdir ../downloads ; rsync -a /mnt/yocto-cache/thead/downloads/ ../downloads/
     - MACHINE=light-beagle bitbake -k light-fm-image-linux --runall=fetch
     - MACHINE=light-beagle bitbake light-fm-image-linux
 #  artifacts:
