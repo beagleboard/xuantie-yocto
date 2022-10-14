@@ -11,5 +11,7 @@ before_script:
 build:
   stage: build
   script:
+    - echo 'SSTATE_MIRRORS = "file://.* http://192.168.3.192/sstate-cache/PATH"' >> ./build/light-fm/conf/local.conf
+    - echo 'SOURCE_MIRROR_URL = "http://192.168.3.192/downloads/"' >> ./build/light-fm/conf/local.conf
     - source openembedded-core/oe-init-build-env build/light-fm
     - MACHINE=light-beagle bitbake light-fm-image-linux
