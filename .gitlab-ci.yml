@@ -11,11 +11,12 @@ before_script:
 build:
   stage: build
   script:
+    - ls -lha /mnt/yocto-cache/
     - echo 'SOURCE_MIRROR_URL = "http://192.168.3.192/downloads/"' >> ./build/light-fm/conf/local.conf
-    - source openembedded-core/oe-init-build-env build/light-fm
-    - MACHINE=light-beagle bitbake light-fm-image-linux
-  artifacts:
-    paths:
-      - "tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin"
-      - "tmp-glibc/deploy/images/light-beagle/boot.ext4"
-      - "tmp-glibc/deploy/images/light-beagle/light-fm-image-linux-light-beagle.ext4"
+#    - source openembedded-core/oe-init-build-env build/light-fm
+#    - MACHINE=light-beagle bitbake light-fm-image-linux
+#  artifacts:
+#    paths:
+#      - "tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin"
+#      - "tmp-glibc/deploy/images/light-beagle/boot.ext4"
+#      - "tmp-glibc/deploy/images/light-beagle/light-fm-image-linux-light-beagle.ext4"
