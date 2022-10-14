@@ -15,8 +15,7 @@ build:
     - source openembedded-core/oe-init-build-env build/light-fm
     - mkdir ../downloads ; rsync -av /mnt/yocto-cache/thead/downloads/ ../downloads/
     - MACHINE=light-beagle bitbake -k light-fm-image-linux --runall=fetch
-    - rsync -av ../downloads/ /mnt/yocto-cache/thead/downloads/ --delete
-#    - MACHINE=light-beagle bitbake light-fm-image-linux
+    - MACHINE=light-beagle bitbake light-fm-image-linux
 #  artifacts:
 #    paths:
 #      - "tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin"
