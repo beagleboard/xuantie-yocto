@@ -13,7 +13,10 @@ build:
   script:
     - ls -lha /mnt/yocto-cache/
     - echo 'SOURCE_MIRROR_URL = "http://192.168.3.192/downloads/"' >> ./build/light-fm/conf/local.conf
-#    - source openembedded-core/oe-init-build-env build/light-fm
+    - echo 'DL_DIR = "/mnt/yocto-cache/thead/downloads"' >> ./build/light-fm/conf/local.conf
+    - echo 'SSTATE_DIR = "/mnt/yocto-cache/thead/sstate-cache"' >> ./build/light-fm/conf/local.conf
+    - source openembedded-core/oe-init-build-env build/light-fm
+    - MACHINE=light-beagle bitbake light-fm-image-linux --runall=fetch
 #    - MACHINE=light-beagle bitbake light-fm-image-linux
 #  artifacts:
 #    paths:
