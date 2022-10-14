@@ -18,6 +18,7 @@ git clone -b light-beagle-wip-20221003 git@git.beagleboard.org:RobertCNelson/xua
 ```
 
 # Configure Build
+
 ```
 source openembedded-core/oe-init-build-env build/light-fm
 ```
@@ -25,14 +26,20 @@ source openembedded-core/oe-init-build-env build/light-fm
 # Copy mirrored downloads:
 
 ```
-mkdir ../downloads ; rsync -av /mnt/ti-processor-sdk/thead/downloads/ ../downloads/
+mkdir ../downloads ; rsync -av /mnt/yocto-cache/thead/downloads/ ../downloads/
+```
+
+# Copy mirrored sstate-cache
+
+```
+mkdir ../sstate-cache ; rsync -av /mnt/yocto-cache/thead/sstate-cache/ ../sstate-cache/
 ```
 
 # Download missing files:
 
 ```
 MACHINE=light-beagle bitbake light-fm-image-linux --runall=fetch
-rsync -av ../downloads/ /mnt/ti-processor-sdk/thead/downloads/ --delete
+rsync -a ../downloads/ /mnt/yocto-cache/thead/downloads/ --delete
 ```
 
 # Start Build
@@ -41,6 +48,11 @@ rsync -av ../downloads/ /mnt/ti-processor-sdk/thead/downloads/ --delete
 MACHINE=light-beagle bitbake light-fm-image-linux
 ```
 
+# Save cache
+
+```
+rsync -a ../sstate-cache/ /mnt/yocto-cache/thead/sstate-cache/ --delete
+```
 
 # install (android fastboot tools)
 
