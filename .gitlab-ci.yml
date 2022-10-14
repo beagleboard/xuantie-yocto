@@ -7,7 +7,7 @@ before_script:
     - chmod 700 ~/.ssh
     - ssh-keyscan git.beagleboard.org >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-    - git config --global --add safe.directory /mnt/yocto-cache/thead/downloads/*
+    - git config --global --add safe.directory '/mnt/yocto-cache/thead/downloads/*'
 
 build:
   stage: build
