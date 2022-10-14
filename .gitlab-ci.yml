@@ -2,7 +2,7 @@ image: robertcnelson/ubuntu-2004-yocto:latest
 
 before_script:
     - eval $(ssh-agent -s)
-    - echo "$GIT_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - ssh-keyscan git.beagleboard.org >> ~/.ssh/known_hosts
