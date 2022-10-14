@@ -67,7 +67,17 @@ sudo fastboot reboot
 sleep 10
 sudo fastboot flash uboot ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin
 sudo fastboot flash boot ./tmp-glibc/deploy/images/light-beagle/boot.ext4
-sudo fastboot flash root ./tmp-glibc/deploy/images/light-beagle/light-fm-image-linux-light-beagle-*.rootfs.ext4
+sudo fastboot flash root ./tmp-glibc/deploy/images/light-beagle/light-fm-image-linux-light-beagle.ext4
+sudo fastboot reboot
+```
+
+Quick: (kernel update)
+
+```
+sudo fastboot flash ram ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin
+sudo fastboot reboot
+sleep 10
+sudo fastboot flash root ./tmp-glibc/deploy/images/light-beagle/light-fm-image-linux-light-beagle.ext4
 sudo fastboot reboot
 ```
 
