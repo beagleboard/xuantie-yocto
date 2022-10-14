@@ -45,7 +45,7 @@ rsync -a ../downloads/ /mnt/yocto-cache/thead/downloads/ --delete
 # Start Build
 
 ```
-MACHINE=light-beagle bitbake light-fm-image-linux
+MACHINE=light-beagle bitbake -k light-fm-image-linux
 ```
 
 # Save cache
