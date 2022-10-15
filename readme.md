@@ -48,6 +48,12 @@ rsync -a ../downloads/ /mnt/yocto-cache/thead/downloads/ --delete
 MACHINE=light-beagle bitbake -k light-fm-image-linux
 ```
 
+# Limit cpu threads
+
+```
+BB_NUMBER_THREADS=2 MACHINE=light-beagle bitbake -k light-fm-image-linux
+```
+
 # Save cache
 
 ```
