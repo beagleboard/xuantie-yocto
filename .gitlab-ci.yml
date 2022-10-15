@@ -15,6 +15,8 @@ build:
     - echo 'SSTATE_DIR = "/mnt/yocto-cache/thead/sstate-cache"' >> ./build/light-fm/conf/local.conf
     - source openembedded-core/oe-init-build-env build/light-fm
     - mkdir ../downloads ; rsync -a /mnt/yocto-cache/thead/downloads/ ../downloads/
+    - BB_NUMBER_THREADS=4 MACHINE=light-beagle bitbake -k light-fm-image-linux --runall=fetch
+    - rsync -a ../downloads/ /mnt/yocto-cache/thead/downloads/ --delete
     - MACHINE=light-beagle bitbake -k light-fm-image-linux
     - cp -v ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin ../../deploy/ || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/boot.ext4 ../../deploy/ || true
