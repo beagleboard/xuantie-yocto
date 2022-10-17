@@ -12,9 +12,9 @@ build:
   stage: build
   script:
     - ls -lha /mnt/yocto-cache/
-    - echo 'SSTATE_DIR = "/mnt/yocto-cache/thead/sstate-cache"' >> ./build/light-fm/conf/local.conf
+    - echo 'SSTATE_DIR = "/mnt/yocto-cache/beaglev-ahead/sstate-cache"' >> ./build/light-fm/conf/local.conf
     - source openembedded-core/oe-init-build-env build/light-fm
-    - mkdir ../downloads ; rsync -a /mnt/yocto-cache/thead/downloads/ ../downloads/
+    - mkdir ../downloads ; rsync -a /mnt/yocto-cache/beaglev-ahead/downloads/ ../downloads/
     - MACHINE=light-beagle bitbake -k light-fm-image-linux
     - cp -v ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin ../../deploy/ || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/boot.ext4 ../../deploy/ || true
