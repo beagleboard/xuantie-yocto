@@ -16,7 +16,7 @@ build:
     - source openembedded-core/oe-init-build-env build/light-fm
     - mkdir ../downloads ; rsync -a /mnt/yocto-cache/beaglev-ahead/downloads/ ../downloads/
     - BB_NUMBER_THREADS=2 MACHINE=light-beagle bitbake light-fm-image-linux --runall=fetch
-    - MACHINE=light-beagle bitbake -k light-fm-image-linux
+    - MACHINE=light-beagle bitbake -k light-fm-image-linux || BB_NUMBER_THREADS=2 MACHINE=light-beagle bitbake -k light-fm-image-linux
     - cp -v ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin ../../deploy/ || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/boot.ext4 ../../deploy/ || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/light-fm-image-linux-light-beagle.ext4 ../../deploy/ || true
