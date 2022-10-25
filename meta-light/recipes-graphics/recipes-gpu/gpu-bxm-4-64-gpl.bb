@@ -17,7 +17,7 @@ DEPENDS += " \
 inherit pkgconfig
 
 SRC_URI = " \
-           git://git@gitee.com/thead-yocto/gpu_bxm_4_64-kernel.git;branch=master;protocol=http \
+           git://git@git.beagleboard.org/beaglev-ahead/gpu_bxm_4_64-kernel.git;branch=master;protocol=ssh \
            file://.param \
            file://0001-delete-um-for-yocto.patch \
            file://0001-support-parallel-make-for-yocto.patch \
