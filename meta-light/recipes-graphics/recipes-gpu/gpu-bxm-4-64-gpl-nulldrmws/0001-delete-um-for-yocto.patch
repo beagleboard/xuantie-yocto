@@ -1,4 +1,5 @@
 From 1b0a28e4b3a42c9bccf486b567421ed793c90dfd Mon Sep 17 00:00:00 2001
+From: zhangjb <zhangjb194813@linux.alibaba.com>
 Date: Tue, 28 Dec 2021 20:28:19 +0800
 Subject: [PATCH] delete-um-for-yocto
 

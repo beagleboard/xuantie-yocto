@@ -16,6 +16,7 @@ IMAGE_INSTALL += " thead-ddr-pmu "
 IMAGE_INSTALL += " isp-isp8000l "
 IMAGE_INSTALL += " vi-bt "
 IMAGE_INSTALL += " vi-kernel "
+IMAGE_INSTALL += " vi-sensor "
 IMAGE_INSTALL += " xtensa-dsp "
 IMAGE_INSTALL += " csi-camera-hal "
 IMAGE_INSTALL += " rambus-os-ik-150 "
@@ -37,6 +38,7 @@ IMAGE_INSTALL += " vpu-vc8000d-kernel "
 IMAGE_INSTALL += " vpu-vc8000e-kernel "
 # disable for public release
 IMAGE_INSTALL += " csi-hal-vcodec "
+IMAGE_INSTALL += " watchdog "
 
 # // for public release only, disabled by default for internal release
 # IMAGE_INSTALL += " image-proprietary "

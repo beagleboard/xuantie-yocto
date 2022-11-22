@@ -104,7 +104,8 @@ extern bool riscv_hard_regno_rename_ok (unsigned, unsigned);
 rtl_opt_pass * make_pass_shorten_memrefs (gcc::context *ctxt);
 
 /* T-Head */
-rtl_opt_pass * make_pass_delete_redundancy_sext (gcc::context *ctxt);
+rtl_opt_pass * make_pass_delete_redundancy_sext1 (gcc::context *ctxt);
+rtl_opt_pass * make_pass_delete_redundancy_sext2 (gcc::context *ctxt);
 rtl_opt_pass * make_pass_xthead_dvsetvl (gcc::context *ctxt);
 rtl_opt_pass * make_pass_xthead_dvsetvl2 (gcc::context *ctxt);
 rtl_opt_pass * make_pass_xthead_dread_vlenb (gcc::context *ctxt);

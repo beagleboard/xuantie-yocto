@@ -1,0 +1,12 @@
+[Unit]
+Description=Vivante vc8000e driver init Service.
+
+[Service]
+Type=simple
+EnvironmentFile=-/usr/share/vc8000e/vc8000e.env
+ExecStart=sh usr/share/vc8000e/insmod.sh
+ExecStop=sh usr/share/vc8000e/rmmod.sh
+RemainAfterExit=y
+
+[Install]
+WantedBy=multi-user.target

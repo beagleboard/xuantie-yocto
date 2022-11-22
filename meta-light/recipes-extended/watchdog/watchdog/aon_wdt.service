@@ -1,0 +1,11 @@
+[Unit]
+Description=aon wdt Service.
+
+[Service]
+Type=simple
+ExecStart=sh usr/share/aon_wdt/aon_wdt_start.sh
+ExecStop=sh usr/share/aon_wdt/aon_wdt_stop.sh
+RemainAfterExit=y
+
+[Install]
+WantedBy=multi-user.target

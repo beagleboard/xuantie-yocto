@@ -1,0 +1,22 @@
+From dc8014a8568b62d494978a5e7f65b16e46fdbc72 Mon Sep 17 00:00:00 2001
+From: zhangjb <zhangjb194813@linux.alibaba.com>
+Date: Tue, 1 Mar 2022 18:04:13 +0800
+Subject: [PATCH] support-parallel-make-for-yocto
+
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 96c841391..5b5f00b66 100644
+--- a/Makefile
++++ b/Makefile
+@@ -77,7 +77,7 @@ prepare_lib:
+ 
+ lib: prepare_lib
+ 	@echo $(BUILD_LOG_START)
+-	make -C $(LIBDIR)/build/linux/thead_linux CROSS_COMPILE=$(TOOLCHAIN_PREFIX) ARCH=$(ARCH) BUILD=$(BUILD) RGX_BVNC=$(RGX_BVNC)
++	make -j 64 -C $(LIBDIR)/build/linux/thead_linux CROSS_COMPILE=$(TOOLCHAIN_PREFIX) ARCH=$(ARCH) BUILD=$(BUILD) RGX_BVNC=$(RGX_BVNC)
+ 	@echo $(BUILD_LOG_END)
+ 
+ clean_lib:

@@ -1,10 +1,12 @@
 From 829825f0609d20d280a36d653376e322a30486d9 Mon Sep 17 00:00:00 2001
+From: Yugang <fanyugang.fyg@linux.alibaba.com>
 Date: Tue, 1 Mar 2022 08:19:19 +0800
 Subject: [PATCH] Reset all planes state due to hotplug dirty state.
 
 To fix the overlay state hang when surface changed the position
 after hotplug.
 
+Signed-off-by: Yugang <fanyugang.fyg@linux.alibaba.com>
 ---
  libweston/backend-drm/drm.c | 9 +++++++++
  1 file changed, 9 insertions(+)

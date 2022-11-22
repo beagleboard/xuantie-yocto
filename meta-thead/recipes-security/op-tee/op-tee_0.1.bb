@@ -48,6 +48,10 @@ do_install() {
     if [ -f ${WORKDIR}/git/prebuild/images/light-fm-a/tee.bin ]; then
        cp ${WORKDIR}/git/prebuild/images/light-fm-a/tee.bin ${DEPLOY_DIR_IMAGE}/
     fi
+
+    if [ -d ${WORKDIR}/git/Tsec_dev_kit ]; then
+       cp -rf ${WORKDIR}/git/Tsec_dev_kit ${DEPLOY_DIR_IMAGE}/
+    fi
 }
 
 FILES_${PN} += " ${base_libdir} "

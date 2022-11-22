@@ -6,6 +6,8 @@ COMPATIBLE_MACHINE = "light-*"
 
 SRC_URI = " \
             git://git@gitee.com/thead-yocto/vpu-vc8000e-kernel.git;branch=master;protocol=http \
+            file://vc8000e.service \
+            file://98-vc8000e.preset \
           "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"
@@ -33,16 +35,20 @@ PARALLEL_MAKEINST = "-j1"
 
 do_install() {
     install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra
-    install -d ${D}${sysconfdir}/modules-load.d
     install -d ${D}${includedir}/vc8000e
+    install -d ${D}${datadir}/vc8000e
+    install -d ${D}/lib/systemd/system
+    install -d ${D}/lib/systemd/system-preset
 
     install -m 0644 ${S}/output/rootfs/bsp/venc/ko/*.ko       ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra
-    install -m 0755 ${S}/output/rootfs/bsp/venc/ko/*.conf     ${D}${sysconfdir}/modules-load.d
     install -m 0644 ${S}/linux/kernel_module/vc8000_driver.h  ${D}${includedir}/vc8000e
     install -m 0644 ${S}/linux/kernel_module/hantrommu.h      ${D}${includedir}/vc8000e
+    install -m 0755 ${S}/output/rootfs/bsp/venc/ko/*.sh       ${D}${datadir}/vc8000e
+    install -m 0755 ${WORKDIR}/98-vc8000e.preset              ${D}/lib/systemd/system-preset
+    install -m 0755 ${WORKDIR}/vc8000e.service                ${D}/lib/systemd/system
 }
 
 PACKAGES = "${PN}"
-FILES_${PN} = "${base_libdir} ${includedir} ${sysconfdir}"
+FILES_${PN} = "${base_libdir} ${includedir} ${sysconfdir} ${datadir} "
 
 INSANE_SKIP_${PN} += " debug-files staticdev "

@@ -1,4 +1,5 @@
 From 486f3eb3afa4573fef876ba5f46408241dbdeda8 Mon Sep 17 00:00:00 2001
+From: lihm <koumei.lhm@linux.alibaba.com>
 Date: Fri, 6 Aug 2021 14:43:17 +0800
 Subject: [PATCH] Makefile: Fix the compile error for yocto
 

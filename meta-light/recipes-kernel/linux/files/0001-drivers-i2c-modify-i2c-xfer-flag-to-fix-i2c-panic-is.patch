@@ -1,0 +1,68 @@
+From 73d350f00158035536d3a3a8eab2c015c1b4f264 Mon Sep 17 00:00:00 2001
+From: bianhq <bhq01502828@linux.alibaba.com>
+Date: Mon, 14 Nov 2022 02:57:03 +0000
+Subject: [PATCH] drivers: i2c: modify i2c xfer flag to fix i2c panic issue
+
+---
+ drivers/i2c/busses/i2c-designware-core.h   |  1 +
+ drivers/i2c/busses/i2c-designware-master.c | 18 +++++++++++-------
+ 2 files changed, 12 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/i2c/busses/i2c-designware-core.h b/drivers/i2c/busses/i2c-designware-core.h
+index 5c2bad8a4fdc..b85ffe0fcd1e 100644
+--- a/drivers/i2c/busses/i2c-designware-core.h
++++ b/drivers/i2c/busses/i2c-designware-core.h
+@@ -107,6 +107,7 @@
+ 
+ #define DW_IC_STATUS_ACTIVITY		0x1
+ #define DW_IC_STATUS_TFE		BIT(2)
++#define DW_IC_STATUS_RFNE               BIT(3)
+ #define DW_IC_STATUS_MASTER_ACTIVITY	BIT(5)
+ #define DW_IC_STATUS_SLAVE_ACTIVITY	BIT(6)
+ 
+diff --git a/drivers/i2c/busses/i2c-designware-master.c b/drivers/i2c/busses/i2c-designware-master.c
+index 875ba2c27790..cbb9fc455ee5 100644
+--- a/drivers/i2c/busses/i2c-designware-master.c
++++ b/drivers/i2c/busses/i2c-designware-master.c
+@@ -613,7 +613,7 @@ static u32 i2c_dw_read_clear_intrbits(struct dw_i2c_dev *dev)
+  */
+ static int i2c_dw_irq_handler_master(struct dw_i2c_dev *dev)
+ {
+-	u32 stat;
++	u32 stat, status;
+ 
+ 	stat = i2c_dw_read_clear_intrbits(dev);
+ 	if (stat & DW_IC_INTR_TX_ABRT) {
+@@ -641,12 +641,14 @@ static int i2c_dw_irq_handler_master(struct dw_i2c_dev *dev)
+ 	 */
+ 
+ tx_aborted:
+-	if ((stat & (DW_IC_INTR_TX_ABRT | DW_IC_INTR_STOP_DET)) || dev->msg_err) {
+-		/* Enforce disabled interrupts */
+-		i2c_dw_disable_int(dev);
+-		complete(&dev->cmd_complete);
+-	} else if (unlikely(dev->flags & ACCESS_INTR_MASK)) {
+-		/* Workaround to trigger pending interrupt */
++	regmap_read(dev->map, DW_IC_STATUS, &status);
++        if ((stat & DW_IC_INTR_TX_ABRT) || dev->msg_err ||
++		 ((status & DW_IC_STATUS_TFE) &&
++       	          (!(status & DW_IC_STATUS_RFNE)) &&
++                  (!(status & DW_IC_STATUS_MASTER_ACTIVITY))))		
++	       complete(&dev->cmd_complete);
++       else if (unlikely(dev->flags & ACCESS_INTR_MASK)) {	
++	/* Workaround to trigger pending interrupt */
+ 		regmap_read(dev->map, DW_IC_INTR_MASK, &stat);
+ 		i2c_dw_disable_int(dev);
+ 		regmap_write(dev->map, DW_IC_INTR_MASK, stat);
+@@ -808,6 +810,8 @@ int i2c_dw_probe_master(struct dw_i2c_dev *dev)
+ 		dev_err(dev->dev, "failure adding adapter: %d\n", ret);
+ 	pm_runtime_put_noidle(dev->dev);
+ 
++	dev_info(dev->dev, "finish initialize i2c apter-2022-11-14-01\n");
++
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(i2c_dw_probe_master);
+-- 
+2.17.1
+

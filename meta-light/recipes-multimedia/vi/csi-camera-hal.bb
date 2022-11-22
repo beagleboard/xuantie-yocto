@@ -1,4 +1,5 @@
 DESCRIPTION = "thead CSI Camera HAL"
+HOMEPAGE = "https://gitee.com/thead-yocto/csi_hal"
 LICENSE = "CLOSED"
 #LIC_FILES_CHKSUM = ""
 
@@ -47,6 +48,9 @@ do_install() {
     install -d ${D}${includedir}/csi_hal
     install -m 0644 ${S}/output/hal/lib_so/*.so                          ${D}${libdir}/csi_hal
     install -m 0644 ${S}/include/hal/*                                   ${D}${includedir}/csi_hal
+    install -m 0644 ${S}/include/lib_camera/*                            ${D}${includedir}/csi_hal
+    install -m 0644 ${S}/include/common/*                                ${D}${includedir}/csi_hal
+    install -m 0644 ${S}/output/hal/lib_so/libhal_camera.so              ${D}${libdir}
     install -m 0755 ${S}/output/examples/camera/*                        ${D}${datadir}/csi_hal
 }
 

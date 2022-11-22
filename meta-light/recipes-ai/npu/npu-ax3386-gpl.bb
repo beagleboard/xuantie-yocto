@@ -1,4 +1,5 @@
 DESCRIPTION = "thead neural network accelerator driver"
+HOMEPAGE = "https://gitee.com/thead-yocto/npu-ax3386-kernel"
 LICENSE = "CLOSED"
 #LIC_FILES_CHKSUM = ""
 
@@ -28,14 +29,15 @@ export BUILDROOT_DIR?="${BUILD_ROOT}"
 export CROSS_COMPILE="riscv64-linux-"
 export TOOLCHAIN_DIR?="${EXTERNAL_TOOLCHAIN}"
 export LINUX_DIR?="${STAGING_KERNEL_BUILDDIR}"
-
+export BUILD_SYSTEM="YOCTO_BUILD"
+export RELEASE_BUILD?="0"
 export INSTALL_DIR_ROOTFS?="${IMAGE_ROOTFS}"
 export INSTALL_DIR_SDK?="${SDK_DEPLOY}"
 
 export PATH="${SYSROOT_DIR}:${SYSROOT_DIR}/usr/include:${SYSROOT_DIR}/usr/lib:${SYSROOT_DIR}/lib:${SYSROOT_DIR}/include:${RECIPE_SYSROOT_NATIVE}/usr/bin/riscv64-oe-linux:${COREBASE}/scripts:${COREBASE}/bitbake/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
 export KERNEL_VERSION="$(cat ${BASE_WORKDIR}/kernel_version)"
 
-EXTRA_OEMAKE+="BUILD_SYSTEM='YOCTO_BUILD'"
+EXTRA_OEMAKE+="'BUILD_SYSTEM=${BUILD_SYSTEM}' 'RELEASE_BUILD=${RELEASE_BUILD}'"
 
 PARALLEL_MAKEINST = "-j1"
 

@@ -1,9 +1,11 @@
 From b43c9d470ec89c7e9ac0c013f484ed79780302e3 Mon Sep 17 00:00:00 2001
+From: "linghui.zlh" <linghui.zlh@linux.alibaba.com>
 Date: Sat, 7 May 2022 18:49:26 +0800
 Subject: [PATCH] arch: riscv: boot: dts: thead:
 
 modify pdn pin-index for cam-sensor
 
+Signed-off-by: linghui.zlh < linghui.zlh@linux.alibaba.com >
 ---
  arch/riscv/boot/dts/thead/light-val-ant-evt.dts | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

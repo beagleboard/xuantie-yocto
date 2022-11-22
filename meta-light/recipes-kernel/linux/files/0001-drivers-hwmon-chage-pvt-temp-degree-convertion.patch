@@ -1,4 +1,5 @@
 From 1c0d8e05f61027a94bd31d033ebd2aa0475e62c9 Mon Sep 17 00:00:00 2001
+From: "linghui.zlh" <linghui.zlh@linux.alibaba.com>
 Date: Fri, 13 May 2022 15:50:26 +0800
 Subject: [PATCH] drivers: hwmon: chage pvt-temp degree convertion
 
@@ -16,6 +17,7 @@ light use following degree conversion, temp value in degress
      * C = -0.16
      * *****************************************/
 
+Signed-off-by: linghui.zlh < linghui.zlh@linux.alibaba.com >
 ---
  drivers/hwmon/mr75203.c | 18 +++++++++++++++++-
  1 file changed, 17 insertions(+), 1 deletion(-)

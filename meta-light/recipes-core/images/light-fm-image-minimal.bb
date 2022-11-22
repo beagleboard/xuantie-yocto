@@ -2,6 +2,7 @@ DESCRIPTION = "A minimal image for light fm."
 
 IMAGE_INSTALL = "packagegroup-core-boot kernel-modules"
 IMAGE_INSTALL += " resizefs initscripts-readonly-rootfs-overlay "
+IMAGE_INSTALL += "tzdata"
 
 LICENSE = "MIT"
 

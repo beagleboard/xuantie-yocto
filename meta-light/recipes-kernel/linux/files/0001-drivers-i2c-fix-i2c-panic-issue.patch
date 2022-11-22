@@ -1,0 +1,33 @@
+From e011f6cea8496aac54e78a3cfef49b91ce7cb62b Mon Sep 17 00:00:00 2001
+From: lw312886 <lw312886@linux.alibaba.com>
+Date: Fri, 11 Nov 2022 14:44:05 +0800
+Subject: [PATCH] drivers: i2c: fix i2c panic issue
+
+disable all i2c interrupts when STOP_DET is set, to fix i2c panic issue
+
+Signed-off-by: Wei Liu <wei.liu@linux.alibaba.com>
+---
+ drivers/i2c/busses/i2c-designware-master.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/i2c/busses/i2c-designware-master.c b/drivers/i2c/busses/i2c-designware-master.c
+index 2871cf2ee8b4..875ba2c27790 100644
+--- a/drivers/i2c/busses/i2c-designware-master.c
++++ b/drivers/i2c/busses/i2c-designware-master.c
+@@ -641,9 +641,11 @@ static int i2c_dw_irq_handler_master(struct dw_i2c_dev *dev)
+ 	 */
+ 
+ tx_aborted:
+-	if ((stat & (DW_IC_INTR_TX_ABRT | DW_IC_INTR_STOP_DET)) || dev->msg_err)
++	if ((stat & (DW_IC_INTR_TX_ABRT | DW_IC_INTR_STOP_DET)) || dev->msg_err) {
++		/* Enforce disabled interrupts */
++		i2c_dw_disable_int(dev);
+ 		complete(&dev->cmd_complete);
+-	else if (unlikely(dev->flags & ACCESS_INTR_MASK)) {
++	} else if (unlikely(dev->flags & ACCESS_INTR_MASK)) {
+ 		/* Workaround to trigger pending interrupt */
+ 		regmap_read(dev->map, DW_IC_INTR_MASK, &stat);
+ 		i2c_dw_disable_int(dev);
+-- 
+2.17.1
+

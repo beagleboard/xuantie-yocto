@@ -1,4 +1,5 @@
 From b9de35673026d0751b5834402e148b442656dc43 Mon Sep 17 00:00:00 2001
+From: Yugang <fanyugang.fyg@linux.alibaba.com>
 Date: Wed, 15 Jun 2022 09:46:35 +0800
 Subject: [PATCH] Support xdg top levle window position for wayland.
 

@@ -1,9 +1,11 @@
 From 5f7d0eaf40cee01966790b47510322fc2f3a8c39 Mon Sep 17 00:00:00 2001
+From: "linghui.zlh" <linghui.zlh@linux.alibaba.com>
 Date: Sat, 7 May 2022 18:53:50 +0800
 Subject: [PATCH] board: thead: light-c910: enable audio pwr by default
 
 enable audio power by default
 
+Signed-off-by: linghui.zlh < linghui.zlh@linux.alibaba.com >
 ---
  board/thead/light-c910/light.c | 2 ++
  1 file changed, 2 insertions(+)

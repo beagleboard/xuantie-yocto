@@ -33,6 +33,7 @@
 # include "config/glibc-stdint.h"
 # include "config/riscv/riscv.h"
 # include "config/riscv/linux.h"
+# include "config/riscv/riscv-thead.h"
 # include "config/initfini-array.h"
 #endif
 #if defined IN_GCC && !defined GENERATOR_FILE && !defined USED_FOR_TARGET

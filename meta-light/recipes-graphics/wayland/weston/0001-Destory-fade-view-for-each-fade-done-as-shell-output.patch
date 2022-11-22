@@ -1,4 +1,5 @@
 From f9710114a009c96088c5d2206f27e5705c28fc65 Mon Sep 17 00:00:00 2001
+From: Yugang <fanyugang.fyg@linux.alibaba.com>
 Date: Wed, 22 Jun 2022 15:05:12 +0800
 Subject: [PATCH] Destory fade view for each fade done as shell output changes.
 

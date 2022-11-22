@@ -1,4 +1,5 @@
 From d7db929fca59e2ef3c20ce1527d6040541bcf02f Mon Sep 17 00:00:00 2001
+From: lihm <koumei.lhm@linux.alibaba.com>
 Date: Fri, 29 Oct 2021 13:25:27 +0800
 Subject: [PATCH] Modify boot lcd backlight on timing.
 

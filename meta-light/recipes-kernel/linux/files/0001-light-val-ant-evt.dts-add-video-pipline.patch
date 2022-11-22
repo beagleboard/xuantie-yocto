@@ -1,4 +1,5 @@
 From d460984ed60ec0d29c66c74fdc13928a754f76d8 Mon Sep 17 00:00:00 2001
+From: "yitong.lyt" <yitong.lyt@linux.alibaba.com>
 Date: Fri, 13 May 2022 11:49:52 +0800
 Subject: [PATCH] light-val-ant-evt.dts add video pipline
 

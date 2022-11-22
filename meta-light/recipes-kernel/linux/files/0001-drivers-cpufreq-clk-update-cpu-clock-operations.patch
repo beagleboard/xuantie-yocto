@@ -1,0 +1,60 @@
+From f8d64560fa1e8836b5a29574db7352079726ab35 Mon Sep 17 00:00:00 2001
+From: lw312886 <lw312886@linux.alibaba.com>
+Date: Tue, 8 Nov 2022 20:01:42 +0800
+Subject: [PATCH] drivers: cpufreq/clk: update cpu clock operations
+
+update cpu clock operations to fix the panic hang issue
+
+Signed-off-by: Wei Liu <wei.liu@linux.alibaba.com>
+---
+ drivers/clk/thead/clk-light-fm.c    | 2 --
+ drivers/cpufreq/light-mpw-cpufreq.c | 6 +++---
+ 2 files changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/clk/thead/clk-light-fm.c b/drivers/clk/thead/clk-light-fm.c
+index 2d38fc1e4690..2fe47c063a53 100644
+--- a/drivers/clk/thead/clk-light-fm.c
++++ b/drivers/clk/thead/clk-light-fm.c
+@@ -608,8 +608,6 @@ static int light_clocks_probe(struct platform_device *pdev)
+ 
+ #ifndef FPGA_EMU
+ 	/* HW defalut */
+-	clk_prepare_enable(clks[CPU_PLL1_FOUTPOSTDIV]);
+-	udelay(1);
+ 	clk_set_parent(clks[C910_CCLK], clks[CPU_PLL1_FOUTPOSTDIV]);
+ #else
+ 	clk_set_parent(clks[C910_CCLK_I0], clks[OSC_24M]);
+diff --git a/drivers/cpufreq/light-mpw-cpufreq.c b/drivers/cpufreq/light-mpw-cpufreq.c
+index e6a6ad5e260c..b6b4ac8651fd 100644
+--- a/drivers/cpufreq/light-mpw-cpufreq.c
++++ b/drivers/cpufreq/light-mpw-cpufreq.c
+@@ -268,7 +268,7 @@ static int panic_cpufreq_notifier_call(struct notifier_block *nb,
+ 	struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
+ 	u32 val = readl(ap_sys_reg);
+ 
+-	pr_debug("[%s,%d]Enter panic_cpufreq_notifier_call\n", __func__, __LINE__);
++	pr_info("enter panic_cpufreq_notifier_call\n");
+ 
+ 	/*
+ 	 * set CPU PLL1's frequency as minimum to compatible voltage
+@@ -277,7 +277,7 @@ static int panic_cpufreq_notifier_call(struct notifier_block *nb,
+ 	if (strcmp(__clk_get_name(clk_get_parent(clks[LIGHT_C910_CCLK].clk)),
+ 		__clk_get_name(clks[LIGHT_C910_CCLK_I0].clk))) {
+ 		pr_debug("[%s,%d]\n", __func__, __LINE__);
+-
++		clk_prepare_enable(clks[LIGHT_CPU_PLL0_FOUTPOSTDIV].clk);
+ 		clk_set_rate(clks[LIGHT_CPU_PLL0_FOUTPOSTDIV].clk, policy->min * 1000);
+ 		udelay(1);
+ 		clk_set_parent(clks[LIGHT_C910_CCLK].clk, clks[LIGHT_C910_CCLK_I0].clk);
+@@ -296,7 +296,7 @@ static int panic_cpufreq_notifier_call(struct notifier_block *nb,
+ 	clk_set_rate(clks[LIGHT_CPU_PLL1_FOUTPOSTDIV].clk, policy->min * 1000);
+ 	udelay(1);
+ 
+-	pr_debug("finish to execute cpufreq notifier callback on panic\n");
++	pr_info("finish to execute cpufreq notifier callback on panic\n");
+ 
+ 	return 0;
+ }
+-- 
+2.17.1
+

@@ -16,6 +16,7 @@ SRC_URI = "https://github.com/${BPN}/${BPN}/releases/download/${PV}/${BP}.tar.xz
             file://act-as-mv-when-rotate.patch \
             file://0001-Update-the-manual.patch \
             file://disable-check-different-filesystems.patch \
+            file://rot_syslog.conf \
             "
 
 SRC_URI[sha256sum] = "58cc2178ff57faa3c0490181cce041345aeca6cff18dba1c5cd1398bf1c19294"
@@ -28,7 +29,8 @@ PACKAGECONFIG[selinux] = ",,libselinux"
 CONFFILES_${PN} += "${localstatedir}/lib/logrotate.status \
                     ${sysconfdir}/logrotate.conf \
                     ${sysconfdir}/logrotate.d/btmp \
-                    ${sysconfdir}/logrotate.d/wtmp"
+                    ${sysconfdir}/logrotate.d/wtmp \
+                    ${sysconfdir}/logrotate.d/rot_syslog.conf "
 
 # If RPM_OPT_FLAGS is unset, it adds -g itself rather than obeying our
 # optimization variables, so use it rather than EXTRA_CFLAGS.
@@ -67,6 +69,7 @@ do_install(){
     install -p -m 644 ${S}/examples/logrotate.conf ${D}${sysconfdir}/logrotate.conf
     install -p -m 644 ${S}/examples/btmp ${D}${sysconfdir}/logrotate.d/btmp
     install -p -m 644 ${S}/examples/wtmp ${D}${sysconfdir}/logrotate.d/wtmp
+    install -p -m 644 ${WORKDIR}/rot_syslog.conf ${D}${sysconfdir}/logrotate.d/rot_syslog.conf
     touch ${D}${localstatedir}/lib/logrotate.status
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then

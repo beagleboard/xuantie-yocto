@@ -1,0 +1,61 @@
+From c5e1b97c03c51f0d3409e7d74d8e86428a289a14 Mon Sep 17 00:00:00 2001
+From: menghong0628 <menghong0628@linux.alibaba.com>
+Date: Wed, 2 Nov 2022 14:28:48 +0800
+Subject: [PATCH 3/4] add volt set for sensor
+
+---
+ arch/riscv/boot/dts/thead/light-a-val.dts   | 3 +++
+ arch/riscv/boot/dts/thead/light-ant-ref.dts | 2 ++
+ 2 files changed, 5 insertions(+)
+
+diff --git a/arch/riscv/boot/dts/thead/light-a-val.dts b/arch/riscv/boot/dts/thead/light-a-val.dts
+index 90da285ee93e..4f4130754f25 100644
+--- a/arch/riscv/boot/dts/thead/light-a-val.dts
++++ b/arch/riscv/boot/dts/thead/light-a-val.dts
+@@ -967,6 +967,7 @@
+ &vvcam_sensor0 {
+ 	sensor_name = "SC2310";
+ 	sensor_regulators = "DOVDD18_RGB", "DVDD12_RGB", "AVDD28_RGB";
++	sensor_regulator_voltage_uV = <1800000 1200000 2800000>;
+ 	sensor_regulator_timing_us = <70 50 20>;
+ 	sensor_rst = <&gpio1_porta 16 0>;
+ 	sensor_pdn_delay_us = <4000>; //powerdown pin / shutdown pin actived till I2C ready
+@@ -1038,6 +1039,7 @@
+ &vvcam_sensor5 {
+     sensor_name = "OV12870";
+     sensor_regulators = "DOVDD18_RGB", "DVDD12_RGB", "AVDD28_RGB";
++    sensor_regulator_voltage_uV = <1800000 1200000 2800000>;
+     sensor_regulator_timing_us = <100 50 0>;
+     sensor_rst = <&gpio1_porta 16 0>;
+     sensor_pdn_delay_us = <60>; //powerdown pin / shutdown pin actived till I2C ready
+@@ -1054,6 +1056,7 @@
+ &vvcam_sensor6 {
+ 	sensor_name = "GC02M1B";
+ 	sensor_regulators = "DOVDD18_RGB", "DVDD12_RGB", "AVDD28_RGB";
++	sensor_regulator_voltage_uV = <1800000 1675000 2800000>;
+ 	sensor_regulator_timing_us = <70 50 20>;
+ 	sensor_rst = <&gpio1_porta 16 0>;
+ 	sensor_pdn_delay_us = <1000>; //powerdown pin / shutdown pin actived till I2C ready
+diff --git a/arch/riscv/boot/dts/thead/light-ant-ref.dts b/arch/riscv/boot/dts/thead/light-ant-ref.dts
+index c62b3f97b0fb..f8796b70d45b 100644
+--- a/arch/riscv/boot/dts/thead/light-ant-ref.dts
++++ b/arch/riscv/boot/dts/thead/light-ant-ref.dts
+@@ -1008,6 +1008,7 @@
+ &vvcam_sensor2 {
+ 	sensor_name = "GC5035";
+ 	sensor_regulators = "DOVDD18_SCAN", "DVDD12_SCAN", "AVDD28_SCAN";
++	sensor_regulator_voltage_uV = <1800000 1200000 2800000>;
+ 	sensor_regulator_timing_us = <100 50 0>;
+ 	sensor_pdn = <&gpio1_porta 30 0>; //powerdown pin / shutdown pin 
+ 	sensor_rst = <&gpio1_porta 29 0>;
+@@ -1025,6 +1026,7 @@
+ &vvcam_sensor3 {
+ 	sensor_name = "GC02M1B";
+ 	sensor_regulators = "DOVDD18_SCAN", "DVDD12_SCAN", "AVDD28_SCAN";
++	sensor_regulator_voltage_uV = <1800000 1800000 2800000>;
+ 	sensor_regulator_timing_us = <100 50 0>;
+ 	sensor_pdn = <&gpio1_porta 30 0>; //powerdown pin / shutdown pin 
+ 	sensor_rst = <&gpio1_porta 29 0>;
+-- 
+2.17.1
+

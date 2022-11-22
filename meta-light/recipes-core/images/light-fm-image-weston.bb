@@ -14,6 +14,7 @@ IMAGE_INSTALL += "packagegroup-core-boot \
     tiff \
     skia \
     initscripts-readonly-rootfs-overlay \
+    tzdata \
 "
 
 inherit core-image features_check

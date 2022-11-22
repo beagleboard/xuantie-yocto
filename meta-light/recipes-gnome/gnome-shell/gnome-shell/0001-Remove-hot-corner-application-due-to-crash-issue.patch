@@ -1,4 +1,5 @@
 From 23ce8b5393f5aacb976f8fe131229d9a87c6e80c Mon Sep 17 00:00:00 2001
+From: Yugang <fanyugang.fyg@linux.alibaba.com>
 Date: Wed, 17 Nov 2021 11:30:39 +0800
 Subject: [PATCH] Remove hot corner application due to crash issue.
 
