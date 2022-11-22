@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/lhome/software/toolsbuild/slave2/workspace/Toolchain/build-gnu-riscv_4/build-riscv-gcc-riscv64-unknown-linux-gnu/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.2.4/riscv64-unknown-linux-gnu/lib/../lib64v_xthead/lp64d'
+libdir='/mnt/ssd/jenkins_iotsw/slave/workspace/Toolchain/build-gnu-riscv_2/build-gcc-riscv64-unknown-linux-gnu/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.2.7-aone_36788129/riscv64-unknown-linux-gnu/lib/../lib64v_xthead/lp64d'

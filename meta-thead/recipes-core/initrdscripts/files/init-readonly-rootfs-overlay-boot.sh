@@ -57,8 +57,6 @@ read_args() {
 				ROOT_RWFSTYPE="$optarg"
 				modprobe $optarg 2> /dev/null || \
 					log "Could not load $optarg module";;
-			rootrwreset=*)
-				ROOT_RWRESET=$optarg ;;
 			rootrwoptions=*)
 				ROOT_RWMOUNTOPTIONS_DEVICE="$optarg" ;;
 			init=*)
@@ -190,11 +188,13 @@ mount_and_boot() {
 	fi
 
 	# Reset read-write file system if specified
+	ROOT_RWRESET=`fw_printenv -l $ROOT_RWMOUNT -n factory_reset` || true
 	if [ "yes" == "$ROOT_RWRESET" -a -n "${ROOT_RWMOUNT}" ]; then
 		echo "Start to clean up data partion, please wait ..."
 		rm -rf $ROOT_RWMOUNT/*
-		fw_setenv -l /tmp factory_reset no || true
+		fw_setenv -l $ROOT_RWMOUNT factory_reset no || true
 	fi
+	rm -rf $ROOT_RWMOUNT/fw_printenv.lock || true
 
 	# Determine which unification file system to use
 	union_fs_type=""

@@ -1,4 +1,5 @@
 From 0dc3250366ff8ef7f1a5201f4186e3617caa0e04 Mon Sep 17 00:00:00 2001
+From: Yugang <fanyugang.fyg@linux.alibaba.com>
 Date: Fri, 17 Jun 2022 12:08:41 +0800
 Subject: [PATCH 2/2] Accept window positon parameters over wayland in desktop
  shell.

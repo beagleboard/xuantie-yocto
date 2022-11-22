@@ -1,9 +1,11 @@
 From 610ee71c0aa611eab4efa987307806a9ad46194b Mon Sep 17 00:00:00 2001
+From: lw312886 <lw312886@linux.alibaba.com>
 Date: Sat, 7 May 2022 19:37:48 +0800
 Subject: [PATCH] dts: thead: modify the regulator name to match driver
 
 modify the regulator name to match driver, or the lcd in LightB can not display
 
+Signed-off-by: wei.liu <lw312886@linux.alibaba.com>
 ---
  arch/riscv/boot/dts/thead/light-val-b.dts | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)

@@ -6,7 +6,8 @@ IMAGE_INSTALL += " util-linux openssl e2fsprogs "
 IMAGE_INSTALL += " cpupower cpufrequtils "
 IMAGE_INSTALL += " kmscube glmark2 vkmark mixbench "
 IMAGE_INSTALL += " memtool curl tcpdump usbutils mmc-utils net-tools iw perf iperf2 gdb strace netperf "
-IMAGE_INSTALL += "initscripts-readonly-rootfs-overlay "
+IMAGE_INSTALL += " initscripts-readonly-rootfs-overlay "
+IMAGE_INSTALL += " tzdata "
 
 python do_rootfs_append_riscv64 () {
     import subprocess

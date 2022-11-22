@@ -11,20 +11,19 @@ start_hci_attach()
 
 	#bt rfkill init
 	echo 0 > /sys/class/rfkill/rfkill0/state;
-	sleep 1
+	sleep 0.3
 	echo 1 > /sys/class/rfkill/rfkill0/state;
-	sleep 1
+	sleep 0.3
 
 	"$bt_hciattach" -n -s 115200 ttyS4 rtk_h5 >/dev/null 2>&1 &
-	sleep 8
 
 	wait_hci0_count=0
 	while true
 	do
-		[ -d /sys/class/bluetooth/hci0 ] && break
+		[ -d "/sys/class/bluetooth/hci0" ] && break
 		sleep 1
 		let wait_hci0_count++
-		[ $wait_hci0_count -eq 8 ] && {
+		[ $wait_hci0_count -eq 16 ] && {
 			echo "bring up hci0 failed"
 			exit 1
 		}
@@ -40,10 +39,10 @@ start() {
 		start_hci_attach
 	fi
 
-	hci_is_up=`hciconfig hci0 | grep RUNNING`
-	[ -z "$hci_is_up" ] && {
-		hciconfig hci0 up
-	}
+	# hci_is_up=`hciconfig hci0 | grep RUNNING`
+	# [ -z "$hci_is_up" ] && {
+	# 	hciconfig hci0 up
+	# }
 
     #d=`ps | grep bluetoothd | grep -v grep`
 	#[ -z "$d" ] && {

@@ -1,4 +1,5 @@
 DESCRIPTION = "repo for light proprietary image"
+HOMEPAGE = "https://gitee.com/thead-yocto/light-images-proprietary"
 LICENSE = "CLOSED"
 
 COMPATIBLE_MACHINE = "light-*"
@@ -89,9 +90,7 @@ do_install() {
     install -d ${D}/etc/vulkan/icd.d/
     install -d ${D}/etc/OpenCL/vendors/
     install -d ${D}/etc/init.d/
-    install -d ${D}/etc/modules-load.d/
 
-    install -m 0755 ${S}/gpu_bxm_4_64/etc/modules-load.d/pvrsrvkm.conf              ${D}/etc/modules-load.d/
     install -m 0755 ${S}/gpu_bxm_4_64/usr/local/bin/*                               ${D}/usr/local/bin/
     install -m 0755 ${S}/gpu_bxm_4_64/etc/vulkan/icd.d/icdconf.json                 ${D}/etc/vulkan/icd.d/
     install -m 0755 ${S}/gpu_bxm_4_64/etc/OpenCL/vendors/IMG.icd                    ${D}/etc/OpenCL/vendors/
@@ -102,6 +101,7 @@ do_install() {
 # //vi system	start
     install -d ${D}${libdir}
     install -d ${D}${datadir}/vi
+    install -d ${D}${datadir}/vi/config
     install -d ${D}${datadir}/vi/dw200
     install -d ${D}${datadir}/vi/dw200/test
     install -d ${D}${datadir}/vi/dw200/test/case
@@ -133,44 +133,19 @@ do_install() {
     install -d ${D}${datadir}/vi/tuningtool/lib
     install -d ${D}/vi/isp/include/
     install -d ${D}${includedir}/csi_hal
+    install -d ${D}${includedir}/ebase
+    install -d ${D}${includedir}/common
+    install -d ${D}${includedir}/isi
+    install -d ${D}${includedir}/hal
+    install -d ${D}${includedir}/cam_device
+    install -d ${D}${includedir}/oslayer
+    install -d ${D}${includedir}/cameric_drv
+    install -d ${D}${includedir}/fpga
+    install -d ${D}${includedir}/i2c_drv
 
-#csi_hal
-    install -m 0755 ${S}/isp-isp8000l/hal/*.h                           ${D}${includedir}/csi_hal
-#DEC400
-    install -m 0644 ${S}/isp-isp8000l/dec400/lib/lib*.so*                          ${D}${libdir}
-    #DW200
-    install -m 0644 ${S}/isp-isp8000l/dw200/lib/lib*.so*                          ${D}${libdir}
-
-#TUNING TOOL
-    cd ${S}/isp-isp8000l/build/riscv64-unknown-linux-gnu/debug/appshell/generated/debug/bin/
-    cp -Rv  --no-dereference --preserve=mode,links -v * ${D}${datadir}/vi/tuningtool/bin
-    cd -
-    cd ${S}/isp-isp8000l/dist/riscv64-unknown-linux-gnu/debug/bin/
-    cp -Rv  --no-dereference --preserve=mode,links -v * ${D}${datadir}/vi/tuningtool/bin
-    cd -
-    rm -f ${D}${datadir}/vi/tuningtool/bin/DAA3840*
-    rm -f ${D}${datadir}/vi/tuningtool/bin/daA3840*
-    cd  ${S}/isp-isp8000l/build/riscv64-unknown-linux-gnu/debug/appshell/generated/debug/lib/
-    cp -Rv  --no-dereference --preserve=mode,links -v lib*.so* ${D}${libdir}
-    cd -
-
-    cd  ${S}/isp-isp8000l/dist/riscv64-unknown-linux-gnu/debug/lib/
-    cp -Rv  --no-dereference --preserve=mode,links -v *.so.* ${D}${libdir}
-    cp -Rv  --no-dereference --preserve=mode,links -v pkgconfig ${D}${libdir}
-    rm -f ${D}${libdir}/pkgconfig/*
-    rm -f ${D}${libdir}/libdaA3840*
-    cp ${S}/isp-isp8000l/csi_cfg.sh ${D}${datadir}/vi/tuningtool/bin
-    cp ${S}/isp-isp8000l/isp/test/video_property.yaml ${D}${datadir}/vi/tuningtool/bin
-    cd -
-    install -m 0644 ${S}/isp-isp8000l/isp/lib/lib*.so*                          ${D}${libdir}
-    cd ${S}/isp-isp8000l/isp/test/
-    cp -R  --no-dereference --preserve=mode,links -v  * ${D}${datadir}/vi/isp/test
-    cd -
-#ISP RY
-    install -m 0644 ${S}/isp-isp8000l/isp_ry/lib/lib*.so*                          ${D}${libdir}
-    cd ${S}/isp-isp8000l/isp_ry/test/
-    cp -R  --no-dereference --preserve=mode,links -v * ${D}${datadir}/vi/isp_ry/test
-    cd -
+    cp -r  --no-dereference --preserve=mode,links -v  ${S}/isp-isp8000l/${includedir}/*                         ${D}${includedir}/
+    cp -r  --no-dereference --preserve=mode,links -v   ${S}/isp-isp8000l/${libdir}/*                              ${D}${libdir}/
+    cp -r  --no-dereference --preserve=mode,links -v   ${S}/isp-isp8000l/${datadir}/vi/*                   ${D}${datadir}/vi/
 
     chrpath -d ${D}${datadir}/vi/isp/test/isp_test
     chrpath -d ${D}${datadir}/vi/isp_ry/test/isp_test

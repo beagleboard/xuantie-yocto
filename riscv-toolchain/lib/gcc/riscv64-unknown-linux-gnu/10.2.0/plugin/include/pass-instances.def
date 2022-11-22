@@ -468,7 +468,7 @@ NEXT_PASS (pass_xthead_dvsetvl, 1);
 	  NEXT_PASS (pass_gcse2, 1);
 	  NEXT_PASS (pass_split_after_reload, 1);
 	  NEXT_PASS (pass_ree, 1);
-NEXT_PASS (pass_delete_redundancy_sext, 1);
+NEXT_PASS (pass_delete_redundancy_sext2, 1);
 	  NEXT_PASS (pass_compare_elim_after_reload, 1);
 	  NEXT_PASS (pass_thread_prologue_and_epilogue, 1);
 NEXT_PASS (pass_xthead_dread_vlenb, 1);

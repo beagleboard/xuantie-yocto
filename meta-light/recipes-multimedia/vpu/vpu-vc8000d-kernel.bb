@@ -6,6 +6,8 @@ COMPATIBLE_MACHINE = "light-*"
 
 SRC_URI = " \
             git://git@gitee.com/thead-yocto/vpu-vc8000d-kernel.git;branch=master;protocol=http \
+            file://vc8000d.service \
+            file://98-vc8000d.preset \
           "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"
@@ -34,17 +36,21 @@ PARALLEL_MAKEINST = "-j1"
 
 do_install() {
     install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra
-    install -d ${D}${sysconfdir}/modules-load.d
     install -d ${D}${includedir}/vc8000d/subsys_driver
     install -d ${D}${includedir}/vc8000d/memalloc
+    install -d ${D}${datadir}/vc8000d
+    install -d ${D}/lib/systemd/system
+    install -d ${D}/lib/systemd/system-preset
 
     install -m 0644 ${S}/output/rootfs/bsp/vdec/ko/*.ko       ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra
-    install -m 0755 ${S}/output/rootfs/bsp/vdec/ko/*.conf     ${D}${sysconfdir}/modules-load.d
     install -m 0644 ${S}/linux/subsys_driver/*.h              ${D}${includedir}/vc8000d/subsys_driver
     install -m 0644 ${S}/linux/memalloc/*.h                   ${D}${includedir}/vc8000d/memalloc
+    install -m 0755 ${S}/output/rootfs/bsp/vdec/ko/*.sh       ${D}${datadir}/vc8000d
+    install -m 0755 ${WORKDIR}/98-vc8000d.preset              ${D}/lib/systemd/system-preset
+    install -m 0755 ${WORKDIR}/vc8000d.service                ${D}/lib/systemd/system
 }
 
 PACKAGES = "${PN}"
-FILES_${PN} = "${base_libdir} ${includedir} ${sysconfdir}"
+FILES_${PN} = "${base_libdir} ${includedir} ${sysconfdir} ${datadir} "
 
 INSANE_SKIP_${PN} += " debug-files staticdev "

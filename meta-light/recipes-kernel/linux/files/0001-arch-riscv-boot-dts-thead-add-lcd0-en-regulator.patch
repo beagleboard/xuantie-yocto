@@ -1,9 +1,11 @@
 From 4d09a6c7ad3017a3f6c5dcc9cbfd6513a2a09f32 Mon Sep 17 00:00:00 2001
+From: "linghui.zlh" <linghui.zlh@linux.alibaba.com>
 Date: Tue, 10 May 2022 14:55:57 +0800
 Subject: [PATCH] arch: riscv: boot: dts: thead: add  lcd0-en regulator
 
 add lcd0-en rgulator
 
+Signed-off-by: linghui.zlh < linghui.zlh@linux.alibaba.com >
 ---
  arch/riscv/boot/dts/thead/light-val-ant-evt.dts | 10 ++++++++++
  1 file changed, 10 insertions(+)

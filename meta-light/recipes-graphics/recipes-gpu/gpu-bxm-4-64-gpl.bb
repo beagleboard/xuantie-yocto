@@ -21,7 +21,10 @@ SRC_URI = " \
            file://.param \
            file://0001-delete-um-for-yocto.patch \
            file://0001-support-parallel-make-for-yocto.patch \
+           file://0001-to-support-gpu-driver-init-service-in-systemd.patch \
            file://pvrsrvkm.conf \
+           file://pvrsrvkm.service \
+           file://98-pvrsrvkm.preset \
            "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"
@@ -37,9 +40,6 @@ export BUILD_ROOT?="${TOPDIR}"
 
 export TOOLCHAIN_DIR?="${EXTERNAL_TOOLCHAIN}/bin"
 export KERNELDIR?="${STAGING_KERNEL_BUILDDIR}"
-
-export http_proxy="http://11.162.93.61:3128"
-export https_proxy="http://11.162.93.61:3128"
 
 export PATH="${HOME}/.local/bin:${PROJECT_DIR}/openembedded-core/scripts:${PROJECT_DIR}/openembedded-core/bitbake/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:${EXTERNAL_TOOLCHAIN}/bin:${PROJECT_DIR}/thead-build/light-fm/tmp-glibc/sysroots-uninative/x86_64-linux/usr/bin:${PROJECT_DIR}/openembedded-core/scripts:${PROJECT_DIR}/thead-build/light-fm/tmp-glibc/work/riscv64-oe-linux/gpu-bxm-4-64-kernel/1.0-r0/recipe-sysroot-native/usr/bin/riscv64-oe-linux:${PROJECT_DIR}/thead-build/light-fm/tmp-glibc/work/riscv64-oe-linux/gpu-bxm-4-64-kernel/1.0-r0/recipe-sysroot/usr/bin/crossscripts:${PROJECT_DIR}/thead-build/light-fm/tmp-glibc/work/riscv64-oe-linux/gpu-bxm-4-64-kernel/1.0-r0/recipe-sysroot-native/usr/sbin:${PROJECT_DIR}/thead-build/light-fm/tmp-glibc/work/riscv64-oe-linux/gpu-bxm-4-64-kernel/1.0-r0/recipe-sysroot-native/usr/bin:${PROJECT_DIR}/thead-build/light-fm/tmp-glibc/work/riscv64-oe-linux/gpu-bxm-4-64-kernel/1.0-r0/recipe-sysroot-native/sbin:${PROJECT_DIR}/thead-build/light-fm/tmp-glibc/work/riscv64-oe-linux/gpu-bxm-4-64-kernel/1.0-r0/recipe-sysroot-native/bin:${PROJECT_DIR}/openembedded-core/bitbake/bin:${PROJECT_DIR}/thead-build/light-fm/tmp-glibc/hosttools:/bin:/sbin"
 
@@ -80,16 +80,21 @@ export VERSION="6052913"
 do_compile() {
     oe_runmake driver
     oe_runmake install_driver
+    oe_runmake install_addons
 }
 
 do_install() {
     install -d ${D}${bindir}
     install -d ${D}${libdir}
-    install -d ${D}/etc/modules-load.d/
+    install -d ${D}${datadir}/gpu
     install -d ${D}/lib/modules/${KERNEL_VERSION}/extra/
-    install -m 0755 ${WORKDIR}/pvrsrvkm.conf ${D}/etc/modules-load.d/
+    install -d ${D}/lib/systemd/system
+    install -d ${D}/lib/systemd/system-preset
 
     install -m 0755 ${S}/rogue_km/binary_thead_linux_${WINDOW_SYSTEM}_${BUILD}/target_riscv64/*.ko                        ${D}/lib/modules/${KERNEL_VERSION}/extra/
+    install -m 0755 ${S}/output/rootfs/bsp/gpu/ko/*.sh                                                                    ${D}${datadir}/gpu
+    install -m 0755 ${WORKDIR}/98-pvrsrvkm.preset                                                                         ${D}/lib/systemd/system-preset
+    install -m 0755 ${WORKDIR}/pvrsrvkm.service                                                                           ${D}/lib/systemd/system
 }
 
 # PACKAGES = " "

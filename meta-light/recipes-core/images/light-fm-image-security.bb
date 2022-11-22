@@ -1,6 +1,7 @@
 DESCRIPTION = "A security image for light fm."
 
 IMAGE_INSTALL += "packagegroup-core-boot kernel-modules op-tee initscripts-readonly-rootfs-overlay"
+IMAGE_INSTALL += "tzdata"
 
 LICENSE = "MIT"
 

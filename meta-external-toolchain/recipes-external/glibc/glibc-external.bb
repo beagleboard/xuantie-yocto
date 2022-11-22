@@ -233,6 +233,7 @@ FILES_${PN}-dev += "\
     ${includedir}/fpu_control.h \
     ${includedir}/stdc-predef.h \
     ${includedir}/uchar.h \
+    ${includedir}/features-time64.h \
 "
 FILES_${PN}-dev[file-checksums] += "${libc_headers_file}:True"
 

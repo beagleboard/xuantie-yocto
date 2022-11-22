@@ -1,4 +1,5 @@
 From d80500b49233ac521fe041a816502aca0bb0394a Mon Sep 17 00:00:00 2001
+From: lihm <koumei.lhm@linux.alibaba.com>
 Date: Fri, 29 Oct 2021 13:54:53 +0800
 Subject: [PATCH] Modify lcd format for D1 64M memory: RGB565
 

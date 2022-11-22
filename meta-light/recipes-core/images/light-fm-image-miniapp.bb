@@ -20,6 +20,7 @@ IMAGE_INSTALL += "haas-ui"
 IMAGE_INSTALL += "dhcpcd"
 IMAGE_INSTALL += "wpa-supplicant"
 IMAGE_INSTALL += "fota initscripts-readonly-rootfs-overlay"
+IMAGE_INSTALL += "tzdata"
 CORE_IMAGE_EXTRA_INSTALL += "ntp"
 
 LICENSE = "MIT"

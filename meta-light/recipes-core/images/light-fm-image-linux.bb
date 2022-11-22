@@ -9,6 +9,8 @@ require light-fm-image-weston.bb
 require light-fm-image-security.bb
 #inherit vidio related packages, disable for public release
 #require light-fm-image-vision.bb
+#inherit debug related packages
+require light-fm-image-debug.bb
 
 #WIFI & BT related packages
 IMAGE_INSTALL += " wpa-supplicant bluez5 light-bt alsa-tools pulseaudio-server "

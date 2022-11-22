@@ -1,9 +1,11 @@
 From 5b209b155adfccae7de429757560d0d7df4a6dc4 Mon Sep 17 00:00:00 2001
+From: "linghui.zlh" <linghui.zlh@linux.alibaba.com>
 Date: Fri, 6 May 2022 19:56:08 +0800
 Subject: [PATCH] drivers: mmc: host: rm log in sdhci irq context
 
 rm log in sdhci irq context
 
+Signed-off-by: linghui.zlh < linghui.zlh@linux.alibaba.com >
 ---
  drivers/mmc/host/sdhci.c | 5 ++---
  1 file changed, 2 insertions(+), 3 deletions(-)

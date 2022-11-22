@@ -8,11 +8,11 @@
 #     "variable=value ..." portion of the 'sysctl -w ' command.
 #     If not set, the default value "kernel.panic_on_oops=1" will
 #     be used.  Disable this feature by setting KDUMP_SYSCTL=" "
-#     Example - also panic on oom:
-#         KDUMP_SYSCTL="kernel.panic_on_oops=1 vm.panic_on_oom=1"
+#     Example - also panic on oom, hang, rcu stall, softlockup:
+#         KDUMP_SYSCTL="kernel.panic_on_oops=1 vm.panic_on_oom=1 kernel.hung_task_panic=1 kernel.panic_on_rcu_stall=1 kernel.softlockup_panic=1"
 #
 USE_KDUMP=1
-KDUMP_SYSCTL="kernel.panic_on_oops=1"
+KDUMP_SYSCTL="kernel.panic_on_oops=1 kernel.hung_task_panic=1 kernel.softlockup_panic=1"
 
 # ---------------------------------------------------------------------------
 # Crash Post notifiers:
@@ -22,14 +22,17 @@ KDUMP_SYSCTL="kernel.panic_on_oops=1"
 # 	This only for the users who doubt kdump always succeeds in any situation.
 # 	Note that this also increases risks of kdump failure, because some panic
 # 	notifiers can make the crashed kernel more unstable.
-CRASH_POST_NOTIFIERS=0
+CRASH_POST_NOTIFIERS=1
 
 # ---------------------------------------------------------------------------
 # Kdump Kernel:
 # KDUMP_KERNEL - A full pathname to a kdump kernel.
 # KDUMP_INITRD - A full pathname to the kdump initrd (if used).
+# KDUMP_CMDLINE - Custom kernel cmdline for crash system (if used,
+#		  otherwise reuse host's cmdline)
 KDUMP_KERNEL=/var/lib/kdump/vmlinux
-#KDUMP_INITRD=/var/lib/kdump/initrd.img
+#KDUMP_CMDLINE="console=ttyS0,115200 root=PARTUUID=80a5a8e9-c744-491a-93c1-4f4194fd690b rootfstype=ext4 rdinit=/sbin/init rootwait rw"
+#KDUMP_INITRD=/var/lib/kdump/rootfs.cpio.gz
 
 # ---------------------------------------------------------------------------
 # vmcore Handling:

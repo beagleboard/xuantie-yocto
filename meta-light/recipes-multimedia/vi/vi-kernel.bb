@@ -1,4 +1,5 @@
 DESCRIPTION = "thead VI sub-system drivers"
+HOMEPAGE = "https://gitee.com/thead-yocto/vi-kernel"
 LICENSE = "CLOSED"
 
 COMPATIBLE_MACHINE = "light-*"
@@ -8,7 +9,6 @@ SRC_URI = " \
             git://git@gitee.com/thead-yocto/vi-kernel.git;branch=master;protocol=http \
             file://vi-kernel.service \
             file://98-vi-kernel.preset\
-            file://0001-fix-isp-ry-not-free-cma-memroy-issue.patch\
           "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"

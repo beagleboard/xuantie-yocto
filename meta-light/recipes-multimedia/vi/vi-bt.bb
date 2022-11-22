@@ -1,4 +1,5 @@
 DESCRIPTION = "thead neural network accelerator driver"
+HOMEPAGE = "https://gitee.com/thead-yocto/baremetal-drivers"
 LICENSE = "CLOSED"
 #LIC_FILES_CHKSUM = ""
 
@@ -39,16 +40,19 @@ do_compile() {
 }
 
 do_install() {
+  install -d ${D}${includedir}/vvcam/csi
   install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra
   install -d ${D}${datadir}/bm_visys
   install -m 0644 ${S}/output/rootfs/bsp/baremetal/ko/bm_csi.ko                               ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra
   install -m 0644 ${S}/output/rootfs/bsp/baremetal/ko/bm_visys.ko                             ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra
-  install -m 0755 ${S}/driver/visys/Module.symvers                                             ${D}${datadir}/bm_visys
+  install -m 0755 ${S}/driver/visys/Module.symvers                                            ${D}${datadir}/bm_visys
+  install -m 0644 ${S}/driver/csi/bm_csi_ioctl.h                                              ${D}${includedir}/vvcam/csi
 }
 
 FILES_${PN} += " ${base_libdir} "
 FILES_${PN} += " ${libdir} "
 FILES_${PN} += " ${datadir} "
+FILES_${PN} += " ${includedir} "
 
 PACKAGES = "${PN}"
 

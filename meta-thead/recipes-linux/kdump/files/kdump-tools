@@ -3,6 +3,11 @@
 VMCORE_FILE=/proc/vmcore
 KEXEC=/usr/bin/kexec
 VMCORE_DMESG=/usr/bin/vmcore-dmesg
+LIGHTA_CRASH_DTB=/boot/light-a-val-crash.dtb
+LIGHTB_CRASH_DTB=/boot/light-b-product-crash.dtb
+LIGHT_ANT_DISCRETE_CRASH_DTB=/boot/light-ant-discrete-crash.dtb
+LIGHT_ANT_EVT_CRASH_DTB=/boot/light-ant-ref-crash.dts
+KDUMP_DTB=/var/lib/kdump/light-crash.dtb
 
 sys_kexec_crash=/sys/kernel/kexec_crash_loaded
 crash_post_notify=/sys/module/kernel/parameters/crash_kexec_post_notifiers
@@ -56,13 +61,82 @@ else
 
 	if [ $CRASH_POST_NOTIFIERS -eq 0 ]; then
 		echo 0 > $crash_post_notify
+	else
+		echo 1 > $crash_post_notify
 	fi
 
-	echo -n "Starting load crashkernel..."
-	$KEXEC -p $KDUMP_KERNEL --reuse-cmdline 
+	dtb_ready=1
+	if [ "$(ls -A /boot)" ]; then
+		if [ -f $LIGHTA_CRASH_DTB ]; then
+			cp "$LIGHTA_CRASH_DTB" "$KDUMP_DTB"
+		elif [ -f $LIGHTB_CRASH_DTB ]; then
+			cp "$LIGHTB_CRASH_DTB" "$KDUMP_DTB"
+		elif [ -f $LIGHT_ANT_DISCRETE_CRASH_DTB ]; then
+			cp "$LIGHT_ANT_DISCRETE_CRASH_DTB" "$KDUMP_DTB"
+		elif [ -f $LIGHT_ANT_EVT_CRASH_DTB ]; then
+			cp "$LIGHT_ANT_EVT_CRASH_DTB" "$KDUMP_DTB"
+		else
+			dtb_ready=0
+		fi
+	else
+		# boot_part = /dev/mmcblk0p2 /dev/mmcblk0p4
+		boot_part=$(fdisk -l | grep boot | awk '{print $1}')
+		# boot_part = /dev/mmcblk0p2
+		boot_part=$(echo  $boot_part | cut -d " " -f 1)
+		mount -t ext4 $boot_part /boot/
+		if [ $? -eq 0 ]; then
+			if [ -f $LIGHTA_CRASH_DTB ]; then
+				cp "$LIGHTA_CRASH_DTB" "$KDUMP_DTB"
+			elif [ -f $LIGHTB_CRASH_DTB ]; then
+				cp "$LIGHTB_CRASH_DTB" "$KDUMP_DTB"
+			elif [ -f $LIGHT_ANT_DISCRETE_CRASH_DTB ]; then
+				cp "$LIGHT_ANT_DISCRETE_CRASH_DTB" "$KDUMP_DTB"
+			elif [ -f $LIGHT_ANT_EVT_CRASH_DTB ]; then
+				cp "$LIGHT_ANT_EVT_CRASH_DTB" "$KDUMP_DTB"
+			else
+				dtb_ready=0
+			fi
+			umount /boot
+		else
+			dtb_ready=0
+		fi
+	fi
+
+	if [ ! -z $KDUMP_CMDLINE ]; then
+		cmdline=$KDUMP_CMDLINE
+	else
+		cmdline=$(cat /proc/cmdline)
+	fi
+
+	echo -e "use custom dtb ? $dtb_ready"
+	echo -e "use cmdline: $cmdline"
+	echo -e "Starting load crashkernel..."
+
+	# initrd version
+	if [ -n "$KDUMP_INITRD" -a -f $KDUMP_INITRD ]; then
+		if [ $dtb_ready -eq 0 ]; then
+			$KEXEC -p $KDUMP_KERNEL --initrd $KDUMP_INITRD
+		else
+			$KEXEC -p $KDUMP_KERNEL --initrd $KDUMP_INITRD --dtb="$KDUMP_DTB" --append="$cmdline"
+		fi
+
+		if [ -e $sys_kexec_crash -a `cat $sys_kexec_crash` -eq 1 ] ; then
+			echo "load done (initrd version)"
+		else
+			echo "load failed (initrd version)"
+		fi
+		exit 0;
+	fi
+
+	# ext4 version
+	if [ $dtb_ready -eq 0 ]; then
+		$KEXEC -p $KDUMP_KERNEL --append="$cmdline"
+	else
+		$KEXEC -p $KDUMP_KERNEL --dtb="$KDUMP_DTB" --append="$cmdline"
+	fi
 
 	if [ -e $sys_kexec_crash -a `cat $sys_kexec_crash` -eq 1 ] ; then
-		echo "done"
+		echo "load done"
 	else
 		echo "load failed";
 	fi

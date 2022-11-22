@@ -1,4 +1,5 @@
 From 16e7291ff9701ffdcf5efe5b56f9a67c849fc426 Mon Sep 17 00:00:00 2001
+From: lihm <koumei.lhm@linux.alibaba.com>
 Date: Wed, 8 Sep 2021 01:07:23 +0800
 Subject: [PATCH] fix hci tool error
 

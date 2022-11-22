@@ -15,6 +15,10 @@ IMAGE_INSTALL += " memtool curl iw tcpdump gdb strace usbutils mmc-utils e2fspro
 IMAGE_INSTALL += " alsa-utils alsa-lib alsa-tools pulseaudio-server "
 IMAGE_INSTALL += " lrzsz "
 IMAGE_INSTALL += " zlib boost libatomic libatomic-dev libatomic-ops initscripts-readonly-rootfs-overlay "
+IMAGE_INSTALL += " kdump "
+IMAGE_INSTALL += " haveged "
+IMAGE_INSTALL += " tzdata "
+IMAGE_INSTALL += " cronie logrotate "
 
 python do_rootfs_append_riscv64 () {
     import subprocess

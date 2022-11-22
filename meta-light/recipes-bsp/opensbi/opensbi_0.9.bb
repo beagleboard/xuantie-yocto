@@ -8,26 +8,42 @@ COMPATIBLE_MACHINE = "light-*"
 
 SRC_URI = " \
             git://git@gitee.com/thead-yocto/opensbi.git;branch=master;protocol=http \
-            file://light_aon_fpga.bin;md5=eb0b2fc3765b2a8771b53915487d8a75 \
-            file://light_aon_fpga.elf;md5=09dab875b6bbbbde6b2eeef126f11c8e \
+            file://light_aon_fpga.bin;md5=9f0d26a65b54d7f72a21be519c1c09b4 \
+            file://light_aon_fpga.elf;md5=447b37b51877dce013b21d845c6c602a \
             file://light_c906_audio.bin;md5=d11d1c42e6cbe432279286eac1eae940 \
             file://light_c906_audio.elf;md5=2663d4dab3fa10ec614467bf4a124fbe \
-            file://lightA/light_aon_fpga.bin;md5=9fe5cc7adff55242d2b0a4889c71a168 \
-            file://lightA/light_aon_fpga.elf;md5=1a4e09538174ecbd759085a6e8f04f05 \
+            file://lightA/light_aon_fpga.bin;md5=93d0bd559cda10adfd50463a142f8a37 \
+            file://lightA/light_aon_fpga.elf;md5=11f6f5293f0b54e738d058116c4b9e98 \
             file://lightA/light_c906_audio.bin;md5=d11d1c42e6cbe432279286eac1eae940 \
             file://lightA/light_c906_audio.elf;md5=2663d4dab3fa10ec614467bf4a124fbe \
-            file://lightB/light_aon_fpga.bin;md5=971a79b8d361a505a765086588a0e405 \
-            file://lightB/light_aon_fpga.elf;md5=b4e433d389ceb52dea290df9b1ece8b6 \
+            file://lightB/light_aon_fpga.bin;md5=709d447f7973dc9789af54c1c820f383 \
+            file://lightB/light_aon_fpga.elf;md5=87f55a3f0af394ea703eab379204dbb8 \
             file://lightB/light_c906_audio.bin;md5=67141bb799ccad041dd34c49081d6905 \
             file://lightB/light_c906_audio.elf;md5=f07966e101cb8c047b7b93c183dde9ac \
-            file://light-ant-evt/light_aon_fpga.bin;md5=82270517191cfd055107811a3b882b7a \
-            file://light-ant-evt/light_aon_fpga.elf;md5=82d291f9d78f2d9cac85bd815f050f8a \
-            file://light-ant-evt/light_c906_audio.bin;md5=9124f7306370eb0d9e3f6178da1fa4fd \
-            file://light-ant-evt/light_c906_audio.elf;md5=b4206da84148852df208088c96e4b2b3 \
-            file://light-ant-discrete/light_aon_fpga.bin;md5=785c06c0eab5ff414375d6ce08c8940e \
-            file://light-ant-discrete/light_aon_fpga.elf;md5=2da373f3e1950c9a9464be8c490cb25e \
+            file://light-ant-ref/light_aon_fpga.bin;md5=f87aa7be3675914d1842806f54f8a8d8 \
+            file://light-ant-ref/light_aon_fpga.elf;md5=fa0df5c3f47a2475882aa171b7a72e96 \
+            file://light-ant-ref/light_c906_audio.bin;md5=9124f7306370eb0d9e3f6178da1fa4fd \
+            file://light-ant-ref/light_c906_audio.elf;md5=b4206da84148852df208088c96e4b2b3 \
+            file://light-ant-discrete/light_aon_fpga.bin;md5=9b98df64aa4b95a32b1939e822ac912c \
+            file://light-ant-discrete/light_aon_fpga.elf;md5=96d1e845e69d2a9b4e014d87e9e1e15a \
             file://light-ant-discrete/light_c906_audio.bin;md5=3c5d2ccb84c98fb1dbcacec72e49ee96 \
             file://light-ant-discrete/light_c906_audio.elf;md5=b4206da84148852df208088c96e4b2b3 \
+            file://light-beagle/light_aon_fpga.bin;md5=6486aed6f815af4118e4e4a840ec5482 \
+            file://light-beagle/light_aon_fpga.elf;md5=f447400d1df5ab59f23c738fe147260a \
+            file://light-beagle/light_c906_audio.bin;md5=9124f7306370eb0d9e3f6178da1fa4fd \
+            file://light-beagle/light_c906_audio.elf;md5=b4206da84148852df208088c96e4b2b3 \
+            file://light-b-ref/light_aon_fpga.bin;md5=aaacb9a4382298f73472bb26a4c73a42 \
+            file://light-b-ref/light_aon_fpga.elf;md5=501e828bb48bc6795bfd391518352fc2 \
+            file://light-b-ref/light_c906_audio.bin;md5=9124f7306370eb0d9e3f6178da1fa4fd \
+            file://light-b-ref/light_c906_audio.elf;md5=b4206da84148852df208088c96e4b2b3 \
+            file://light-a-ref/light_aon_fpga.bin;md5=dfabc70fda5b845ee9d7123358a39bc8 \
+            file://light-a-ref/light_aon_fpga.elf;md5=f8be0d51e17ad3fddd6cc721be42807d \
+            file://light-a-ref/light_c906_audio.bin;md5=d11d1c42e6cbe432279286eac1eae940 \
+            file://light-a-ref/light_c906_audio.elf;md5=2663d4dab3fa10ec614467bf4a124fbe \
+	    file://light-b-power/light_aon_fpga.bin;md5=701b9540f0585ea8030139d36960e75b \
+	    file://light-b-power/light_aon_fpga.elf;md5=b60dc93a181e09de2773c145ff04f79c \
+	    file://light-b-power/light_c906_audio.bin;md5=9124f7306370eb0d9e3f6178da1fa4fd \
+	    file://light-b-power/light_c906_audio.elf;md5=b4206da84148852df208088c96e4b2b3 \
           "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"
@@ -50,36 +66,66 @@ do_deploy () {
 	install -m 0755 ${S}/build/platform/generic/firmware/fw_dynamic.bin ${DEPLOYDIR}/
 	install -m 0755 ${S}/build/platform/generic/firmware/fw_dynamic.elf ${DEPLOYDIR}/
 
-    if  echo "${MACHINE}" | grep -q "light-a-val"; then
+    if  echo "${MACHINE}" | grep -Eq "light-a-val|light-a-public-release"; then
 		echo "Firmware INFO: light-evb opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
 		install -m 0755 ${WORKDIR}/light_aon_fpga.bin ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light_aon_fpga.elf ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light_c906_audio.bin ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light_c906_audio.elf ${DEPLOYDIR}/
 	elif echo "${MACHINE}" | grep -q "light-ant-discrete"; then
-		echo "Firmware INFO: light ant-evt  opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
+		echo "Firmware INFO: light ant-discrete  opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
 		install -m 0755 ${WORKDIR}/light-ant-discrete/light_aon_fpga.bin ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light-ant-discrete/light_aon_fpga.elf ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light-ant-discrete/light_c906_audio.bin ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light-ant-discrete/light_c906_audio.elf ${DEPLOYDIR}/
-	elif echo "${MACHINE}" | grep -q "light-ant-evt"; then
-		echo "Firmware INFO: light ant-evt  opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
-		install -m 0755 ${WORKDIR}/light-ant-evt/light_aon_fpga.bin ${DEPLOYDIR}/
-		install -m 0755 ${WORKDIR}/light-ant-evt/light_aon_fpga.elf ${DEPLOYDIR}/
-		install -m 0755 ${WORKDIR}/light-ant-evt/light_c906_audio.bin ${DEPLOYDIR}/
-		install -m 0755 ${WORKDIR}/light-ant-evt/light_c906_audio.elf ${DEPLOYDIR}/
+	elif echo "${MACHINE}" | grep -q "light-beagle"; then
+		echo "Firmware INFO: light beagle  opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
+		install -m 0755 ${WORKDIR}/light-beagle/light_aon_fpga.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-beagle/light_aon_fpga.elf ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-beagle/light_c906_audio.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-beagle/light_c906_audio.elf ${DEPLOYDIR}/
+	elif echo "${MACHINE}" | grep -q "light-a-ref"; then
+		echo "Firmware INFO: light-a-ref  opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
+		install -m 0755 ${WORKDIR}/light-a-ref/light_aon_fpga.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-a-ref/light_aon_fpga.elf ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-a-ref/light_c906_audio.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-a-ref/light_c906_audio.elf ${DEPLOYDIR}/
+	elif echo "${MACHINE}" | grep -q "light-b-ref"; then
+		echo "Firmware INFO: light-b-ref  opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
+		install -m 0755 ${WORKDIR}/light-b-ref/light_aon_fpga.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-b-ref/light_aon_fpga.elf ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-b-ref/light_c906_audio.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-b-ref/light_c906_audio.elf ${DEPLOYDIR}/
+	elif echo "${MACHINE}" | grep -q "light-ant-ref"; then
+		echo "Firmware INFO: light ant-ref  opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
+		install -m 0755 ${WORKDIR}/light-ant-ref/light_aon_fpga.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-ant-ref/light_aon_fpga.elf ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-ant-ref/light_c906_audio.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-ant-ref/light_c906_audio.elf ${DEPLOYDIR}/
 	elif echo "${MACHINE}" | grep -q "light-a-product"; then
 		echo "Firmware INFO: light-a opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
 		install -m 0755 ${WORKDIR}/lightA/light_aon_fpga.bin ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/lightA/light_aon_fpga.elf ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/lightA/light_c906_audio.bin ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/lightA/light_c906_audio.elf ${DEPLOYDIR}/
-	elif echo "${MACHINE}" | grep -q "light-b-product"; then
+	elif echo "${MACHINE}" | grep -q "light-b-product-release"; then
 		echo "Firmware INFO: light b opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
 		install -m 0755 ${WORKDIR}/lightB/light_aon_fpga.bin ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/lightB/light_aon_fpga.elf ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/lightB/light_c906_audio.bin ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/lightB/light_c906_audio.elf ${DEPLOYDIR}/
+	elif echo "${MACHINE}" | grep -Eq "light-b-product|light-b-public"; then
+		echo "Firmware INFO: light b opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
+		install -m 0755 ${WORKDIR}/lightB/light_aon_fpga.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/lightB/light_aon_fpga.elf ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/lightB/light_c906_audio.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/lightB/light_c906_audio.elf ${DEPLOYDIR}/
+	elif echo "${MACHINE}" | grep -q "light-b-power"; then
+		echo "Firmware INFO: light b power opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
+		install -m 0755 ${WORKDIR}/light-b-power/light_aon_fpga.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-b-power/light_aon_fpga.elf ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-b-power/light_c906_audio.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-b-power/light_c906_audio.elf ${DEPLOYDIR}/
 	else
 		echo "Firmware INFO: light general opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
 		install -m 0755 ${WORKDIR}/light_aon_fpga.bin ${DEPLOYDIR}/
@@ -115,4 +161,5 @@ FILES_${PN} += " ${datadir} "
 PACKAGES = "${PN}"
 
 INSANE_SKIP_${PN} += " debug-files "
+
 
