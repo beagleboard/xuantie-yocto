@@ -29,6 +29,12 @@ source openembedded-core/oe-init-build-env build/light-fm
 mkdir ../downloads ; rsync -av /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.0.2/downloads/ ../downloads/
 ```
 
+# Copy mirrored sstate-cache
+
+```
+mkdir ../sstate-cache ; rsync -av /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.0.2/sstate-cache/ ../sstate-cache/
+```
+
 # Download missing files:
 
 ```
@@ -40,4 +46,10 @@ rsync -a ../downloads/ /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.0.2/downloads
 
 ```
 MACHINE=light-beagle bitbake -k light-fm-image-linux
+```
+
+# Save cache
+
+```
+rsync -av ../sstate-cache/ /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.0.2/sstate-cache/ --delete
 ```
