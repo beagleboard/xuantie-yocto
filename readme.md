@@ -3,7 +3,7 @@
 # Install
 
 ```
-sudo apt install build-essential chrpath diffstat gawk git python3-distutils python-is-python3 rsync
+sudo apt install build-essential cmake chrpath diffstat gawk git git-lfs python3-distutils python-is-python3 rsync
 ```
 
 # No Dash...
@@ -34,4 +34,10 @@ mkdir ../downloads ; rsync -av /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.0.2/d
 ```
 MACHINE=light-beagle bitbake light-fm-image-linux --runall=fetch
 rsync -a ../downloads/ /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.0.2/downloads/ --delete
+```
+
+# Start Build
+
+```
+MACHINE=light-beagle bitbake -k light-fm-image-linux
 ```
