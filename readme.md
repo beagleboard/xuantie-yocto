@@ -3,7 +3,7 @@
 # Install
 
 ```
-sudo apt install build-essential chrpath diffstat gawk git python3-distutils rsync
+sudo apt install build-essential chrpath diffstat gawk git python3-distutils python-is-python3 rsync
 ```
 
 # No Dash...
@@ -21,4 +21,17 @@ git clone -b Linux_SDK_V1.0.2-light-beagle git@git.beagleboard.org:beaglev-ahead
 
 ```
 source openembedded-core/oe-init-build-env build/light-fm
+```
+
+# Copy mirrored downloads:
+
+```
+mkdir ../downloads ; rsync -av /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.0.2/downloads/ ../downloads/
+```
+
+# Download missing files:
+
+```
+MACHINE=light-beagle bitbake light-fm-image-linux --runall=fetch
+rsync -a ../downloads/ /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.0.2/downloads/ --delete
 ```
