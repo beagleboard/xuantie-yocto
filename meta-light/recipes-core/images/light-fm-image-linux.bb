@@ -29,6 +29,7 @@ IMAGE_INSTALL_remove += "thead-ddr-pmu isp-isp8000l libgal-viv libcsi-g2d vpu-om
 
 # for public release only, disabled by default for internal release
 IMAGE_INSTALL += " image-proprietary "
+IMAGE_INSTALL += " ap6203 "
 
 #IMAGE_FSTYPES_remove = "cpio.gz cpio cpio.gz.u-boot cpio.bz2"
 export IMAGE_BASENAME = "light-fm-image-linux"
