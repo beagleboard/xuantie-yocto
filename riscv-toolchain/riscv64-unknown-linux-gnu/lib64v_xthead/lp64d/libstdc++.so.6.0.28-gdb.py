@@ -19,8 +19,8 @@ import gdb
 import os
 import os.path
 
-pythondir = '/mnt/ssd/jenkins_iotsw/slave/workspace/Toolchain/build-gnu-riscv_2/build-gcc-riscv64-unknown-linux-gnu/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.2.7-aone_36788129/share/gcc-10.2.0/python'
-libdir = '/mnt/ssd/jenkins_iotsw/slave/workspace/Toolchain/build-gnu-riscv_2/build-gcc-riscv64-unknown-linux-gnu/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.2.7-aone_36788129/riscv64-unknown-linux-gnu/lib/../lib64v_xthead/lp64d'
+pythondir = '/mnt/ssd/jenkins_iotsw/slave/workspace/Toolchain/build-gnu-riscv_3/build-gcc-riscv64-unknown-linux-gnu/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.2.8/share/gcc-10.2.0/python'
+libdir = '/mnt/ssd/jenkins_iotsw/slave/workspace/Toolchain/build-gnu-riscv_3/build-gcc-riscv64-unknown-linux-gnu/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.2.8/riscv64-unknown-linux-gnu/lib/../lib64v_xthead/lp64d'
 
 # This file might be loaded when there is no current objfile.  This
 # can happen if the user loads it manually.  In this case we don't

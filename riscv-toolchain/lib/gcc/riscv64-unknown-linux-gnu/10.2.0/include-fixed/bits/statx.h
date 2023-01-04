@@ -2,7 +2,7 @@
 
     It has been auto-edited by fixincludes from:
 
-	"/mnt/ssd/jenkins_iotsw/slave/workspace/Toolchain/build-gnu-riscv_2/build-gcc-riscv64-unknown-linux-gnu/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.2.7-aone_36788129/sysroot/usr/include/bits/statx.h"
+	"/mnt/ssd/jenkins_iotsw/slave/workspace/Toolchain/build-gnu-riscv_3/build-gcc-riscv64-unknown-linux-gnu/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.2.8/sysroot/usr/include/bits/statx.h"
 
     This had to be done to correct non-standard usages in the
     original, manufacturer supplied header file.  */

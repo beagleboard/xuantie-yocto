@@ -1,5 +1,5 @@
 DESCRIPTION = "thead neural network accelerator driver"
-HOMEPAGE = "https://gitee.com/thead-yocto/baremetal-drivers"
+HOMEPAGE = "https://code.aone.alibaba-inc.com/light_sdk/baremetal-drivers"
 LICENSE = "CLOSED"
 #LIC_FILES_CHKSUM = ""
 

@@ -1,5 +1,5 @@
 DESCRIPTION = "thead VI customized sensor drivers"
-HOMEPAGE = "https://gitee.com/thead-yocto/vi-sensor/"
+HOMEPAGE = "https://code.alibaba-inc.com/light_sdk/vi-sensor/"
 LICENSE = "CLOSED"
 
 COMPATIBLE_MACHINE = "light-*"
@@ -8,7 +8,6 @@ DEPENDS += "image-proprietary vi-kernel"
 
 SRC_URI = " \
             git://git@gitee.com/thead-yocto/vi-sensor.git;branch=master;protocol=http \
-            file://0001-dependency-fix.patch \
           "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"

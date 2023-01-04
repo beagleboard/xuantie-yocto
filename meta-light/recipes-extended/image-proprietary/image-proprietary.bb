@@ -1,5 +1,5 @@
 DESCRIPTION = "repo for light proprietary image"
-HOMEPAGE = "https://gitee.com/thead-yocto/light-images-proprietary"
+HOMEPAGE = "https://code.aone.alibaba-inc.com/light_sdk/light-images-proprietary"
 LICENSE = "CLOSED"
 
 COMPATIBLE_MACHINE = "light-*"

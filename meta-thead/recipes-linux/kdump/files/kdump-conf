@@ -32,7 +32,7 @@ CRASH_POST_NOTIFIERS=1
 #		  otherwise reuse host's cmdline)
 KDUMP_KERNEL=/var/lib/kdump/vmlinux
 #KDUMP_CMDLINE="console=ttyS0,115200 root=PARTUUID=80a5a8e9-c744-491a-93c1-4f4194fd690b rootfstype=ext4 rdinit=/sbin/init rootwait rw"
-#KDUMP_INITRD=/var/lib/kdump/rootfs.cpio.gz
+KDUMP_INITRD=/var/lib/kdump/rootfs.cpio.gz
 
 # ---------------------------------------------------------------------------
 # vmcore Handling:

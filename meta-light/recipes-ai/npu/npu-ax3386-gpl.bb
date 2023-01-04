@@ -1,5 +1,5 @@
 DESCRIPTION = "thead neural network accelerator driver"
-HOMEPAGE = "https://gitee.com/thead-yocto/npu-ax3386-kernel"
+HOMEPAGE = "https://code.aone.alibaba-inc.com/light_sdk/npu-ax3386-kernel"
 LICENSE = "CLOSED"
 #LIC_FILES_CHKSUM = ""
 

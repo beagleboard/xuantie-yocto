@@ -1,5 +1,5 @@
 DESCRIPTION = "thead VI sub-system drivers"
-HOMEPAGE = "https://gitee.com/thead-yocto/vi-kernel"
+HOMEPAGE = "https://code.aone.alibaba-inc.com/light_sdk/vi-kernel"
 LICENSE = "CLOSED"
 
 COMPATIBLE_MACHINE = "light-*"
