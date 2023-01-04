@@ -3,7 +3,7 @@
 # Install
 
 ```
-sudo apt install build-essential cmake chrpath diffstat gawk git git-lfs python3-distutils python-is-python3 rsync
+sudo apt install bison build-essential cmake chrpath diffstat flex gawk git git-lfs python3-distutils python-is-python3 rsync
 ```
 
 # No Dash...
@@ -22,3 +22,35 @@ git clone -b Linux_SDK_V1.0.3-light-beagle git@git.beagleboard.org:beaglev-ahead
 ```
 source openembedded-core/oe-init-build-env build/light-fm
 ```
+
+# Copy mirrored downloads:
+
+```
+mkdir ../downloads ; rsync -av /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.0.3/downloads/ ../downloads/
+```
+
+# Copy mirrored sstate-cache (assuming you built and saved sstate-cache in a prior build)
+
+```
+mkdir ../sstate-cache ; rsync -av /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.0.3/sstate-cache/ ../sstate-cache/
+```
+
+# Download missing files:
+
+```
+MACHINE=light-beagle bitbake light-fm-image-linux --runall=fetch
+rsync -a ../downloads/ /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.0.3/downloads/ --delete
+```
+
+# Start Build
+
+```
+MACHINE=light-beagle bitbake -k light-fm-image-linux
+```
+
+# Save cache
+
+```
+rsync -av ../sstate-cache/ /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.0.3/sstate-cache/ --delete
+```
+#
