@@ -37,6 +37,7 @@ do_install() {
 
     install -m 0644 ${S}/output/rootfs/bsp/vidmem/ko/*.ko     ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra
     install -m 0755 ${S}/output/rootfs/bsp/vidmem/lib/*.so    ${D}${libdir}
+    install -m 0755 ${S}/output/rootfs/bsp/vidmem/lib/*.so    ${D}${libdir}/vidmem
     install -m 0755 ${S}/output/rootfs/bsp/vidmem/test/*      ${D}${datadir}/vidmem/test/bin
     install -m 0644 ${S}/driver/video_memory.h                ${D}${includedir}/vidmem
     install -m 0644 ${S}/lib/video_mem.h                      ${D}${includedir}/vidmem

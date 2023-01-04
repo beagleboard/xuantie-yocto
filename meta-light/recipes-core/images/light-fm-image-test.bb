@@ -19,6 +19,7 @@ IMAGE_INSTALL += " kdump "
 IMAGE_INSTALL += " haveged "
 IMAGE_INSTALL += " tzdata "
 IMAGE_INSTALL += " cronie logrotate "
+IMAGE_INSTALL += " scene "
 
 python do_rootfs_append_riscv64 () {
     import subprocess

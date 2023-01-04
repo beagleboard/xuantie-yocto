@@ -4,20 +4,11 @@ DEPENDS = "e2fsprogs-native opensbi"
 
 SRC_URI = " \
             git://git@gitee.com/thead-yocto/kernel.git;branch=master;protocol=http \
-            file://0001-drivers-clk-modify-clk-gate-bit-for-mipi-csi1-cfg-cl.patch \
-            file://0002-dts-riscv-thead-light.dtsi.patch \
-            file://0003-add-volt-set-for-sensor.patch\
-            file://0004-dts-riscv-thead-add-CSI2X2_A-support-for-imx219.patch\
-	    file://0001-drivers-i2c-fix-i2c-panic-issue.patch\
-	    file://0001-drivers-cpufreq-clk-update-cpu-clock-operations.patch\
-	    file://0001-dts-riscv-enable-gmac1-in-crash-kernel-for-kdump.patch\
-            file://0001-drivers-i2c-modify-i2c-xfer-flag-to-fix-i2c-panic-is.patch \
 "
 # crop the kernel based on the defconfig
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI_light-b-product-release = " \
             git://git@gitee.com/thead-yocto/kernel.git;branch=master;protocol=http \
-            file://0001-drivers-i2c-modify-i2c-xfer-flag-to-fix-i2c-panic-is.patch \
 "
 SRC_URI_light-b-product-release += "file://cvl1.cfg"
 SRC_URI_light-b-product-release += "file://cvl2.cfg"
