@@ -1,7 +1,7 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 COMPATIBLE_MACHINE = "(^d1*)"
 
-SRC_URI_append = " file://ntp.conf \
+SRC_URI:append = " file://ntp.conf \
                    file://ntpd \
                  "

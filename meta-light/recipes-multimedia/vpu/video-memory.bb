@@ -43,7 +43,7 @@ do_install() {
     install -m 0644 ${S}/lib/video_mem.h                      ${D}${includedir}/vidmem
 }
 
-FILES_${PN} = "${base_libdir} ${libdir} ${datadir} ${includedir}"
+FILES:${PN} = "${base_libdir} ${libdir} ${datadir} ${includedir}"
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " debug-files "
+INSANE_SKIP:${PN} += " debug-files "

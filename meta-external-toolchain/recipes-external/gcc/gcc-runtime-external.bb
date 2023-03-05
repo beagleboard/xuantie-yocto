@@ -26,12 +26,12 @@ FILES_MIRRORS =. "\
     ${includedir}/c\+\+/${GCC_VERSION}/${TARGET_SYS}/|${includedir}/c++/${GCC_VERSION}/${EXTERNAL_TARGET_SYS}/\n \
 "
 
-# The do_install_append in gcc-runtime.inc doesn't do well if the links
+# The do_install:append in gcc-runtime.inc doesn't do well if the links
 # already exist, as it causes a recursion that breaks traversal.
 python () {
-    adjusted = d.getVar('do_install_appended').replace('ln -s', 'link_if_no_dest')
+    adjusted = d.getVar('do_install_added', expand=False).replace('ln -s', 'link_if_no_dest')
     adjusted = adjusted.replace('mkdir', 'mkdir_if_no_dest')
-    d.setVar('do_install_appended', adjusted)
+    d.setVar('do_install_added', adjusted)
 }
 
 link_if_no_dest () {
@@ -69,14 +69,14 @@ do_install_extra () {
     fi
 }
 
-FILES_${PN}-dbg += "${datadir}/gdb/python/libstdcxx"
-FILES_libstdc++-dev = "\
+FILES:${PN}-dbg += "${datadir}/gdb/python/libstdcxx"
+FILES:libstdc++-dev = "\
     ${includedir}/c++ \
     ${libdir}/libstdc++.so \
     ${libdir}/libstdc++.la \
     ${libdir}/libsupc++.la \
 "
-FILES_libgomp-dev += "\
+FILES:libgomp-dev += "\
     ${libdir}/gcc/${TARGET_SYS}/${BINV}/include/openacc.h \
 "
 BBCLASSEXTEND = ""
@@ -85,12 +85,12 @@ BBCLASSEXTEND = ""
 # short-circuit the interdependency here by manually specifying it rather than
 # depending on the libc packagedata.
 libc_rdep = "${@'${PREFERRED_PROVIDER_virtual/libc}' if '${PREFERRED_PROVIDER_virtual/libc}' else '${TCLIBC}'}"
-RDEPENDS_libgomp += "${libc_rdep}"
-RDEPENDS_libssp += "${libc_rdep}"
-RDEPENDS_libstdc++ += "${libc_rdep}"
-RDEPENDS_libatomic += "${libc_rdep}"
-RDEPENDS_libquadmath += "${libc_rdep}"
-RDEPENDS_libmpx += "${libc_rdep}"
+RDEPENDS:libgomp += "${libc_rdep}"
+RDEPENDS:libssp += "${libc_rdep}"
+RDEPENDS:libstdc++ += "${libc_rdep}"
+RDEPENDS:libatomic += "${libc_rdep}"
+RDEPENDS:libquadmath += "${libc_rdep}"
+RDEPENDS:libmpx += "${libc_rdep}"
 
 do_package_write_ipk[depends] += "virtual/${MLPREFIX}libc:do_packagedata"
 do_package_write_deb[depends] += "virtual/${MLPREFIX}libc:do_packagedata"

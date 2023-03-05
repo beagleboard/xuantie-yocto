@@ -9,8 +9,11 @@ PACKAGES = "\
     ${@bb.utils.contains("DISTRO_FEATURES", "ptest", "packagegroup-meta-perl-ptest-packages", "", d)} \
 "
 
-RDEPENDS_packagegroup-meta-perl = "\
+RDEPENDS:packagegroup-meta-perl = "\
     adduser \
+    compress-raw-bzip2-perl \
+    compress-raw-lzma-perl \
+    compress-raw-zlib-perl \
     libalgorithm-diff-perl \
     libauthen-sasl-perl \
     libauthen-radius-perl \
@@ -28,6 +31,8 @@ RDEPENDS_packagegroup-meta-perl = "\
     libhtml-tree-perl \
     libhtml-tagset-perl \
     libimport-into-perl \
+    libio-compress-perl \
+    libio-compress-lzma-perl \
     libio-socket-ssl-perl \
     libio-stringy-perl \
     libipc-signal-perl \
@@ -78,12 +83,12 @@ RDEPENDS_packagegroup-meta-perl = "\
     po4a \
 "
 
-RDEPENDS_packagegroup-meta-perl-extended = "\
+RDEPENDS:packagegroup-meta-perl-extended = "\
     logcheck \
     mime-construct \
 "
 
-RDEPENDS_packagegroup-meta-perl-ptest-packages = "\
+RDEPENDS:packagegroup-meta-perl-ptest-packages = "\
     libmime-types-perl-ptest \
     libio-socket-ssl-perl-ptest \
     libdata-hexdump-perl-ptest \

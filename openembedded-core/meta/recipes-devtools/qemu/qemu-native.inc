@@ -1,11 +1,7 @@
-inherit native
-
 require qemu.inc
 
-EXTRA_OEMAKE_append = " LD='${LD}' AR='${AR}' OBJCOPY='${OBJCOPY}' LDFLAGS='${LDFLAGS}'"
+inherit native
 
-LDFLAGS_append = " -fuse-ld=bfd"
+EXTRA_OEMAKE:append = " LD='${LD}' AR='${AR}' OBJCOPY='${OBJCOPY}' LDFLAGS='${LDFLAGS}'"
 
-do_install_append() {
-     ${@bb.utils.contains('PACKAGECONFIG', 'gtk+', 'make_qemu_wrapper', '', d)}
-}
+LDFLAGS:append = " -fuse-ld=bfd"

@@ -1,4 +1,4 @@
-HOMEPAGE = "https://code.alibaba-inc.com/light_sdk/scene"
+HOMEPAGE = "https://gitee.com/thead-yocto/light_sdk/"
 LICENSE = "CLOSED"
 COMPATIBLE_MACHINE = "light-*"
 PROVIDES = "scene"
@@ -7,7 +7,7 @@ THEAD_BSP_TAG ?= "${AUTOREV}"
 SRCREV = "${THEAD_BSP_TAG}"
 SRC_URI = "git://git@gitee.com/thead-yocto/scene.git;branch=master;protocol=http \
           "
-RDEPENDS_${PN} += " gc620-test plink-ai plink-dpu-client"
+RDEPENDS:${PN} += " gc620-test plink-ai plink-dpu-client"
 
 EXCLUDE_FROM_SHLIBS = "1"
 do_install() {
@@ -17,6 +17,6 @@ do_install() {
 }
 
 PACKAGES = "${PN}"
-FILES_${PN} += " ${datadir}/scene/ "
+FILES:${PN} += " ${datadir}/scene/ "
 DEPENDS += " gc620-test plink-dpu-client"
-INSANE_SKIP_${PN} += " already-stripped useless-rpaths file-rdeps libdir "
+INSANE_SKIP:${PN} += " already-stripped useless-rpaths file-rdeps libdir "

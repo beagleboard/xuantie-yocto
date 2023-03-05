@@ -157,9 +157,17 @@ mount_and_boot() {
 	ROOT_RWDEVICE=`wait_for_device ${ROOT_RWDEVICE}`
 	if [ -n "${ROOT_RWDEVICE}" ]; then
 		[ -z "$ROOT_ROFSTYPE" ] && ROOT_ROFSTYPE="ext4"
+		# Reset read-write file system if specified
+		ROOT_RWRESET=`fw_printenv -l /dev/ -n factory_reset` || true
+		if [ "yes" == "$ROOT_RWRESET" -a -n "${ROOT_RWMOUNT}" ]; then
+			echo "Start to clean up data partion, please wait ..."
+			mke2fs -t $ROOT_ROFSTYPE -F $ROOT_RWDEVICE || fatal "mke2fs -t $ROOT_ROFSTYPE -F $ROOT_RWDEVICE"
+			fw_setenv -l /dev/ factory_reset no || true
+		fi
+		rm -rf /dev/fw_printenv.lock || true
 		cur_type=`blkid -o value -s TYPE "$ROOT_RWDEVICE" || true`
 		if [ -z "$cur_type" ]; then
-			mke2fs -t $ROOT_ROFSTYPE -F $ROOT_RWDEVICE
+			mke2fs -t $ROOT_ROFSTYPE -F $ROOT_RWDEVICE || fatal "mke2fs -t $ROOT_ROFSTYPE -F $ROOT_RWDEVICE"
 			break
 		fi
 		ROOT_RWMOUNTPARAMS="-o $ROOT_RWMOUNTOPTIONS_DEVICE $ROOT_RWDEVICE"
@@ -172,7 +180,7 @@ mount_and_boot() {
 			sleep 2
 			cur_type=`blkid -o value -s TYPE "$ROOT_RWDEVICE" || true`
 			if [ -z "$cur_type" ]; then
-				mke2fs -t $ROOT_ROFSTYPE -F $ROOT_RWDEVICE
+				mke2fs -t $ROOT_ROFSTYPE -F $ROOT_RWDEVICE || fatal "mke2fs -t $ROOT_ROFSTYPE -F $ROOT_RWDEVICE"
 				break
 			fi
 			# Mount again
@@ -186,15 +194,6 @@ mount_and_boot() {
 			fatal "Could not mount read-write rootfs"
 		fi
 	fi
-
-	# Reset read-write file system if specified
-	ROOT_RWRESET=`fw_printenv -l $ROOT_RWMOUNT -n factory_reset` || true
-	if [ "yes" == "$ROOT_RWRESET" -a -n "${ROOT_RWMOUNT}" ]; then
-		echo "Start to clean up data partion, please wait ..."
-		rm -rf $ROOT_RWMOUNT/*
-		fw_setenv -l $ROOT_RWMOUNT factory_reset no || true
-	fi
-	rm -rf $ROOT_RWMOUNT/fw_printenv.lock || true
 
 	# Determine which unification file system to use
 	union_fs_type=""

@@ -1,10 +1,10 @@
 SUMMARY = "CSI G2D HAL interfaces for using Vivante G2D module"
 DESCRIPTION = "The runtime library for using services provide by Vivante G2D module."
-HOMEPAGE = "https://code.alibaba-inc.com/light_sdk/gc620-test"
+HOMEPAGE = "https://gitee.com/thead-yocto/light_sdk/"
 LICENSE = "CLOSED"
 COMPATIBLE_MACHINE = "light-*"
 #DEPENDS = " openssl cmake-native python3 zlib boost linux-thead process-linker xtensa-dsp vi-kernel"
-RDEPENDS_${PN} += " process-linker"
+RDEPENDS:${PN} += " process-linker"
 PROVIDES = "gc620-test"
 S = "${WORKDIR}/git"
 export ARCH="riscv"
@@ -36,9 +36,9 @@ do_install() {
     install -m 0755 ${S}/build/sdk/samples/hal/unit_test/galRunTest2IN  ${D}${datadir}/scene/g2d/preview/
     install -m 0755 ${S}/build/sdk/samples/hal/unit_test/libgal2DFilterBlit100.so   ${D}${datadir}/scene/g2d/preview/
 }
-CFLAGS_append = " -I${STAGING_INCDIR}/gal-viv"
+CFLAGS:append = " -I${STAGING_INCDIR}/gal-viv"
 PACKAGES = "${PN}"
-FILES_${PN} += " ${datadir}/scene/ "
+FILES:${PN} += " ${datadir}/scene/ "
 DEPENDS += " image-proprietary process-linker"
-#INSANE_SKIP_${PN} += " debug-files"
-INSANE_SKIP_${PN} += " already-stripped useless-rpaths file-rdeps libdir "
+#INSANE_SKIP:${PN} += " debug-files"
+INSANE_SKIP:${PN} += " already-stripped useless-rpaths file-rdeps libdir "

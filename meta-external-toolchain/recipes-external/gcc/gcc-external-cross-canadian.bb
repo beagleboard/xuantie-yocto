@@ -5,8 +5,8 @@ PN .= "-${TRANSLATED_TARGET_ARCH}"
 
 BINV = "${GCC_VERSION}"
 
-RDEPENDS_${PN} = "binutils-external-cross-canadian-${TRANSLATED_TARGET_ARCH}"
-FILES_${PN} = "\
+RDEPENDS:${PN} = "binutils-external-cross-canadian-${TRANSLATED_TARGET_ARCH}"
+FILES:${PN} = "\
     ${libdir}/gcc/${EXTERNAL_TARGET_SYS}/${BINV} \
     ${libexecdir}/gcc/${EXTERNAL_TARGET_SYS}/${BINV} \
     ${libdir}/libcc1* \
@@ -16,4 +16,4 @@ FILES_${PN} = "\
 external_libroot = "${@os.path.realpath('${EXTERNAL_TOOLCHAIN_LIBROOT}').replace(os.path.realpath('${EXTERNAL_TOOLCHAIN}') + '/', '/')}"
 FILES_MIRRORS =. "${libdir}/gcc/${EXTERNAL_TARGET_SYS}/${BINV}/|${external_libroot}/\n"
 
-INSANE_SKIP_${PN} += "dev-so staticdev"
+INSANE_SKIP:${PN} += "dev-so staticdev"

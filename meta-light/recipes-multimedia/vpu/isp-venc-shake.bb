@@ -44,7 +44,7 @@ do_install() {
     install -m 0644 ${S}/user_mode/isp_venc_shake_hal.h       ${D}${includedir}/ivs
 }
 
-FILES_${PN} = "${base_libdir} ${libdir} ${datadir} ${includedir}"
+FILES:${PN} = "${base_libdir} ${libdir} ${datadir} ${includedir}"
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " debug-files staticdev "
+INSANE_SKIP:${PN} += " debug-files staticdev "

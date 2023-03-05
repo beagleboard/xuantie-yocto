@@ -1,6 +1,6 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-do_install_append_d1() {
+do_install:append_d1() {
     echo "" >> ${D}${sysconfdir}/fstab
     echo "tmpfs                /tmp                 tmpfs      defaults              0  0" >> ${D}${sysconfdir}/fstab
     echo "tmpfs                /var/lib             tmpfs      defaults              0  0" >> ${D}${sysconfdir}/fstab

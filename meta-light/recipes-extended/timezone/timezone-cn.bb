@@ -16,4 +16,4 @@ do_install() {
     install -m 0644 ${WORKDIR}/Shanghai ${D}${sysconfdir}/localtime
 }
 
-FILES_${PN} += " ${sysconfdir} "
+FILES:${PN} += " ${sysconfdir} "

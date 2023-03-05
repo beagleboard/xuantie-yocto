@@ -21,10 +21,10 @@ OpenEmbedded/Yocto distributions and layer stacks, such as:
 
 This layer depends on:
 
-* URI: git://github.com/openembedded/openembedded-core
+* URI: https://github.com/openembedded/openembedded-core
   * branch: master
   * revision: HEAD
-* URI: git://github.com/openembedded/bitbake
+* URI: https://github.com/openembedded/bitbake
   * branch: master
   * revision: HEAD
 
@@ -37,7 +37,7 @@ Make sure to [install the `repo` command by Google](https://source.android.com/s
 ### Create workspace
 ```text
 mkdir riscv-yocto && cd riscv-yocto
-repo init -u git://github.com/riscv/meta-riscv  -b master -m tools/manifests/riscv-yocto.xml
+repo init -u https://github.com/riscv/meta-riscv  -b master -m tools/manifests/riscv-yocto.xml
 repo sync
 repo start work --all
 ```
@@ -58,23 +58,32 @@ repo rebase
 
 ## Available Machines
 
-The three different machines you can build for are:
+The different machines you can build for are:
 
-* qemuriscv64: The 64-bit RISC-V machine
-* qemuriscv32: The 32-bit RISC-V machine
 * freedom-u540: The SiFive HiFive Unleashed board
+* beaglev-starlight-jh7100: BeagleV - Based on Starlight JH7100 SOC
 
+Note that this layer also provides improvements and features for the
+upstream qemuriscv32 and qemuriscv64 machines.
+
+Additional beagleV notes on bringup are [here](https://github.com/riscv/meta-riscv/blob/master/docs/BeagleV.md)
 ## Build Images
 
 A console-only image for the 64-bit QEMU machine
 ```text
 MACHINE=qemuriscv64 bitbake core-image-full-cmdline
+MACHINE=beaglev-starlight-jh7100 bitbake core-image-full-cmdline
 ```
 
 To build an image to run on the HiFive Unleashed using Wayland run the following
 
 ```text
 MACHINE=freedom-u540 bitbake core-image-weston
+```
+
+To build an image to run on the BeagleV using Wayland run the following
+```text
+MACHINE=beaglev-starlight-jh7100 bitbake core-image-weston
 ```
 
 To build a full GUI equipped image running Plasma Mobile see the in-tree documentation [here](https://github.com/riscv/meta-riscv/blob/master/docs/Plasma-Mobile-on-Unleashed.md).
@@ -108,7 +117,7 @@ TFTP_SERVER_IP = "127.0.0.1"
 To use the Microsemi expansion board with your HiFive Unleased add the following line to your local.conf. This tells the Unleashed to use a device tree with the PCIe device described:
 
 ```text
-RISCV_SBI_FDT_freedom-u540 = "hifive-unleashed-a00-microsemi.dtb"
+RISCV_SBI_FDT:freedom-u540 = "hifive-unleashed-a00-microsemi.dtb"
 ```
 
 ### Sparse Image Creation
@@ -123,7 +132,7 @@ $ sudo bmaptool copy --bmap image.bmap ./freedom-u540-opensbi-201812181337-mmcbl
 
 ### dding wic.gz
 
-The output of a ```freedom-u540``` build will be a ```<image>.wic.gz``` file. You can write this file to an sd card using:
+The output of a ```freedom-u540``` or ```beaglev-starlight-jh7100```  build will be a ```<image>.wic.gz``` file. You can write this file to an sd card using:
 
 ```text
 $ zcat <image>-<machine>.wic.gz | sudo dd of=/dev/sdX bs=4M iflag=fullblock oflag=direct conv=fsync status=progress

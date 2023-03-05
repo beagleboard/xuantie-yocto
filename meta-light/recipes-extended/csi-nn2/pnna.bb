@@ -5,7 +5,7 @@ LICENSE = "CLOSED"
 COMPATIBLE_MACHINE = "(^light*)"
 
 DEPENDS = " "
-RDEPENDS_${PN} += " bash "
+RDEPENDS:${PN} += " bash "
 
 SRC_URI = " \
             file://usr/lib/libshl_pnna.so \
@@ -18,8 +18,8 @@ do_install() {
     install -m 0644 ${S}/usr/lib/libshl_pnna.so                          ${D}${libdir}
 }
 
-FILES_${PN} += " ${libdir} "
+FILES:${PN} += " ${libdir} "
 
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " debug-files already-stripped dev-deps file-rdeps "
+INSANE_SKIP:${PN} += " debug-files already-stripped dev-deps file-rdeps "

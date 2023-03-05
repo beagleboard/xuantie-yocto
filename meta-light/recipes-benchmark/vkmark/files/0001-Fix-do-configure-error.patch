@@ -1,0 +1,38 @@
+diff --git a/src/meson.build b/src/meson.build
+index 35813c5..cfef036 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -1,5 +1,15 @@
+ prog_python = find_program('python3')
+ 
++pymodule = import('python3')
++py3 = pymodule.find_python()
++
++res = run_command(py3, '-c', 'import os; print(os.environ["STAGING_DIR_HOST"])', check: false)
++if res.returncode() == 0
++    sysroot = res.stdout().strip()
++else
++    sysroot = ''
++endif
++
+ vulkan_hpp = join_paths([
+     vulkan_dep.get_pkgconfig_variable('includedir'),
+     'vulkan',
+@@ -9,7 +19,7 @@ vulkan_hpp = join_paths([
+ format_map_gen_h = custom_target(
+     'format_map_gen.h',
+     output: 'format_map_gen.h',
+-    input: vulkan_hpp,
++    input:  sysroot + vulkan_hpp,
+     command: [prog_python, files('gen_format_map.py'), '@INPUT@', '@OUTPUT@']
+     )
+ 
+@@ -87,7 +97,7 @@ if build_xcb_ws
+ endif
+ 
+ if build_wayland_ws
+-    wayland_scanner = find_program(wayland_scanner_dep.get_pkgconfig_variable('wayland_scanner'))
++    wayland_scanner = find_program('wayland-scanner')
+     wayland_protocols_dir = wayland_protocols_dep.get_pkgconfig_variable('pkgdatadir')
+ 
+     xdg_shell_xml_path = wayland_protocols_dir + '/stable/xdg-shell/xdg-shell.xml'

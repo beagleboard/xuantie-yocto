@@ -39,10 +39,10 @@ do_install() {
    fi
 }
 
-FILES_${PN} += " ${sbindir} "
-FILES_${PN} += " ${datadir} "
-FILES_${PN} += " ${systemd_unitdir} "
+FILES:${PN} += " ${sbindir} "
+FILES:${PN} += " ${datadir} "
+FILES:${PN} += " ${systemd_unitdir} "
 
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " debug-files already-stripped dev-deps file-rdeps "
+INSANE_SKIP:${PN} += " debug-files already-stripped dev-deps file-rdeps "

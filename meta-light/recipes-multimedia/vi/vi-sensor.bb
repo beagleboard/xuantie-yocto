@@ -1,5 +1,5 @@
 DESCRIPTION = "thead VI customized sensor drivers"
-HOMEPAGE = "https://code.alibaba-inc.com/light_sdk/vi-sensor/"
+HOMEPAGE = "https://gitee.com/thead-yocto/vi-sensor/"
 LICENSE = "CLOSED"
 
 COMPATIBLE_MACHINE = "light-*"
@@ -50,12 +50,12 @@ do_install() {
     chrpath -d ${D}${datadir}/vi/config/*.drv
 }
 
-FILES_${PN} += " ${base_libdir} "
-FILES_${PN} += " ${libdir} "
-FILES_${PN} += " ${datadir} "
-FILES_${PN} += " ${includedir} "
-INSANE_SKIP_${PN} += " debug-files staticdev file-rdeps "
+FILES:${PN} += " ${base_libdir} "
+FILES:${PN} += " ${libdir} "
+FILES:${PN} += " ${datadir} "
+FILES:${PN} += " ${includedir} "
+INSANE_SKIP:${PN} += " debug-files staticdev file-rdeps "
 
 PACKAGES = "${PN}"
 
-# RDEPENDS_${PN} = " "
+# RDEPENDS:${PN} = " "

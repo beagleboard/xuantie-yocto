@@ -5,14 +5,23 @@ naming organization for the message catalogs themselves, a runtime library suppo
 a few stand-alone programs to massage in various ways the sets of translatable and already translated strings."
 HOMEPAGE = "http://www.gnu.org/software/gettext/gettext.html"
 SECTION = "libs"
-LICENSE = "GPLv3+ & LGPL-2.1+"
+LICENSE = "GPL-3.0-or-later & LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=c678957b0c8e964aa6c70fd77641a71e"
 
+# without libxml in PACKAGECONFIG vendor copy of the lib will be used
+LICENSE:append = " ${@bb.utils.contains('PACKAGECONFIG', 'libxml', '', '& MIT', d)}"
+LIC_FILES_CHKSUM:append = " ${@bb.utils.contains('PACKAGECONFIG', 'libxml', '', 'file://libtextstyle/lib/libxml/COPYING;md5=2044417e2e5006b65a8b9067b683fcf1', d)}"
+# without croco in PACKAGECONFIG vendor copy of the lib will be used
+LIC_FILES_CHKSUM:append = " ${@bb.utils.contains('PACKAGECONFIG', 'croco', '', 'file://libtextstyle/lib/libcroco/libcroco.h;md5=915a46e7307c2f7f8d2b9c503fc434ed;beginline=10;endline=28', d)}"
+# without glib in PACKAGECONFIG vendor copy of the lib will be used
+LIC_FILES_CHKSUM:append = " ${@bb.utils.contains('PACKAGECONFIG', 'glib', '', 'file://libtextstyle/lib/glib/ghash.c;md5=af89a160226edf0b276b6183888037d0;beginline=10;endline=27', d)}"
+
+
 DEPENDS = "gettext-native virtual/libiconv"
-DEPENDS_class-native = "gettext-minimal-native"
+DEPENDS:class-native = "gettext-minimal-native"
 PROVIDES = "virtual/libintl virtual/gettext"
-PROVIDES_class-native = "virtual/gettext-native"
-RCONFLICTS_${PN} = "proxy-libintl"
+PROVIDES:class-native = "virtual/gettext-native"
+RCONFLICTS:${PN} = "proxy-libintl"
 SRC_URI = "${GNU_MIRROR}/gettext/gettext-${PV}.tar.gz \
            file://parallel.patch \
            file://use-pkgconfig.patch \
@@ -22,6 +31,7 @@ SRC_URI = "${GNU_MIRROR}/gettext/gettext-${PV}.tar.gz \
            file://0001-init-env.in-do-not-add-C-CXX-parameters.patch \
            file://mingw.patch \
            file://0001-msgmerge-29-Add-executable-file-mode-bits.patch \
+           file://0001-libtextstyle-fix-builds-with-automake-1.16.4-and-new.patch \
            "
 SRC_URI[sha256sum] = "c77d0da3102aec9c07f43671e60611ebff89a996ef159497ce8e59d075786b12"
 
@@ -39,7 +49,7 @@ EXTRA_OECONF += "--without-lispdir \
                  --without-git \
                  --cache-file=${B}/config.cache \
                 "
-EXTRA_OECONF_append_class-target = " \
+EXTRA_OECONF:append:class-target = " \
                  --with-bisonlocaledir=${datadir}/locale \
                  gt_cv_locale_fr_utf8=fr_FR \
                  gt_cv_locale_fr=fr_FR.ISO-8859-1 \
@@ -48,8 +58,8 @@ EXTRA_OECONF_append_class-target = " \
 "
 
 PACKAGECONFIG ??= "croco glib libxml"
-PACKAGECONFIG_class-native = ""
-PACKAGECONFIG_class-nativesdk = ""
+PACKAGECONFIG:class-native = ""
+PACKAGECONFIG:class-nativesdk = ""
 
 PACKAGECONFIG[croco] = "--without-included-libcroco,--with-included-libcroco,libcroco"
 PACKAGECONFIG[glib] = "--without-included-glib,--with-included-glib,glib-2.0"
@@ -62,7 +72,7 @@ PACKAGECONFIG[msgcat-curses] = "--with-libncurses-prefix=${STAGING_LIBDIR}/..,--
 acpaths = '-I ${S}/gettext-runtime/m4 \
            -I ${S}/gettext-tools/m4'
 
-do_install_append_libc-musl () {
+do_install:append:libc-musl () {
 	rm -f ${D}${libdir}/charset.alias
 	rm -f ${D}${includedir}/libintl.h
 	rm -f ${D}${libdir}/libintl.la
@@ -79,29 +89,29 @@ do_install_append_libc-musl () {
 # 4       KiB /ep93xx/libgcc-s-dev_4.2.2-r2_ep93xx.ipk
 
 PACKAGES =+ "libgettextlib libgettextsrc"
-FILES_libgettextlib = "${libdir}/libgettextlib-*.so*"
-FILES_libgettextsrc = "${libdir}/libgettextsrc-*.so*"
+FILES:libgettextlib = "${libdir}/libgettextlib-*.so*"
+FILES:libgettextsrc = "${libdir}/libgettextsrc-*.so*"
 
 PACKAGES =+ "gettext-runtime gettext-runtime-dev gettext-runtime-doc"
 
-FILES_${PN} += "${libdir}/${BPN}/*"
+FILES:${PN} += "${libdir}/${BPN}/*"
 
 # The its/Makefile.am has defined:
 # itsdir = $(pkgdatadir)$(PACKAGE_SUFFIX)/its
 # not itsdir = $(pkgdatadir), so use wildcard to match the version.
-FILES_${PN} += "${datadir}/${BPN}-*/*"
+FILES:${PN} += "${datadir}/${BPN}-*/*"
 
-FILES_gettext-runtime = "${bindir}/gettext \
+FILES:gettext-runtime = "${bindir}/gettext \
                          ${bindir}/ngettext \
                          ${bindir}/envsubst \
                          ${bindir}/gettext.sh \
                          ${libdir}/libasprintf.so* \
                          ${libdir}/GNU.Gettext.dll \
                         "
-FILES_gettext-runtime-dev += "${libdir}/libasprintf.a \
+FILES:gettext-runtime-dev += "${libdir}/libasprintf.a \
                       ${includedir}/autosprintf.h \
                      "
-FILES_gettext-runtime-doc = "${mandir}/man1/gettext.* \
+FILES:gettext-runtime-doc = "${mandir}/man1/gettext.* \
                              ${mandir}/man1/ngettext.* \
                              ${mandir}/man1/envsubst.* \
                              ${mandir}/man1/.* \
@@ -116,11 +126,11 @@ FILES_gettext-runtime-doc = "${mandir}/man1/gettext.* \
                              ${infodir}/autosprintf.info \
                             "
 
-do_install_append() {
+do_install:append() {
     rm -f ${D}${libdir}/preloadable_libintl.so
 }
 
-do_install_append_class-native () {
+do_install:append:class-native () {
 	rm ${D}${datadir}/aclocal/*
 	rm ${D}${datadir}/gettext/config.rpath
 	rm ${D}${datadir}/gettext/po/Makefile.in.in
@@ -171,11 +181,12 @@ do_install_ptest() {
         find ${D}${PTEST_PATH}/ -name "*.o" -exec rm {} \;
         chmod 0755 ${D}${PTEST_PATH}/tests/lang-vala ${D}${PTEST_PATH}/tests/plural-1 ${D}${PTEST_PATH}/tests/xgettext-tcl-4 \
                    ${D}${PTEST_PATH}/tests/xgettext-vala-1  ${D}${PTEST_PATH}/tests/xgettext-po-2
+        sed -i -e 's|${DEBUG_PREFIX_MAP}||g' ${D}${PTEST_PATH}/tests/init-env
     fi
 }
 
-RDEPENDS_${PN}-ptest += "make"
-RDEPENDS_${PN}-ptest_append_libc-glibc = "\
+RDEPENDS:${PN}-ptest += "make xz"
+RDEPENDS:${PN}-ptest:append:libc-glibc = "\
     glibc-gconv-big5 \
     glibc-charmap-big5 \
     glibc-gconv-cp1251 \
@@ -196,12 +207,12 @@ RDEPENDS_${PN}-ptest_append_libc-glibc = "\
     locale-base-fr-fr \
 "
 
-RRECOMMENDS_${PN}-ptest_append_libc-glibc = "\
+RRECOMMENDS:${PN}-ptest:append:libc-glibc = "\
     locale-base-de-de.iso-8859-1 \
     locale-base-fr-fr.iso-8859-1 \
 "
 
-INSANE_SKIP_${PN}-ptest += "ldflags"
-INSANE_SKIP_${PN}-ptest += "rpaths"
+INSANE_SKIP:${PN}-ptest += "ldflags"
+INSANE_SKIP:${PN}-ptest += "rpaths"
 
 BBCLASSEXTEND = "native nativesdk"

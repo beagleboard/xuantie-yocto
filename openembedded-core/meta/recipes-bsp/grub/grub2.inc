@@ -8,7 +8,7 @@ standard, which allows for flexible loading of multiple boot images."
 HOMEPAGE = "http://www.gnu.org/software/grub/"
 SECTION = "bootloaders"
 
-LICENSE = "GPLv3"
+LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
 
 CVE_PRODUCT = "grub2"
@@ -18,33 +18,53 @@ SRC_URI = "${GNU_MIRROR}/grub/grub-${PV}.tar.gz \
            file://autogen.sh-exclude-pc.patch \
            file://grub-module-explicitly-keeps-symbole-.module_license.patch \
            file://0001-grub.d-10_linux.in-add-oe-s-kernel-name.patch \
-           file://CVE-2020-10713.patch \
-           file://calloc-Make-sure-we-always-have-an-overflow-checking.patch \
-           file://lvm-Add-LVM-cache-logical-volume-handling.patch \
-           file://CVE-2020-14308-calloc-Use-calloc-at-most-places.patch \
-           file://safemath-Add-some-arithmetic-primitives-that-check-f.patch \
-           file://CVE-2020-14309-CVE-2020-14310-CVE-2020-14311-malloc-Use-overflow-checking-primitives-where-we-do-.patch \
-           file://script-Remove-unused-fields-from-grub_script_functio.patch \
-           file://CVE-2020-15706-script-Avoid-a-use-after-free-when-redefining-a-func.patch \
-           file://CVE-2020-15707-linux-Fix-integer-overflows-in-initrd-size-handling.patch \
+           file://determinism.patch \
+           file://0001-RISC-V-Restore-the-typcast-to-long.patch \
+           file://CVE-2021-3981-grub-mkconfig-Restore-umask-for-the-grub.cfg.patch \
+           file://0001-configure.ac-Use-_zicsr_zifencei-extentions-on-riscv.patch \
+           file://video-Remove-trailing-whitespaces.patch \
+           file://CVE-2021-3695-video-readers-png-Drop-greyscale-support-to-fix-heap.patch \
+           file://CVE-2021-3696-video-readers-png-Avoid-heap-OOB-R-W-inserting-huff.patch \
+           file://video-readers-jpeg-Abort-sooner-if-a-read-operation-.patch \
+           file://video-readers-jpeg-Refuse-to-handle-multiple-start-o.patch \
+           file://CVE-2021-3697-video-readers-jpeg-Block-int-underflow-wild-pointer.patch \
+           file://CVE-2022-28733-net-ip-Do-IP-fragment-maths-safely.patch \
+           file://CVE-2022-28734-net-http-Fix-OOB-write-for-split-http-headers.patch \
+           file://CVE-2022-28734-net-http-Error-out-on-headers-with-LF-without-CR.patch \
+           file://CVE-2022-28735-kern-efi-sb-Reject-non-kernel-files-in-the-shim_lock.patch \
+           file://0001-configure-Remove-obsoleted-malign-jumps-loops-functi.patch \
+           file://0002-configure-Check-for-falign-jumps-1-beside-falign-loo.patch \
 "
-SRC_URI[md5sum] = "5ce674ca6b2612d8939b9e6abed32934"
-SRC_URI[sha256sum] = "f10c85ae3e204dbaec39ae22fa3c5e99f0665417e91c2cb49b7e5031658ba6ea"
+
+SRC_URI[sha256sum] = "23b64b4c741569f9426ed2e3d0e6780796fca081bee4c99f62aa3f53ae803f5f"
+
+# Applies only to RHEL
+CVE_CHECK_IGNORE += "CVE-2019-14865"
+# Applies only to SUSE
+CVE_CHECK_IGNORE += "CVE-2021-46705"
 
 DEPENDS = "flex-native bison-native gettext-native"
 
-COMPATIBLE_HOST = '(x86_64.*|i.86.*|arm.*|aarch64.*)-(linux.*|freebsd.*)'
-COMPATIBLE_HOST_armv7a = 'null'
-COMPATIBLE_HOST_armv7ve = 'null'
+GRUB_COMPATIBLE_HOST = '(x86_64.*|i.86.*|arm.*|aarch64.*|riscv.*)-(linux.*|freebsd.*)'
+COMPATIBLE_HOST = "${GRUB_COMPATIBLE_HOST}"
+# Grub doesn't support hard float toolchain and won't be able to forcefully
+# disable it on some of the target CPUs. See 'configure.ac' for
+# supported/unsupported CPUs in hardfp.
+COMPATIBLE_HOST:armv7a = "${@'null' if bb.utils.contains('TUNE_CCARGS_MFLOAT', 'hard', True, False, d) else d.getVar('GRUB_COMPATIBLE_HOST')}"
+COMPATIBLE_HOST:armv7ve = "${@'null' if bb.utils.contains('TUNE_CCARGS_MFLOAT', 'hard', True, False, d) else d.getVar('GRUB_COMPATIBLE_HOST')}"
 
 # configure.ac has code to set this automagically from the target tuple
 # but the OE freeform one (core2-foo-bar-linux) don't work with that.
 
-GRUBPLATFORM_arm = "efi"
-GRUBPLATFORM_aarch64 = "efi"
+GRUBPLATFORM:arm = "efi"
+GRUBPLATFORM:aarch64 = "efi"
+GRUBPLATFORM:riscv32 = "efi"
+GRUBPLATFORM:riscv64 = "efi"
 GRUBPLATFORM ??= "pc"
 
 inherit autotools gettext texinfo pkgconfig
+
+CFLAGS:remove = "-O2"
 
 EXTRA_OECONF = "--with-platform=${GRUBPLATFORM} \
                 --disable-grub-mkfont \
@@ -70,7 +90,7 @@ BUILD_LDFLAGS = ""
 
 export PYTHON = "python3"
 
-do_configure_prepend() {
+do_configure:prepend() {
 	cd ${S}
 	FROM_BOOTSTRAP=1 ${S}/autogen.sh
 	cd ${B}

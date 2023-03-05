@@ -1,0 +1,13 @@
+diff --git a/configure.ac b/configure.ac
+index 84b6fc8..a4220e0 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -129,7 +129,7 @@ if test "$enable_backend" != "no"; then
+   AC_SUBST(JSON_GLIB_CFLAGS)
+   AC_SUBST(JSON_GLIB_LIBS)
+ 
+-  PKG_CHECK_MODULES(REST, [rest-0.7])
++  PKG_CHECK_MODULES(REST, [rest-1.0])
+   AC_SUBST(REST_CFLAGS)
+   AC_SUBST(REST_LIBS)
+ 

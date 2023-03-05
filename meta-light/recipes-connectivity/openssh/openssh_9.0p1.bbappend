@@ -1,0 +1,1 @@
+PACKAGECONFIG:remove = "rng-tools"

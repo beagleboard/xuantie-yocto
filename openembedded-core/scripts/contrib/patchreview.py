@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 #
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
@@ -8,7 +10,7 @@
 # - test suite
 # - validate signed-off-by
 
-status_values = ("accepted", "pending", "inappropriate", "backport", "submitted", "denied")
+status_values = ("accepted", "pending", "inappropriate", "backport", "submitted", "denied", "inactive-upstream")
 
 class Result:
     # Whether the patch has an Upstream-Status or not
@@ -46,7 +48,7 @@ def patchreview(path, patches):
     # hyphen or spaces, maybe a colon, some whitespace, then the value, all case
     # insensitive.
     sob_re = re.compile(r"^[\t ]*(Signed[-_ ]off[-_ ]by:?)[\t ]*(.+)", re.IGNORECASE | re.MULTILINE)
-    status_re = re.compile(r"^[\t ]*(Upstream[-_ ]Status:?)[\t ]*(\w*)", re.IGNORECASE | re.MULTILINE)
+    status_re = re.compile(r"^[\t ]*(Upstream[-_ ]Status:?)[\t ]*([\w-]*)", re.IGNORECASE | re.MULTILINE)
     cve_tag_re = re.compile(r"^[\t ]*(CVE:)[\t ]*(.*)", re.IGNORECASE | re.MULTILINE)
     cve_re = re.compile(r"cve-[0-9]{4}-[0-9]{4,6}", re.IGNORECASE)
 
@@ -222,6 +224,7 @@ if __name__ == "__main__":
         row = collections.Counter()
         row["total"] = len(results)
         row["date"] = subprocess.check_output(["git", "-C", args.directory, "show", "-s", "--pretty=format:%cd", "--date=format:%s"]).decode("utf-8").strip()
+        row["commit"] = subprocess.check_output(["git", "-C", args.directory, "show", "-s", "--pretty=format:%H"]).decode("utf-8").strip()
         for r in results.values():
             if r.upstream_status in status_values:
                 row[r.upstream_status] += 1
@@ -231,7 +234,7 @@ if __name__ == "__main__":
                 row['malformed-sob'] += 1
 
         data.append(row)
-        json.dump(data, open(args.json, "w"))
+        json.dump(data, open(args.json, "w"), sort_keys=True, indent="\t")
 
     if args.histogram:
         print()

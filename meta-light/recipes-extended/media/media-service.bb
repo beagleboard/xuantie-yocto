@@ -3,11 +3,11 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
 inherit bin_package systemd
-DEPENDS_append = " update-rc.d-native"
+DEPENDS:append = " update-rc.d-native"
 
 COMPATIBLE_MACHINE = "(^d1*)"
 
-RDEPENDS_${PN} += " alsa-lib dbus libcap liblzma openssl libevent log4cpp jsoncpp libidn2 \
+RDEPENDS:${PN} += " alsa-lib dbus libcap liblzma openssl libevent log4cpp jsoncpp libidn2 \
                     libopus libcurl gnutls nettle zlib libunistring gmp libgmpxx "
 
 DEPENDS = "libevent"
@@ -42,15 +42,15 @@ do_install() {
     fi
 }
 
-SYSTEMD_SERVICE_${PN} = "media.service"
-SYSTEMD_AUTO_ENABLE_${PN} = "enable"
+SYSTEMD_SERVICE:${PN} = "media.service"
+SYSTEMD_AUTO_ENABLE:${PN} = "enable"
 
-FILES_${PN} += " ${base_libdir} "
-FILES_${PN} += " ${bindir} "
-FILES_${PN} += " ${libdir} "
-FILES_${PN} += " ${systemd_system_unitdir} "
-FILES_${PN} += " ${sysconfdir} "
+FILES:${PN} += " ${base_libdir} "
+FILES:${PN} += " ${bindir} "
+FILES:${PN} += " ${libdir} "
+FILES:${PN} += " ${systemd_system_unitdir} "
+FILES:${PN} += " ${sysconfdir} "
 
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " debug-files file-rdeps already-stripped "
+INSANE_SKIP:${PN} += " debug-files file-rdeps already-stripped "

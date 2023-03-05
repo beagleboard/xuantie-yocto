@@ -5,7 +5,7 @@ COMPATIBLE_MACHINE = "light-*"
 
 PREFERRED_VERSION_libdrm = "2.4.101"
 DEPENDS = " libdrm bison-native zlib-native font-util-native font-cursor-misc process-linker video-memory linux-thead wayland wayland-native wayland-protocols"
-RDEPENDS_${PN} = " libpvr-mesa-wsi"
+RDEPENDS:${PN} = " libpvr-mesa-wsi"
 
 DEPENDS += " \
     intltool-native \
@@ -16,8 +16,7 @@ DEPENDS += " \
 "
 inherit pkgconfig
 
-SRC_URI = " \
-           git://git@gitee.com/thead-yocto/gpu_bxm_4_64-kernel.git;branch=master;protocol=http \
+SRC_URI = "git://git@gitee.com/thead-yocto/gpu_bxm_4_64-kernel.git;branch=master;protocol=http \
            file://.param \
            file://0001-delete-um-for-yocto.patch \
            file://0001-support-parallel-make-for-yocto.patch \
@@ -99,23 +98,23 @@ do_install() {
 
 # PACKAGES = " "
 
-# RDEPENDS_${PN} = " "
+# RDEPENDS:${PN} = " "
 
-# FILES_${PN} = " "
+# FILES:${PN} = " "
 
-# SYSTEMD_SERVICE_${PN} = "haasui_app.service"
-# SYSTEMD_AUTO_ENABLE_${PN} = "enable"
+# SYSTEMD_SERVICE:${PN} = "haasui_app.service"
+# SYSTEMD_AUTO_ENABLE:${PN} = "enable"
 
-FILES_${PN} += " ${base_libdir} "
-FILES_${PN} += " ${datadir} "
-FILES_${PN} += " ${bindir} "
-FILES_${PN} += " ${libdir} "
-FILES_${PN} += " /lib/modules/${KERNEL_VERSION}/extra/ "
+FILES:${PN} += " ${base_libdir} "
+FILES:${PN} += " ${datadir} "
+FILES:${PN} += " ${bindir} "
+FILES:${PN} += " ${libdir} "
+FILES:${PN} += " /lib/modules/${KERNEL_VERSION}/extra/ "
 
 #PACKAGES = "${PN}"
 
-#INSANE_SKIP_${PN} += " debug-files already-stripped rpaths "
+#INSANE_SKIP:${PN} += " debug-files already-stripped rpaths "
 
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " arch debug-files already-stripped dev-deps file-rdeps "
+INSANE_SKIP:${PN} += " arch debug-files already-stripped dev-deps file-rdeps "

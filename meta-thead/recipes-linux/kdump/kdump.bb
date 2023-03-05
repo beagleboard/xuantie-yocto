@@ -30,8 +30,14 @@ board_b_pub_name ?= "light-b-public"
 board_b_pub_path ?= "light-b-public"
 board_ant_ref_name ?= "light-ant-ref"
 board_ant_ref_path ?= "light_ant_ref"
+board_ant_ref_release_name ?= "light-ant-ref-release"
+board_ant_ref_release_path ?= "light_ant_ref_release"
 board_beagle_name ?= "light-beagle"
 board_beagle_path ?= "light_beagle"
+board_lpi4a_name ?= "light-lpi4a"
+board_lpi4a_path ?= "light_lpi4a"
+board_fire_emu_name ?= "fire-emu"
+board_fire_emu_path ?= "fire_emu"
 VMLINUXPATH ?= ""
 
 python() {
@@ -45,10 +51,16 @@ python() {
         d.setVar('board', d.getVar('board_b_release_path'))
     elif d.getVar('MACHINE') == d.getVar('board_b_pub_name'):
         d.setVar('board', d.getVar('board_b_pub_path'))
+    elif d.getVar('MACHINE') == d.getVar('board_ant_ref_release_name'):
+        d.setVar('board', d.getVar('board_ant_ref_release_path'))
     elif d.getVar('MACHINE') == d.getVar('board_ant_ref_name'):
         d.setVar('board', d.getVar('board_ant_ref_path'))
     elif d.getVar('MACHINE') == d.getVar('board_beagle_name'):
         d.setVar('board', d.getVar('board_beagle_path'))
+    elif d.getVar('MACHINE') == d.getVar('board_lpi4a_name'):
+        d.setVar('board', d.getVar('board_lpi4a_path'))
+    elif d.getVar('MACHINE') == d.getVar('board_fire_emu_name'):
+        d.setVar('board', d.getVar('board_fire_emu_path'))
     else:
         bb.warn("invalid MACHINE")
 
@@ -79,14 +91,14 @@ do_install () {
 
 }
 
-SYSTEMD_SERVICE_${PN} = "kdump.service"
-SYSTEMD_AUTO_ENABLE_${PN} = "enable"
+SYSTEMD_SERVICE:${PN} = "kdump.service"
+SYSTEMD_AUTO_ENABLE:${PN} = "enable"
 
-FILES_${PN} += " ${bindir} "
-FILES_${PN} += " ${sysconfdir} "
-FILES_${PN} += " ${systemd_system_unitdir} "
-FILES_${PN} += " ${localstatedir} "
+FILES:${PN} += " ${bindir} "
+FILES:${PN} += " ${sysconfdir} "
+FILES:${PN} += " ${systemd_system_unitdir} "
+FILES:${PN} += " ${localstatedir} "
 
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " debug-files already-stripped rpaths "
+INSANE_SKIP:${PN} += " debug-files already-stripped rpaths "

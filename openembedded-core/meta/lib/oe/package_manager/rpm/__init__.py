@@ -1,4 +1,6 @@
 #
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
@@ -33,6 +35,9 @@ class RpmIndexer(Indexer):
 class RpmSubdirIndexer(RpmIndexer):
     def write_index(self):
         bb.note("Generating package index for %s" %(self.deploy_dir))
+        # Remove the existing repodata to ensure that we re-generate it no matter what
+        bb.utils.remove(os.path.join(self.deploy_dir, "repodata"), recurse=True)
+
         self.do_write_index(self.deploy_dir)
         for entry in os.walk(self.deploy_dir):
             if os.path.samefile(self.deploy_dir, entry[0]):
@@ -43,7 +48,7 @@ class RpmSubdirIndexer(RpmIndexer):
                         self.do_write_index(dir_path)
 
 
-class RpmPkgsList(PkgsList):
+class PMPkgsList(PkgsList):
     def list_pkgs(self):
         return RpmPM(self.d, self.rootfs_dir, self.d.getVar('TARGET_VENDOR'), needfeed=False).list_installed()
 
@@ -93,11 +98,15 @@ class RpmPM(PackageManager):
         archs = ["sdk_provides_dummy_target"] + archs
         confdir = "%s/%s" %(self.target_rootfs, "etc/dnf/vars/")
         bb.utils.mkdirhier(confdir)
-        open(confdir + "arch", 'w').write(":".join(archs))
-        distro_codename = self.d.getVar('DISTRO_CODENAME')
-        open(confdir + "releasever", 'w').write(distro_codename if distro_codename is not None else '')
+        with open(confdir + "arch", 'w') as f:
+            f.write(":".join(archs))
 
-        open(oe.path.join(self.target_rootfs, "etc/dnf/dnf.conf"), 'w').write("")
+        distro_codename = self.d.getVar('DISTRO_CODENAME')
+        with open(confdir + "releasever", 'w') as f:
+            f.write(distro_codename if distro_codename is not None else '')
+
+        with open(oe.path.join(self.target_rootfs, "etc/dnf/dnf.conf"), 'w') as f:
+            f.write("")
 
 
     def _configure_rpm(self):
@@ -107,14 +116,17 @@ class RpmPM(PackageManager):
         platformconfdir = "%s/%s" %(self.target_rootfs, "etc/rpm/")
         rpmrcconfdir = "%s/%s" %(self.target_rootfs, "etc/")
         bb.utils.mkdirhier(platformconfdir)
-        open(platformconfdir + "platform", 'w').write("%s-pc-linux" % self.primary_arch)
+        with open(platformconfdir + "platform", 'w') as f:
+            f.write("%s-pc-linux" % self.primary_arch)
         with open(rpmrcconfdir + "rpmrc", 'w') as f:
             f.write("arch_compat: %s: %s\n" % (self.primary_arch, self.archs if len(self.archs) > 0 else self.primary_arch))
             f.write("buildarch_compat: %s: noarch\n" % self.primary_arch)
 
-        open(platformconfdir + "macros", 'w').write("%_transaction_color 7\n")
+        with open(platformconfdir + "macros", 'w') as f:
+            f.write("%_transaction_color 7\n")
         if self.d.getVar('RPM_PREFER_ELF_ARCH'):
-            open(platformconfdir + "macros", 'a').write("%%_prefer_color %s" % (self.d.getVar('RPM_PREFER_ELF_ARCH')))
+            with open(platformconfdir + "macros", 'a') as f:
+                f.write("%%_prefer_color %s" % (self.d.getVar('RPM_PREFER_ELF_ARCH')))
 
         if self.d.getVar('RPM_SIGN_PACKAGES') == '1':
             signer = get_signer(self.d, self.d.getVar('RPM_GPG_BACKEND'))
@@ -161,13 +173,13 @@ class RpmPM(PackageManager):
                     repo_uri = uri + "/" + arch
                     repo_id   = "oe-remote-repo"  + "-".join(urlparse(repo_uri).path.split("/"))
                     repo_name = "OE Remote Repo:" + " ".join(urlparse(repo_uri).path.split("/"))
-                    open(oe.path.join(self.target_rootfs, "etc", "yum.repos.d", repo_base + ".repo"), 'a').write(
-                             "[%s]\nname=%s\nbaseurl=%s\n%s\n" % (repo_id, repo_name, repo_uri, gpg_opts))
+                    with open(oe.path.join(self.target_rootfs, "etc", "yum.repos.d", repo_base + ".repo"), 'a') as f:
+                        f.write("[%s]\nname=%s\nbaseurl=%s\n%s\n" % (repo_id, repo_name, repo_uri, gpg_opts))
             else:
                 repo_name = "OE Remote Repo:" + " ".join(urlparse(uri).path.split("/"))
                 repo_uri = uri
-                open(oe.path.join(self.target_rootfs, "etc", "yum.repos.d", repo_base + ".repo"), 'w').write(
-                             "[%s]\nname=%s\nbaseurl=%s\n%s" % (repo_base, repo_name, repo_uri, gpg_opts))
+                with open(oe.path.join(self.target_rootfs, "etc", "yum.repos.d", repo_base + ".repo"), 'w') as f:
+                    f.write("[%s]\nname=%s\nbaseurl=%s\n%s" % (repo_base, repo_name, repo_uri, gpg_opts))
 
     def _prepare_pkg_transaction(self):
         os.environ['D'] = self.target_rootfs
@@ -178,7 +190,7 @@ class RpmPM(PackageManager):
         os.environ['NATIVE_ROOT'] = self.d.getVar('STAGING_DIR_NATIVE')
 
 
-    def install(self, pkgs, attempt_only = False):
+    def install(self, pkgs, attempt_only=False, hard_depends_only=False):
         if len(pkgs) == 0:
             return
         self._prepare_pkg_transaction()
@@ -189,13 +201,16 @@ class RpmPM(PackageManager):
 
         output = self._invoke_dnf((["--skip-broken"] if attempt_only else []) +
                          (["-x", ",".join(exclude_pkgs)] if len(exclude_pkgs) > 0 else []) +
-                         (["--setopt=install_weak_deps=False"] if self.d.getVar('NO_RECOMMENDATIONS') == "1" else []) +
+                         (["--setopt=install_weak_deps=False"] if (hard_depends_only or self.d.getVar('NO_RECOMMENDATIONS') == "1") else []) +
                          (["--nogpgcheck"] if self.d.getVar('RPM_SIGN_PACKAGES') != '1' else ["--setopt=gpgcheck=True"]) +
                          ["install"] +
                          pkgs)
 
         failed_scriptlets_pkgnames = collections.OrderedDict()
         for line in output.splitlines():
+            if line.startswith("Error: Systemctl"):
+                bb.error(line)
+
             if line.startswith("Error in POSTIN scriptlet in rpm package"):
                 failed_scriptlets_pkgnames[line.split()[-1]] = True
 
@@ -323,7 +338,8 @@ class RpmPM(PackageManager):
             return e.output.decode("utf-8")
 
     def dump_install_solution(self, pkgs):
-        open(self.solution_manifest, 'w').write(" ".join(pkgs))
+        with open(self.solution_manifest, 'w') as f:
+            f.write(" ".join(pkgs))
         return pkgs
 
     def load_old_install_solution(self):
@@ -357,7 +373,8 @@ class RpmPM(PackageManager):
         bb.utils.mkdirhier(target_path)
         num = self._script_num_prefix(target_path)
         saved_script_name = oe.path.join(target_path, "%d-%s" % (num, pkg))
-        open(saved_script_name, 'w').write(output)
+        with open(saved_script_name, 'w') as f:
+            f.write(output)
         os.chmod(saved_script_name, 0o755)
 
     def _handle_intercept_failure(self, registered_pkgs):

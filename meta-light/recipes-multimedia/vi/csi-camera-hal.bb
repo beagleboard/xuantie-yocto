@@ -53,12 +53,12 @@ do_install() {
     install -m 0755 ${S}/output/examples/camera/*                        ${D}${datadir}/csi_hal
 }
 
-FILES_${PN} += " ${base_libdir} "
-FILES_${PN} += " ${libdir} "
-FILES_${PN} += " ${datadir} "
-FILES_${PN} += " ${includedir} "
-INSANE_SKIP_${PN} += " debug-files staticdev file-rdeps "
+FILES:${PN} += " ${base_libdir} "
+FILES:${PN} += " ${libdir} "
+FILES:${PN} += " ${datadir} "
+FILES:${PN} += " ${includedir} "
+INSANE_SKIP:${PN} += " debug-files staticdev file-rdeps "
 
 PACKAGES = "${PN}"
 
-# RDEPENDS_${PN} = " "
+# RDEPENDS:${PN} = " "

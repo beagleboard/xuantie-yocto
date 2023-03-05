@@ -9,7 +9,7 @@ SRC_URI = "file://android-gadget-setup \
             "
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-DEPENDS_append = " update-rc.d-native"
+DEPENDS:append = " update-rc.d-native"
 
 do_install() {
     install -d ${D}${bindir}

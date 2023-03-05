@@ -1,4 +1,4 @@
-LICENSE = "GPLv3"
+LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
 require make.inc
 
@@ -12,6 +12,8 @@ SRC_URI += "\
 "
 
 EXTRA_OECONF += "--without-guile"
+
+# meta-thead/recipes-devtools/make/make_4.3.bbappend
 
 SRC_URI[sha256sum] = "e05fdde47c5f7ca45cb697e973894ff4f5d79e13b750ed57d7b66d8defc78e19"
 

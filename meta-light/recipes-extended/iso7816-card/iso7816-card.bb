@@ -27,6 +27,6 @@ do_install() {
         install -m 0755 ${S}/*.h        ${D}${datadir}/iso7816_card
 }
 
-FILES_${PN} += " ${datadir} "
+FILES:${PN} += " ${datadir} "
 PACKAGES = "${PN}"
-INSANE_SKIP_${PN} += " debug-files already-stripped"
+INSANE_SKIP:${PN} += " debug-files already-stripped"

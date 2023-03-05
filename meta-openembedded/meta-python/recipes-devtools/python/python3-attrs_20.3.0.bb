@@ -8,11 +8,11 @@ SRC_URI[md5sum] = "4fe38f89297b2b446d83190fce189f29"
 
 inherit pypi setuptools3
 
-RDEPENDS_${PN}_class-target += " \
+RDEPENDS:${PN}:class-target += " \
     ${PYTHON_PN}-crypt \
     ${PYTHON_PN}-ctypes \
 "
-RDEPENDS_${PN}_class-nativesdk += " \
+RDEPENDS:${PN}:class-nativesdk += " \
     ${PYTHON_PN}-crypt \
     ${PYTHON_PN}-ctypes \
 "

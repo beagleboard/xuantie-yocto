@@ -1,3 +1,9 @@
+#
+# Copyright OpenEmbedded Contributors
+#
+# SPDX-License-Identifier: MIT
+#
+
 # Class for signing package feeds
 #
 # Related configuration variables that will be used after this class is
@@ -27,9 +33,10 @@ inherit sanity
 PACKAGE_FEED_SIGN = '1'
 PACKAGE_FEED_GPG_BACKEND ?= 'local'
 PACKAGE_FEED_GPG_SIGNATURE_TYPE ?= 'ASC'
+PACKAGEINDEXDEPS += "gnupg-native:do_populate_sysroot"
 
 # Make feed signing key to be present in rootfs
-FEATURE_PACKAGES_package-management_append = " signing-keys-packagefeed"
+FEATURE_PACKAGES_package-management:append = " signing-keys-packagefeed"
 
 python () {
     # Check sanity of configuration

@@ -18,9 +18,11 @@ do_install () {
     install -d ${D}${bindir}
     for bin in ${EXTERNAL_CROSS_BINARIES}; do
         if [ ! -e "${EXTERNAL_TOOLCHAIN_BIN}/${EXTERNAL_TARGET_SYS}-$bin" ]; then
+            bbdebug 1 "${EXTERNAL_TOOLCHAIN_BIN}/${EXTERNAL_TARGET_SYS}-$bin does not exist"
             continue
         fi
 
+        bbdebug 1 wrap_bin "$bin"
         wrap_bin "$bin"
     done
 }

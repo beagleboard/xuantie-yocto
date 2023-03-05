@@ -1,0 +1,6 @@
+PREFERRED_PROVIDER_virtual/mesa ?= "mesa-proprietary"
+PREFERRED_PROVIDER_virtual/libgl ?= "mesa-proprietary"
+PREFERRED_PROVIDER_virtual/libgles1 ?= "mesa-proprietary"
+PREFERRED_PROVIDER_virtual/libgles2 ?= "mesa-proprietary"
+PREFERRED_PROVIDER_virtual/egl ?= "mesa-proprietary"
+PREFERRED_PROVIDER_virtual/libgbm ?= "mesa-proprietary"

@@ -14,7 +14,7 @@ SRC_URI = "\
 "
 
 inherit bin_package systemd
-DEPENDS_append = " update-rc.d-native"
+DEPENDS:append = " update-rc.d-native"
 
 
 S = "${WORKDIR}"
@@ -35,13 +35,13 @@ do_install () {
     fi
 }
 
-SYSTEMD_SERVICE_${PN} = "light-bt.service"
-SYSTEMD_AUTO_ENABLE_${PN} = "enable"
+SYSTEMD_SERVICE:${PN} = "light-bt.service"
+SYSTEMD_AUTO_ENABLE:${PN} = "enable"
 
-FILES_${PN} += "\
+FILES:${PN} += "\
     ${bindir} \
     ${systemd_system_unitdir} \
     ${sysconfdir} \
 "
 
-FILES_${PN}-dbg += "${bindir}/.debug"
+FILES:${PN}-dbg += "${bindir}/.debug"

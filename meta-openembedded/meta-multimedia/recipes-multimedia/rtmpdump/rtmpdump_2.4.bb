@@ -2,14 +2,14 @@ SUMMARY = "RTMP Dump"
 DESCRIPTION = "rtmpdump is a toolkit for RTMP streams. All forms of RTMP are \
 supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://."
 HOMEPAGE = "http://rtmpdump.mplayerhq.hu/"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 DEPENDS = "gnutls zlib"
 
 SRCREV = "fa8646daeb19dfd12c181f7d19de708d623704c0"
 SRC_URI = " \
-    git://git.ffmpeg.org/rtmpdump \
+    git://git.ffmpeg.org/rtmpdump;branch=master \
     file://fix-racing-build-issue.patch"
 
 S = "${WORKDIR}/git"

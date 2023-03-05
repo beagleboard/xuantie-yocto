@@ -32,6 +32,10 @@ SRC_URI = " \
             file://light-beagle/light_aon_fpga.elf;md5=f447400d1df5ab59f23c738fe147260a \
             file://light-beagle/light_c906_audio.bin;md5=9124f7306370eb0d9e3f6178da1fa4fd \
             file://light-beagle/light_c906_audio.elf;md5=b4206da84148852df208088c96e4b2b3 \
+            file://light-lpi4a/light_aon_fpga.bin;md5=6486aed6f815af4118e4e4a840ec5482 \
+            file://light-lpi4a/light_aon_fpga.elf;md5=f447400d1df5ab59f23c738fe147260a \
+            file://light-lpi4a/light_c906_audio.bin;md5=384e8de853ea93cc71fef6379a630fae \
+            file://light-lpi4a/light_c906_audio.elf;md5=7ba187b91846cad61e5026bc63f1af6e \
             file://light-b-ref/light_aon_fpga.bin;md5=aaacb9a4382298f73472bb26a4c73a42 \
             file://light-b-ref/light_aon_fpga.elf;md5=501e828bb48bc6795bfd391518352fc2 \
             file://light-b-ref/light_c906_audio.bin;md5=9124f7306370eb0d9e3f6178da1fa4fd \
@@ -84,6 +88,12 @@ do_deploy () {
 		install -m 0755 ${WORKDIR}/light-beagle/light_aon_fpga.elf ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light-beagle/light_c906_audio.bin ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light-beagle/light_c906_audio.elf ${DEPLOYDIR}/
+	elif echo "${MACHINE}" | grep -q "light-lpi4a"; then
+		echo "Firmware INFO: light lpi4a  opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
+		install -m 0755 ${WORKDIR}/light-lpi4a/light_aon_fpga.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-lpi4a/light_aon_fpga.elf ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-lpi4a/light_c906_audio.bin ${DEPLOYDIR}/
+		install -m 0755 ${WORKDIR}/light-lpi4a/light_c906_audio.elf ${DEPLOYDIR}/
 	elif echo "${MACHINE}" | grep -q "light-a-ref"; then
 		echo "Firmware INFO: light-a-ref  opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
 		install -m 0755 ${WORKDIR}/light-a-ref/light_aon_fpga.bin ${DEPLOYDIR}/
@@ -96,7 +106,7 @@ do_deploy () {
 		install -m 0755 ${WORKDIR}/light-b-ref/light_aon_fpga.elf ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light-b-ref/light_c906_audio.bin ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light-b-ref/light_c906_audio.elf ${DEPLOYDIR}/
-	elif echo "${MACHINE}" | grep -q "light-ant-ref"; then
+	elif echo "${MACHINE}" | grep -Eq "light-ant-ref|light-ant-ref-release"; then
 		echo "Firmware INFO: light ant-ref  opensbi and e902 c906 firmware build MACHINE = ${MACHINE}"
 		install -m 0755 ${WORKDIR}/light-ant-ref/light_aon_fpga.bin ${DEPLOYDIR}/
 		install -m 0755 ${WORKDIR}/light-ant-ref/light_aon_fpga.elf ${DEPLOYDIR}/
@@ -151,15 +161,15 @@ do_deploy () {
     fi
 
     dd if=/dev/zero of=${DEPLOY_DIR_IMAGE}/boot.ext4 count=10000 bs=4096
-    ${COMPONENTS_DIR}/x86_64/e2fsprogs-native/sbin/mkfs.ext4 -F  ${DEPLOY_DIR_IMAGE}/boot.ext4 -d ${DEPLOY_DIR_IMAGE}/.boot
+    mkfs.ext4 -F  ${DEPLOY_DIR_IMAGE}/boot.ext4 -d ${DEPLOY_DIR_IMAGE}/.boot
 }
 
 do_deploy[nostamp] = "1"
 addtask deploy before do_build after do_install
 
-FILES_${PN} += " ${datadir} "
+FILES:${PN} += " ${datadir} "
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " debug-files "
+INSANE_SKIP:${PN} += " debug-files "
 
 

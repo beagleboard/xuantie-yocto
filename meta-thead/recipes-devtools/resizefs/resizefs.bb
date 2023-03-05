@@ -4,9 +4,9 @@ DESCRIPTION = "Resize the ext Filesystem to use full size of the partion"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://GPL-2;md5=ef841af1f51e0456cc3c472bed908d71"
 
-RDEPENDS_${PN} += "bash e2fsprogs-resize2fs"
+RDEPENDS:${PN} += "bash e2fsprogs-resize2fs"
 
-COMPATIBLE_MACHINE = "(^light*)"
+COMPATIBLE_MACHINE = "(^light*|fire-*)"
 
 SRC_URI = "file://resizefs.service \
             file://resizefs \
@@ -28,12 +28,12 @@ do_install() {
 }
 
 
-SYSTEMD_SERVICE_${PN} = "resizefs.service"
-SYSTEMD_AUTO_ENABLE_${PN} = "enable"
+SYSTEMD_SERVICE:${PN} = "resizefs.service"
+SYSTEMD_AUTO_ENABLE:${PN} = "enable"
 
-FILES_${PN} += "${systemd_system_unitdir}/resizefs.service"
-FILES_${PN} += "${sysconfdir}/init.d/resizefs"
+FILES:${PN} += "${systemd_system_unitdir}/resizefs.service"
+FILES:${PN} += "${sysconfdir}/init.d/resizefs"
 
 PACKAGES = "${PN}"
 
-#INSANE_SKIP_${PN} += " debug-files already-stripped rpaths "
+#INSANE_SKIP:${PN} += " debug-files already-stripped rpaths "

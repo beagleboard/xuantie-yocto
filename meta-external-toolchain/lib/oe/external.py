@@ -20,7 +20,7 @@ def run(d, cmd, *args):
 
         bb.debug(1, 'oe.external.run({})'.format(repr(args)))
         try:
-            output, _ = bb.process.run(args, cwd=topdir)
+            output, _ = bb.process.run(args, cwd=topdir, stderr=subprocess.STDOUT)
         except bb.process.CmdError as exc:
             bb.debug(1, 'oe.external.run: {} failed: {}'.format(subprocess.list2cmdline(args), exc))
         else:
@@ -66,7 +66,7 @@ def gather_pkg_files(d):
     import itertools
     files = []
     for pkg in d.getVar('PACKAGES').split():
-        files = itertools.chain(files, (d.getVar('EXTERNAL_FILES_{}'.format(pkg)) or d.getVar('FILES_{}'.format(pkg)) or '').split())
+        files = itertools.chain(files, (d.getVar('EXTERNAL_FILES_{}'.format(pkg)) or d.getVar('FILES:{}'.format(pkg)) or '').split())
     files = itertools.chain(files, d.getVar('EXTERNAL_EXTRA_FILES').split())
     return files
 

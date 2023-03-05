@@ -1,6 +1,6 @@
 SUMMARY = "Hard disk temperature monitor daemon"
 SECTION = "console/network"
-LICENSE = "GPLv2+"
+LICENSE = "GPL-2.0-or-later"
 
 PR = "r1"
 
@@ -10,6 +10,7 @@ SRC_URI = "${SAVANNAH_NONGNU_MIRROR}/hddtemp/hddtemp-0.3-beta15.tar.bz2 \
            file://hddtemp-0.3-beta15-autodetect-717479.patch \
            file://0001-backtrace-Replace-struct-ucontext-with-ucontext_t.patch \
            file://0001-configure.ac-Rename-to-configure.ac-and-use-external.patch \
+           file://0001-sata.c-Declare-ata_get_powermode-prototype.patch \
            file://hddtemp.db \
            file://init \
 "
@@ -21,9 +22,9 @@ LIC_FILES_CHKSUM = "file://GPL-2;md5=eb723b61539feef013de476e68b5c50a"
 
 inherit autotools gettext update-rc.d
 
-FILES_${PN} += "/usr/share/misc/hddtemp.db"
+FILES:${PN} += "/usr/share/misc/hddtemp.db"
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/usr/share/misc/
     install -m 0644 ${WORKDIR}/hddtemp.db ${D}/usr/share/misc/hddtemp.db
     install -d ${D}${sysconfdir}/init.d

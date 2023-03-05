@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b19ee058d2d5f69af45da98051d91064"
 SECTION = "Development/Libraries"
 DEPENDS = "swig-native python3 sblim-cmpi-devel"
 
-SRC_URI = "git://github.com/kkaempf/cmpi-bindings.git;protocol=http \
+SRC_URI = "git://github.com/kkaempf/cmpi-bindings.git;protocol=http;branch=master;protocol=https \
            file://cmpi-bindings-0.4.17-no-ruby-perl.patch \
            file://cmpi-bindings-0.4.17-sblim-sigsegv.patch \
            file://cmpi-bindings-0.9.5-python-lib-dir.patch \
@@ -30,13 +30,13 @@ EXTRA_OECMAKE = "-DLIB='${baselib}' \
 # ninja: error: build.ninja:282: bad $-escape (literal $ must be written as $$)
 OECMAKE_GENERATOR = "Unix Makefiles"
 
-do_configure_prepend() {
+do_configure:prepend() {
     export STAGING_LIBDIR=${STAGING_LIBDIR}
     export STAGING_INCDIR=${STAGING_INCDIR}
     export ENV_INSTALL_PATH=${PYTHON_SITEPACKAGES_DIR}
 }
 
-FILES_${PN} =+"${libdir}/cmpi/libpyCmpiProvider.so ${PYTHON_SITEPACKAGES_DIR}/*"
-FILES_${PN}-dbg =+ "${libdir}/cmpi/.debug/libpyCmpiProvider.so"
+FILES:${PN} =+"${libdir}/cmpi/libpyCmpiProvider.so ${PYTHON_SITEPACKAGES_DIR}/*"
+FILES:${PN}-dbg =+ "${libdir}/cmpi/.debug/libpyCmpiProvider.so"
 
 BBCLASSEXTEND = "native"

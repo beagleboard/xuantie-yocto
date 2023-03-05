@@ -1,4 +1,6 @@
 #
+# Copyright BitBake Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
@@ -195,6 +197,10 @@ class BufferedLogger(Logger):
                 self.target.handle(record)
         self.buffer = []
 
+class DummyLogger():
+    def flush(self):
+        return
+
 class PythonParser():
     getvars = (".getVar", ".appendVar", ".prependVar", "oe.utils.conditional")
     getvarflags = (".getVarFlag", ".appendVarFlag", ".prependVarFlag")
@@ -212,9 +218,9 @@ class PythonParser():
             funcstr = codegen.to_source(func)
             argstr = codegen.to_source(arg)
         except TypeError:
-            self.log.debug(2, 'Failed to convert function and argument to source form')
+            self.log.debug2('Failed to convert function and argument to source form')
         else:
-            self.log.debug(1, self.unhandled_message % (funcstr, argstr))
+            self.log.debug(self.unhandled_message % (funcstr, argstr))
 
     def visit_Call(self, node):
         name = self.called_node_name(node.func)
@@ -276,7 +282,9 @@ class PythonParser():
         self.contains = {}
         self.execs = set()
         self.references = set()
-        self.log = BufferedLogger('BitBake.Data.PythonParser', logging.DEBUG, log)
+        self._log = log
+        # Defer init as expensive
+        self.log = DummyLogger()
 
         self.unhandled_message = "in call of %s, argument '%s' is not a string literal"
         self.unhandled_message = "while parsing %s, %s" % (name, self.unhandled_message)
@@ -303,6 +311,9 @@ class PythonParser():
                 self.contains[i] = set(codeparsercache.pythoncacheextras[h].contains[i])
             return
 
+        # Need to parse so take the hit on the real log buffer
+        self.log = BufferedLogger('BitBake.Data.PythonParser', logging.DEBUG, self._log)
+
         # We can't add to the linenumbers for compile, we can pad to the correct number of blank lines though
         node = "\n" * int(lineno) + node
         code = compile(check_indent(str(node)), filename, "exec",
@@ -321,7 +332,11 @@ class ShellParser():
         self.funcdefs = set()
         self.allexecs = set()
         self.execs = set()
-        self.log = BufferedLogger('BitBake.Data.%s' % name, logging.DEBUG, log)
+        self._name = name
+        self._log = log
+        # Defer init as expensive
+        self.log = DummyLogger()
+
         self.unhandled_template = "unable to handle non-literal command '%s'"
         self.unhandled_template = "while parsing %s, %s" % (name, self.unhandled_template)
 
@@ -339,6 +354,9 @@ class ShellParser():
         if h in codeparsercache.shellcacheextras:
             self.execs = set(codeparsercache.shellcacheextras[h].execs)
             return self.execs
+
+        # Need to parse so take the hit on the real log buffer
+        self.log = BufferedLogger('BitBake.Data.%s' % self._name, logging.DEBUG, self._log)
 
         self._parse_shell(value)
         self.execs = set(cmd for cmd in self.allexecs if cmd not in self.funcdefs)
@@ -450,7 +468,7 @@ class ShellParser():
 
                 cmd = word[1]
                 if cmd.startswith("$"):
-                    self.log.debug(1, self.unhandled_template % cmd)
+                    self.log.debug(self.unhandled_template % cmd)
                 elif cmd == "eval":
                     command = " ".join(word for _, word in words[1:])
                     self._parse_shell(command)

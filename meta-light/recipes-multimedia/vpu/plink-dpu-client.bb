@@ -13,7 +13,7 @@ SRCREV = "${THEAD_BSP_TAG}"
 S = "${WORKDIR}/git"
 
 DEPENDS = "process-linker libdrm"
-RDEPENDS_${PN} = "process-linker libdrm"
+RDEPENDS:${PN} = "process-linker libdrm"
 
 export SYSROOT_DIR="${PKG_CONFIG_SYSROOT_DIR}"
 
@@ -34,7 +34,7 @@ do_install() {
     install -m 0755 ${S}/output/plink_dpu_client   ${D}${datadir}/dpu/test/bin
 }
 
-FILES_${PN} = "${libdir} ${datadir} ${includedir}"
+FILES:${PN} = "${libdir} ${datadir} ${includedir}"
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " debug-files staticdev "
+INSANE_SKIP:${PN} += " debug-files staticdev "

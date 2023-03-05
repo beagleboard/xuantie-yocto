@@ -11,11 +11,10 @@ DEPENDS = "openssl libpcap zlib boost curl python3 \
 
 inherit scons dos2unix siteinfo python3native systemd useradd
 
-PV = "4.4.1"
-#v4.4.1
-SRCREV = "ad91a93a5a31e175f5cbf8c69561e788bbc55ce1"
-SRC_URI = "git://github.com/mongodb/mongo.git;branch=v4.4 \
-           file://0001-kms-message-bump-libmongocrypto-to-v1.0.4.patch \
+PV = "4.4.13"
+#v4.4.13
+SRCREV = "df25c71b8674a78e17468f48bcda5285decb9246"
+SRC_URI = "git://github.com/mongodb/mongo.git;branch=v4.4;protocol=https \
            file://0001-Tell-scons-to-use-build-settings-from-environment-va.patch \
            file://0001-Use-long-long-instead-of-int64_t.patch \
            file://0001-Use-__GLIBC__-to-control-use-of-gnu_get_libc_version.patch \
@@ -27,40 +26,58 @@ SRC_URI = "git://github.com/mongodb/mongo.git;branch=v4.4 \
            file://1296.patch \
            file://0001-Fix-compilation-with-fno-common.patch \
            file://0001-stacktrace-Define-ARCH_BITS-for-x86.patch \
+           file://0001-include-needed-c-header.patch \
+           file://disable_runtime_check.patch \
+           file://ppc64_ARCH_BITS.patch \
+           file://PTHREAD_STACK_MIN.patch \
+           file://0001-add-explict-static_cast-size_t-to-maxMemoryUsageByte.patch \
+           file://0001-server-Adjust-the-cache-alignment-assumptions.patch \
+           file://0001-The-std-lib-unary-binary_function-base-classes-are-d.patch \
            "
-SRC_URI_append_libc-musl ="\
+SRC_URI:append:libc-musl ="\
            file://0001-Mark-one-of-strerror_r-implementation-glibc-specific.patch \
            file://0002-Fix-default-stack-size-to-256K.patch \
            file://0004-wiredtiger-Disable-strtouq-on-musl.patch \
            "
 
-SRC_URI_append_toolchain-clang = "\
+SRC_URI:append:toolchain-clang = "\
            file://0001-asio-Dont-use-experimental-with-clang.patch \
            "
 
-
 S = "${WORKDIR}/git"
+
+CVE_CHECK_IGNORE += "\
+    CVE-2014-8180 \
+    CVE-2017-18381 \
+    CVE-2017-2665 \
+"
 
 COMPATIBLE_HOST ?= '(x86_64|i.86|powerpc64|arm|aarch64).*-linux'
 
 PACKAGECONFIG ??= "tcmalloc system-pcre"
 # gperftools compilation fails for arm below v7 because of missing support of
 # dmb operation. So we use system-allocator instead of tcmalloc
-PACKAGECONFIG_remove_armv6 = "tcmalloc"
-PACKAGECONFIG_remove_libc-musl = "tcmalloc"
-PACKAGECONFIG_remove_riscv64 = "tcmalloc"
-PACKAGECONFIG_remove_riscv32 = "tcmalloc"
+PACKAGECONFIG:remove:armv6 = "tcmalloc"
+PACKAGECONFIG:remove:libc-musl = "tcmalloc"
+PACKAGECONFIG:remove:riscv64 = "tcmalloc"
+PACKAGECONFIG:remove:riscv32 = "tcmalloc"
 
 PACKAGECONFIG[tcmalloc] = "--use-system-tcmalloc,--allocator=system,gperftools,"
 PACKAGECONFIG[shell] = ",--js-engine=none,,"
 PACKAGECONFIG[system-pcre] = "--use-system-pcre,,libpcre,"
+
+MONGO_ARCH ?= "${HOST_ARCH}"
+MONGO_ARCH:powerpc64le = "ppc64le"
+WIREDTIGER ?= "off"
+WIREDTIGER:x86-64 = "on"
+WIREDTIGER:aarch64 = "on"
 
 EXTRA_OESCONS = "PREFIX=${prefix} \
                  DESTDIR=${D} \
                  LIBPATH=${STAGING_LIBDIR} \
                  LINKFLAGS='${LDFLAGS}' \
                  CXXFLAGS='${CXXFLAGS}' \
-                 TARGET_ARCH=${TARGET_ARCH} \
+                 TARGET_ARCH=${MONGO_ARCH} \
                  MONGO_VERSION=${PV} \
                  OBJCOPY=${OBJCOPY} \
                  --ssl \
@@ -68,52 +85,54 @@ EXTRA_OESCONS = "PREFIX=${prefix} \
                  --use-system-zlib \
                  --nostrip \
                  --endian=${@oe.utils.conditional('SITEINFO_ENDIANNESS', 'le', 'little', 'big', d)} \
-                 --wiredtiger=${@['off','on'][d.getVar('SITEINFO_BITS') != '32']} \
+                 --wiredtiger='${WIREDTIGER}' \
                  --separate-debug \
                  ${PACKAGECONFIG_CONFARGS}"
 
-
 USERADD_PACKAGES = "${PN}"
-USERADD_PARAM_${PN} = "--system --no-create-home --home-dir /var/run/${BPN} --shell /bin/false --user-group ${BPN}"
-
+USERADD_PARAM:${PN} = "--system --no-create-home --home-dir /var/run/${BPN} --shell /bin/false --user-group ${BPN}"
 
 scons_do_compile() {
-        ${STAGING_BINDIR_NATIVE}/scons ${PARALLEL_MAKE} ${EXTRA_OESCONS} install-core || \
+    ${STAGING_BINDIR_NATIVE}/scons ${PARALLEL_MAKE} ${EXTRA_OESCONS} install-core ||
         die "scons build execution failed."
 }
 
 scons_do_install() {
-        # install binaries
-        install -d ${D}${bindir}
-        for i in mongod mongos mongo
-        do
-            if [ -f ${B}/build/opt/mongo/${i} ]
-            then
-                install -m 0755 ${B}/build/opt/mongo/${i} ${D}${bindir}/${i}
-            else
-                bbnote "${i} does not exist"
-            fi
-        done
+    # install binaries
+    install -d ${D}${bindir}
+    for i in mongod mongos mongo; do
+        if [ -f ${B}/build/opt/mongo/$i ]; then
+            install -m 0755 ${B}/build/opt/mongo/$i ${D}${bindir}
+        else
+            bbnote "$i does not exist"
+        fi
+    done
 
-        # install config
-        install -d ${D}${sysconfdir}
-        install -m 0644 ${S}/debian/mongod.conf ${D}${sysconfdir}/
+    # install config
+    install -d ${D}${sysconfdir}
+    install -m 0644 ${S}/debian/mongod.conf ${D}${sysconfdir}
 
-        # install systemd service
-        install -d ${D}${systemd_system_unitdir}
-        install -m 0644 ${S}/debian/mongod.service ${D}${systemd_system_unitdir}
+    # install systemd service
+    install -d ${D}${systemd_system_unitdir}
+    install -m 0644 ${S}/debian/mongod.service ${D}${systemd_system_unitdir}
 
-        # install mongo data folder
-        install -m 755 -d ${D}${localstatedir}/lib/${BPN}
-        chown ${PN}:${PN} ${D}${localstatedir}/lib/${BPN}
+    # install mongo data folder
+    install -m 755 -d ${D}${localstatedir}/lib/${BPN}
+    chown ${PN}:${PN} ${D}${localstatedir}/lib/${BPN}
 
-        # Log files
-        install -m 755 -d ${D}${localstatedir}/log/${BPN}
-        chown ${PN}:${PN} ${D}${localstatedir}/log/${BPN}
+    # Create /var/log/mongodb in runtime.
+    if [ "${@bb.utils.filter('DISTRO_FEATURES', 'systemd', d)}" ]; then
+        install -d ${D}${nonarch_libdir}/tmpfiles.d
+        echo "d ${localstatedir}/log/${BPN} 0755 ${BPN} ${BPN} -" > ${D}${nonarch_libdir}/tmpfiles.d/${BPN}.conf
+    fi
+    if [ "${@bb.utils.filter('DISTRO_FEATURES', 'sysvinit', d)}" ]; then
+        install -d ${D}${sysconfdir}/default/volatiles
+        echo "d ${BPN} ${BPN} 0755 ${localstatedir}/log/${BPN} none" > ${D}${sysconfdir}/default/volatiles/99_${BPN}
+    fi
 }
 
-CONFFILES_${PN} = "${sysconfdir}/mongod.conf"
+CONFFILES:${PN} = "${sysconfdir}/mongod.conf"
 
-SYSTEMD_SERVICE_${PN} = "mongod.service"
+SYSTEMD_SERVICE:${PN} = "mongod.service"
 
-
+FILES:${PN} += "${nonarch_libdir}/tmpfiles.d"

@@ -52,15 +52,15 @@ fi
 
 read_args
 
-$UMOUNT $FOTA_DIR/$ROOT_NAME || true
-$UMOUNT $FOTA_DIR/$BOOT_NAME || true
-$UMOUNT $FOTA_DIR/$BOOT_NAME-cur || true
+$UMOUNT $FOTA_DIR/$ROOT_NAME > /dev/null 2>&1 || true
+$UMOUNT $FOTA_DIR/$BOOT_NAME > /dev/null 2>&1 || true
+$UMOUNT $FOTA_DIR/$BOOT_NAME-cur > /dev/null 2>&1 || true
 rm -rf $FOTA_DIR
 
 mkdir -p $FOTA_DIR
 
-tar -zxf $update_file update_$ROOT_NAME.sh -C $FOTA_DIR/ || true
-tar -zxf $update_file update_$BOOT_NAME.sh -C $FOTA_DIR/ || true
+tar -zxf $update_file update_$ROOT_NAME.sh -C $FOTA_DIR/ > /dev/null 2>&1 || true
+tar -zxf $update_file update_$BOOT_NAME.sh -C $FOTA_DIR/ > /dev/null 2>&1 || true
 
 [ -z "$ROOT_ROFSTYPE" ] && ROOT_ROFSTYPE="ext4"
 
@@ -77,7 +77,7 @@ update_root(){
 }
 
 update_boot(){
-	$UMOUNT /boot || true
+	$UMOUNT /boot > /dev/null 2>&1 || true
 	mke2fs -t $ROOT_ROFSTYPE -F $BOOT_BAK
 	mkdir -p $FOTA_DIR/$2 $FOTA_DIR/$2-cur
 	$MOUNT $BOOT_BAK $FOTA_DIR/$2
@@ -85,8 +85,8 @@ update_boot(){
 		cp -raf $FOTA_DIR/$2-cur/* $FOTA_DIR/$2/
 		$UMOUNT $FOTA_DIR/$2-cur
 	else
-		$UMOUNT $FOTA_DIR/$2-cur || true
-		$UMOUNT $FOTA_DIR/$2 || true
+		$UMOUNT $FOTA_DIR/$2-cur > /dev/null 2>&1 || true
+		$UMOUNT $FOTA_DIR/$2 > /dev/null 2>&1 || true
 		exit 1
 	fi
 	cd $FOTA_DIR/
@@ -109,15 +109,19 @@ rm -rf $FOTA_DIR
 if [ "${UPDATA_ROOT}" == "1" ]; then
 	if [ "${ROOT_PARTITION}" == "rootfsB" ]; then
 		fw_setenv root_partition rootfsA
+		fw_setenv root_partition_alt rootfsB
 	else
 		fw_setenv root_partition rootfsB
+		fw_setenv root_partition_alt rootfsA
 	fi
 fi
 if [ "${UPDATA_BOOT}" == "1" ]; then
 	if [ "${BOOT_PARTITION}" == "bootB" ]; then
 		fw_setenv boot_partition bootA
+		fw_setenv boot_partition_alt bootB
 	else
 		fw_setenv boot_partition bootB
+		fw_setenv boot_partition_alt bootA
 	fi
 fi
 rm $update_file

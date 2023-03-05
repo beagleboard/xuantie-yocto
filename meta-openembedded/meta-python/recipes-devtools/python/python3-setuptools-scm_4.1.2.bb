@@ -8,13 +8,13 @@ SRC_URI[sha256sum] = "a8994582e716ec690f33fec70cca0f85bd23ec974e3f783233e4879090
 PYPI_PACKAGE = "setuptools_scm"
 inherit pypi setuptools3
 
-RDEPENDS_${PN} = "\
+RDEPENDS:${PN} = "\
     ${PYTHON_PN}-debugger \
     ${PYTHON_PN}-json \
     ${PYTHON_PN}-py \
     ${PYTHON_PN}-setuptools \
 "
-RDEPENDS_${PN}_class-native = "\
+RDEPENDS:${PN}:class-native = "\
     ${PYTHON_PN}-setuptools-native \
 "
 

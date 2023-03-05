@@ -13,6 +13,6 @@ SRC_URI = "git://git@gitee.com/thead-yocto/gfx-examples.git;branch=master;protoc
 S = "${WORKDIR}/git"
 
 DEPENDS = "gtk+3 wayland wayland-protocols wayland-native libdrm"
-RDEPENDS_${PN} = " gtk+3-demo adwaita-icon-theme-cursors adwaita-icon-theme-symbolic-hires adwaita-icon-theme-symbolic adwaita-icon-theme-hires adwaita-icon-theme weston-examples "
+RDEPENDS:${PN} = " gtk+3-demo adwaita-icon-theme-cursors adwaita-icon-theme-symbolic-hires adwaita-icon-theme-symbolic adwaita-icon-theme-hires adwaita-icon-theme weston-examples "
 
 inherit meson pkgconfig

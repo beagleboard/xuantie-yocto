@@ -4,14 +4,17 @@ SECTION = "libs"
 LICENSE = "BSL-1.0"
 LIC_FILES_CHKSUM = "file://LICENSE_1_0.txt;md5=e4224ccaecb14d942c71d31bef20d78c"
 
-SRC_URI = "git://github.com/CPPAlliance/url.git"
+SRC_URI = "git://github.com/CPPAlliance/url.git;branch=develop;protocol=https"
 
-SRCREV = "a56ae0df6d3078319755fbaa67822b4fa7fd352b"
+SRCREV = "d740a92d38e3a8f4d5b2153f53b82f1c98e312ab"
 
 S = "${WORKDIR}/git"
-
-inherit cmake
 
 DEPENDS = "boost"
 
 BBCLASSEXTEND = "native nativesdk"
+
+do_install() {
+    mkdir -p ${D}/${includedir}
+    cp -r ${S}/include/** ${D}/${includedir}/
+}

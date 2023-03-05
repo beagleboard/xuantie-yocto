@@ -1,10 +1,12 @@
 #
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
 from oe.manifest import Manifest
 
-class RpmManifest(Manifest):
+class PkgManifest(Manifest):
     """
     Returns a dictionary object with mip and mlp packages.
     """

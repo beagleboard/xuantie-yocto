@@ -8,8 +8,10 @@ LIC_FILES_CHKSUM = "file://COPYING-LGPL2.1;md5=4fbd65380cdd255951079008b364516c"
 
 DEPENDS = " glm assimp vulkan-loader vulkan-headers wayland wayland-native wayland-protocols"
 
-SRC_URI = "git://github.com/vkmark/vkmark.git;protocol=https"
-SRCREV = "53abc4f660191051fba91ea30de084f412e7c68e"
+SRC_URI = "git://github.com/vkmark/vkmark.git;protocol=https \
+           file://0001-Fix-do-configure-error.patch \
+"
+SRCREV = "30d2cd37f0566589d90914501fc7c51a4e51f559"
 
 S = "${WORKDIR}/git"
 

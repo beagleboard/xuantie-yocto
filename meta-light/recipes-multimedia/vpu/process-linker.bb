@@ -13,7 +13,7 @@ SRCREV = "${THEAD_BSP_TAG}"
 S = "${WORKDIR}/git"
 
 DEPENDS = "video-memory"
-RDEPENDS_${PN} = "video-memory"
+RDEPENDS:${PN} = "video-memory"
 
 export SYSROOT_DIR="${PKG_CONFIG_SYSROOT_DIR}"
 
@@ -41,7 +41,7 @@ do_install() {
     install -m 0644 ${S}/inc/*                ${D}${includedir}/plink
 }
 
-FILES_${PN} = "${libdir} ${datadir} ${includedir}"
+FILES:${PN} = "${libdir} ${datadir} ${includedir}"
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " debug-files staticdev "
+INSANE_SKIP:${PN} += " debug-files staticdev "

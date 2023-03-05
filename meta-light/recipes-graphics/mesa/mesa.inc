@@ -17,14 +17,14 @@ THEAD_LINUX_TAG ?= "${AUTOREV}"
 SRCREV = "${THEAD_LINUX_TAG}"
 # SRCREV = "320f07c9e1aa42ec1d78f52825379b3f0e5fe8da"
 
-SRC_URI = "git://git@gitee.com/thead-yocto/mesa3d.git;branch=master;protocol=http"
+SRC_URI = "git://git@gitlab.alibaba-inc.com/thead-linux-private/mesa3d.git;branch=master;protocol=ssh"
 S = "${WORKDIR}/git"
 
 UPSTREAM_CHECK_GITTAGREGEX = "mesa-(?P<pver>\d+(\.\d+)+)"
 
 #because we cannot rely on the fact that all apps will use pkgconfig,
 #make eglplatform.h independent of MESA_EGL_NO_X11_HEADER
-do_install_append() {
+do_install:append() {
     if ${@bb.utils.contains('PACKAGECONFIG', 'egl', 'true', 'false', d)}; then
         if [ -f  ${D}${includedir}/EGL/eglplatform.h ]; then
             sed -i -e 's/^#elif defined(__unix__) && defined(EGL_NO_X11)$/#elif defined(__unix__) \&\& defined(EGL_NO_X11) || ${@bb.utils.contains('PACKAGECONFIG', 'x11', '0', '1', d)}/' ${D}${includedir}/EGL/eglplatform.h
@@ -32,7 +32,7 @@ do_install_append() {
     fi
 }
 
-DEPENDS = "expat makedepend-native flex-native bison-native libxml2-native zlib chrpath-replacement-native python3-mako-native gettext-native libdrm llvm"
+DEPENDS = "expat makedepend-native flex-native bison-native libxml2-native zlib chrpath-replacement-native python3-mako-native gettext-native libdrm"
 EXTRANATIVEPATH += "chrpath-native"
 PROVIDES = " \
     ${@bb.utils.contains('PACKAGECONFIG', 'opengl', 'virtual/libgl', '', d)} \
@@ -55,7 +55,7 @@ STAGING_LIBDIR[unexport] = "1"
 
 BBCLASSEXTEND = "native nativesdk"
 
-ANY_OF_DISTRO_FEATURES_class-target = "opengl vulkan"
+ANY_OF_DISTRO_FEATURES:class-target = "opengl vulkan"
 
 export YOCTO_ALTERNATE_EXE_PATH = "${STAGING_LIBDIR}/llvm${MESA_LLVM_RELEASE}/llvm-config"
 export YOCTO_ALTERNATE_MULTILIB_NAME = "${base_libdir}"
@@ -78,8 +78,8 @@ def check_buildtype(d):
 MESON_BUILDTYPE = "${@check_buildtype(d)}"
 
 PLATFORMS = "x11,wayland"
-PLATFORMS_class-native = "x11"
-PLATFORMS_class-nativesdk = "x11"
+PLATFORMS:class-native = "x11"
+PLATFORMS:class-nativesdk = "x11"
 
 EXTRA_OEMESON = " \
     -Dshared-glapi=enabled \
@@ -90,7 +90,7 @@ EXTRA_OEMESON = " \
 def strip_comma(s):
     return s.strip(',')
 
-PACKAGECONFIG_class-target ??= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl egl gles gbm dri gallium', '', d)} \
+PACKAGECONFIG:class-target ??= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl egl gles gbm dri gallium', '', d)} \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'vulkan', 'dri3 vulkan', '', d)} \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
@@ -99,8 +99,8 @@ PACKAGECONFIG_class-target ??= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl'
 # YG: need to enable opencl later.
 # ${@bb.utils.contains('DISTRO_FEATURES', 'opencl', 'opencl', '', d)}
 
-PACKAGECONFIG_class-native ?= "gbm dri egl opengl gallium x11"
-PACKAGECONFIG_class-nativesdk ?= "gbm dri egl opengl gallium x11"
+PACKAGECONFIG:class-native ?= "gbm dri egl opengl gallium x11 gles"
+PACKAGECONFIG:class-nativesdk ?= "gbm dri egl opengl gallium x11"
 
 # "gbm" requires "dri", "opengl"
 PACKAGECONFIG[gbm] = "-Dgbm=enabled,-Dgbm=disabled"
@@ -112,8 +112,8 @@ PACKAGECONFIG[xvmc] = "-Dgallium-xvmc=enabled, -Dgallium-xvmc=disabled,libxvmc"
 PACKAGECONFIG[wayland] = ",, wayland-native wayland libdrm wayland-protocols"
 
 DRIDRIVERS = "pvr"
-DRIDRIVERS_class-native = "i965"
-DRIDRIVERS_class-nativesdk = "i965"
+DRIDRIVERS:class-native = "i965"
+DRIDRIVERS:class-nativesdk = "i965"
 # "dri" requires "opengl"
 PACKAGECONFIG[dri] = "-Ddri-drivers=${@strip_comma('${DRIDRIVERS}')}, -Ddri-drivers='', xorgproto libdrm"
 PACKAGECONFIG[dri3] = "-Ddri3=enabled, -Ddri3=disabled, xorgproto libxshmfence"
@@ -133,7 +133,7 @@ PACKAGECONFIG[egl] = "-Degl=enabled, -Degl=disabled"
 
 GALLIUMDRIVERS = "swrast"
 # gallium swrast was found to crash Xorg on startup in x32 qemu
-GALLIUMDRIVERS_x86-x32 = ""
+GALLIUMDRIVERS:x86-x32 = ""
 
 PACKAGECONFIG[gallium] = "-Dgallium-drivers=${@strip_comma('${GALLIUMDRIVERS}')}, -Dgallium-drivers=''"
 PACKAGECONFIG[gallium-llvm] = "-Dllvm=enabled -Dshared-llvm=enabled, -Dllvm=disabled, llvm${MESA_LLVM_RELEASE} llvm-native \
@@ -145,16 +145,16 @@ PACKAGECONFIG[va] = "-Dgallium-va=enabled,-Dgallium-va=disabled,libva-initial"
 PACKAGECONFIG[opencl] = "-Dgallium-opencl=standalone -Dllvm=enabled -Dopencl-native=true, -Dgallium-opencl=disabled"
 
 # llvmpipe is slow if compiled with -fomit-frame-pointer (e.g. -O2)
-FULL_OPTIMIZATION_append = " -fno-omit-frame-pointer"
+FULL_OPTIMIZATION:append = " -fno-omit-frame-pointer"
 
-CFLAGS_append_armv5 = " -DMISSING_64BIT_ATOMICS"
-CFLAGS_append_armv6 = " -DMISSING_64BIT_ATOMICS"
+CFLAGS:append:armv5 = " -DMISSING_64BIT_ATOMICS"
+CFLAGS:append:armv6 = " -DMISSING_64BIT_ATOMICS"
 
 # Remove the mesa dependency on mesa-dev, as mesa is empty
-RDEPENDS_${PN}-dev = ""
+RDEPENDS:${PN}-dev = ""
 
 # Add dependency so that GLES3 header don't need to be added manually
-RDEPENDS_libgles2-mesa-dev += "libgles3-mesa-dev"
+RDEPENDS:libgles2-mesa-dev += "libgles3-mesa-dev"
 
 PACKAGES =+ "libegl-mesa libegl-mesa-dev \
              libosmesa libosmesa-dev \
@@ -169,7 +169,7 @@ PACKAGES =+ "libegl-mesa libegl-mesa-dev \
              mesa-vdpau-drivers \
             "
 
-do_install_append () {
+do_install:append () {
     # Drivers never need libtool .la files
     rm -f ${D}${libdir}/dri/*.la
     rm -f ${D}${libdir}/egl/*.la
@@ -200,28 +200,28 @@ python __anonymous() {
         fullp = mlprefix + p[1] + "-mesa"
         mlprefix = d.getVar("MLPREFIX")
         pkgs = " ".join(mlprefix + x for x in p[1:])
-        d.setVar("DEBIAN_NOAUTONAME_" + fullp, "1")
-        d.appendVar("RREPLACES_" + fullp, pkgs)
-        d.appendVar("RPROVIDES_" + fullp, pkgs)
-        d.appendVar("RCONFLICTS_" + fullp, pkgs)
+        d.setVar("DEBIAN_NOAUTONAME:" + fullp, "1")
+        d.appendVar("RREPLACES:" + fullp, pkgs)
+        d.appendVar("RPROVIDES:" + fullp, pkgs)
+        d.appendVar("RCONFLICTS:" + fullp, pkgs)
 
-        d.appendVar("RRECOMMENDS_" + fullp, " ${MLPREFIX}mesa-megadriver")
+        d.appendVar("RRECOMMENDS:" + fullp, " ${MLPREFIX}mesa-megadriver")
 
         # For -dev, the first element is both the Debian and original name
         fullp += "-dev"
         pkgs = mlprefix + p[1] + "-dev"
-        d.setVar("DEBIAN_NOAUTONAME_" + fullp, "1")
-        d.appendVar("RREPLACES_" + fullp, pkgs)
-        d.appendVar("RPROVIDES_" + fullp, pkgs)
-        d.appendVar("RCONFLICTS_" + fullp, pkgs)
+        d.setVar("DEBIAN_NOAUTONAME:" + fullp, "1")
+        d.appendVar("RREPLACES:" + fullp, pkgs)
+        d.appendVar("RPROVIDES:" + fullp, pkgs)
+        d.appendVar("RCONFLICTS:" + fullp, pkgs)
 }
 
 python mesa_populate_packages() {
     pkgs = ['mesa', 'mesa-dev', 'mesa-dbg']
     for pkg in pkgs:
-        d.setVar("RPROVIDES_%s" % pkg, pkg.replace("mesa", "mesa-dri", 1))
-        d.setVar("RCONFLICTS_%s" % pkg, pkg.replace("mesa", "mesa-dri", 1))
-        d.setVar("RREPLACES_%s" % pkg, pkg.replace("mesa", "mesa-dri", 1))
+        d.setVar("RPROVIDES:%s" % pkg, pkg.replace("mesa", "mesa-dri", 1))
+        d.setVar("RCONFLICTS:%s" % pkg, pkg.replace("mesa", "mesa-dri", 1))
+        d.setVar("RREPLACES:%s" % pkg, pkg.replace("mesa", "mesa-dri", 1))
 
     import re
     dri_drivers_root = oe.path.join(d.getVar('PKGD'), d.getVar('libdir'), "dri")
@@ -232,45 +232,45 @@ python mesa_populate_packages() {
             m = re.match(r'^(.*)_dri\.so$', p)
             if m:
                 pkg_name = " ${MLPREFIX}mesa-driver-%s" % legitimize_package_name(m.group(1))
-                d.appendVar("RPROVIDES_%s" % lib_name, pkg_name)
-                d.appendVar("RCONFLICTS_%s" % lib_name, pkg_name)
-                d.appendVar("RREPLACES_%s" % lib_name, pkg_name)
+                d.appendVar("RPROVIDES:%s" % lib_name, pkg_name)
+                d.appendVar("RCONFLICTS:%s" % lib_name, pkg_name)
+                d.appendVar("RREPLACES:%s" % lib_name, pkg_name)
 
     pipe_drivers_root = os.path.join(d.getVar('libdir'), "gallium-pipe")
     do_split_packages(d, pipe_drivers_root, r'^pipe_(.*)\.so$', 'mesa-driver-pipe-%s', 'Mesa %s pipe driver', extra_depends='')
 }
 
-PACKAGESPLITFUNCS_prepend = "mesa_populate_packages "
+PACKAGESPLITFUNCS:prepend = "mesa_populate_packages "
 
 PACKAGES_DYNAMIC += "^mesa-driver-.*"
 
-FILES_mesa-megadriver = "${libdir}/dri/* ${datadir}/drirc.d/00-mesa-defaults.conf"
-FILES_mesa-vulkan-drivers = "${libdir}/libvulkan_*.so ${datadir}/vulkan"
-FILES_${PN}-vdpau-drivers = "${libdir}/vdpau/*.so.*"
-FILES_libegl-mesa = "${libdir}/libEGL.so.*"
-FILES_libgbm = "${libdir}/libgbm.so.*"
-FILES_libgles1-mesa = "${libdir}/libGLESv1*.so.*"
-FILES_libgles2-mesa = "${libdir}/libGLESv2.so.*"
-FILES_libgl-mesa = "${libdir}/libGL.so.*"
-FILES_libglapi = "${libdir}/libglapi.so.*"
-FILES_libosmesa = "${libdir}/libOSMesa.so.*"
-FILES_libxatracker = "${libdir}/libxatracker.so.*"
-FILES_libpvr-mesa-wsi = "${libdir}/libpvr_mesa_wsi.so"
+FILES:mesa-megadriver = "${libdir}/dri/* ${datadir}/drirc.d/00-mesa-defaults.conf"
+FILES:mesa-vulkan-drivers = "${libdir}/libvulkan_*.so ${datadir}/vulkan"
+FILES:${PN}-vdpau-drivers = "${libdir}/vdpau/*.so.*"
+FILES:libegl-mesa = "${libdir}/libEGL.so.*"
+FILES:libgbm = "${libdir}/libgbm.so.*"
+FILES:libgles1-mesa = "${libdir}/libGLESv1*.so.*"
+FILES:libgles2-mesa = "${libdir}/libGLESv2.so.*"
+FILES:libgl-mesa = "${libdir}/libGL.so.*"
+FILES:libglapi = "${libdir}/libglapi.so.*"
+FILES:libosmesa = "${libdir}/libOSMesa.so.*"
+FILES:libxatracker = "${libdir}/libxatracker.so.*"
+FILES:libpvr-mesa-wsi = "${libdir}/libpvr_mesa_wsi.so"
 
-FILES_${PN}-dev = "${libdir}/pkgconfig/dri.pc ${includedir}/vulkan ${libdir}/vdpau/*.so ${datadir}/pkgconfig/wayland-drm.pc"
-FILES_libegl-mesa-dev = "${libdir}/libEGL.* ${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
-FILES_libgbm-dev = "${libdir}/libgbm.* ${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
-FILES_libgl-mesa-dev = "${libdir}/libGL.* ${includedir}/GL ${libdir}/pkgconfig/gl.pc"
-FILES_libglapi-dev = "${libdir}/libglapi.*"
-FILES_libgles1-mesa-dev = "${libdir}/libGLESv1*.* ${includedir}/GLES ${libdir}/pkgconfig/glesv1*.pc"
-FILES_libgles2-mesa-dev = "${libdir}/libGLESv2.* ${includedir}/GLES2 ${libdir}/pkgconfig/glesv2.pc"
-FILES_libgles3-mesa-dev = "${includedir}/GLES3"
-FILES_libosmesa-dev = "${libdir}/libOSMesa.* ${includedir}/GL/osmesa.h ${libdir}/pkgconfig/osmesa.pc"
-FILES_libxatracker-dev = "${libdir}/libxatracker.so ${libdir}/libxatracker.la \
+FILES:${PN}-dev = "${libdir}/pkgconfig/dri.pc ${includedir}/vulkan ${libdir}/vdpau/*.so ${datadir}/pkgconfig/wayland-drm.pc"
+FILES:libegl-mesa-dev = "${libdir}/libEGL.* ${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
+FILES:libgbm-dev = "${libdir}/libgbm.* ${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
+FILES:libgl-mesa-dev = "${libdir}/libGL.* ${includedir}/GL ${libdir}/pkgconfig/gl.pc"
+FILES:libglapi-dev = "${libdir}/libglapi.*"
+FILES:libgles1-mesa-dev = "${libdir}/libGLESv1*.* ${includedir}/GLES ${libdir}/pkgconfig/glesv1*.pc"
+FILES:libgles2-mesa-dev = "${libdir}/libGLESv2.* ${includedir}/GLES2 ${libdir}/pkgconfig/glesv2.pc"
+FILES:libgles3-mesa-dev = "${includedir}/GLES3"
+FILES:libosmesa-dev = "${libdir}/libOSMesa.* ${includedir}/GL/osmesa.h ${libdir}/pkgconfig/osmesa.pc"
+FILES:libxatracker-dev = "${libdir}/libxatracker.so ${libdir}/libxatracker.la \
                           ${includedir}/xa_tracker.h ${includedir}/xa_composite.h ${includedir}/xa_context.h \
                           ${libdir}/pkgconfig/xatracker.pc"
 
 # Fix upgrade path from mesa to mesa-megadriver
-RREPLACES_mesa-megadriver = "mesa"
-RCONFLICTS_mesa-megadriver = "mesa"
-RPROVIDES_mesa-megadriver = "mesa"
+RREPLACES:mesa-megadriver = "mesa"
+RCONFLICTS:mesa-megadriver = "mesa"
+RPROVIDES:mesa-megadriver = "mesa"

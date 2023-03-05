@@ -11,19 +11,19 @@ THEAD_LINUX_TAG ?= "${THEAD_BSP_TAG}"
 SRCREV = "${THEAD_LINUX_TAG}"
 LICENSE = "CLOSED"
 
-do_configure_append() {
+do_configure:append() {
 	mkdir ${B}/lib/
 	cp ${S}/lib/sec_library ${B}/lib/ -rf
 }
 
-do_compile_append () {
+do_compile:append () {
 	oe_runmake ${UBOOT_MACHINE}
 	oe_runmake envtools
 }
 
 SRC_URI += "file://fw_env.config"
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${sysconfdir}
     install -d ${D}${bindir}
     install -m 0644 ${WORKDIR}/fw_env.config ${D}${sysconfdir}
@@ -31,4 +31,5 @@ do_install_append() {
     ln -rsf ${D}${bindir}/fw_printenv ${D}${bindir}/fw_setenv
 }
 
-FILES_${PN} += " ${bindir} "
+FILES:${PN} += " ${bindir} "
+INSANE_SKIP:${PN} += "installed-vs-shipped"

@@ -1,4 +1,6 @@
 #
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 from abc import ABCMeta, abstractmethod
@@ -10,12 +12,6 @@ import shutil
 import os
 import subprocess
 import re
-from oe.package_manager.rpm.manifest import RpmManifest
-from oe.package_manager.ipk.manifest import OpkgManifest
-from oe.package_manager.deb.manifest import DpkgManifest
-from oe.package_manager.rpm import RpmPkgsList
-from oe.package_manager.ipk import OpkgPkgsList
-from oe.package_manager.deb import DpkgPkgsList
 
 class Rootfs(object, metaclass=ABCMeta):
     """
@@ -120,7 +116,7 @@ class Rootfs(object, metaclass=ABCMeta):
             shutil.rmtree(self.image_rootfs + '-orig')
         except:
             pass
-        os.rename(self.image_rootfs, self.image_rootfs + '-orig')
+        bb.utils.rename(self.image_rootfs, self.image_rootfs + '-orig')
 
         bb.note("  Creating debug rootfs...")
         bb.utils.mkdirhier(self.image_rootfs)
@@ -171,20 +167,14 @@ class Rootfs(object, metaclass=ABCMeta):
             shutil.rmtree(self.image_rootfs + '-dbg')
         except:
             pass
-        os.rename(self.image_rootfs, self.image_rootfs + '-dbg')
+        bb.utils.rename(self.image_rootfs, self.image_rootfs + '-dbg')
 
-        bb.note("  Restoreing original rootfs...")
-        os.rename(self.image_rootfs + '-orig', self.image_rootfs)
+        bb.note("  Restoring original rootfs...")
+        bb.utils.rename(self.image_rootfs + '-orig', self.image_rootfs)
 
     def _exec_shell_cmd(self, cmd):
-        fakerootcmd = self.d.getVar('FAKEROOT')
-        if fakerootcmd is not None:
-            exec_cmd = [fakerootcmd, cmd]
-        else:
-            exec_cmd = cmd
-
         try:
-            subprocess.check_output(exec_cmd, stderr=subprocess.STDOUT)
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             return("Command '%s' returned %d:\n%s" % (e.cmd, e.returncode, e.output))
 
@@ -195,10 +185,6 @@ class Rootfs(object, metaclass=ABCMeta):
         pre_process_cmds = self.d.getVar("ROOTFS_PREPROCESS_COMMAND")
         post_process_cmds = self.d.getVar("ROOTFS_POSTPROCESS_COMMAND")
         rootfs_post_install_cmds = self.d.getVar('ROOTFS_POSTINSTALL_COMMAND')
-
-        bb.utils.mkdirhier(self.image_rootfs)
-
-        bb.utils.mkdirhier(self.deploydir)
 
         execute_pre_post_process(self.d, pre_process_cmds)
 
@@ -223,6 +209,9 @@ class Rootfs(object, metaclass=ABCMeta):
             self.progress_reporter.next_stage()
 
         if bb.utils.contains("IMAGE_FEATURES", "read-only-rootfs",
+                         True, False, self.d) and \
+           not bb.utils.contains("IMAGE_FEATURES",
+                         "read-only-rootfs-delayed-postinsts",
                          True, False, self.d):
             delayed_postinsts = self._get_delayed_postinsts()
             if delayed_postinsts is not None:
@@ -253,13 +242,11 @@ class Rootfs(object, metaclass=ABCMeta):
 
 
     def _uninstall_unneeded(self):
-        # Remove unneeded init script symlinks
+        # Remove the run-postinsts package if no delayed postinsts are found
         delayed_postinsts = self._get_delayed_postinsts()
         if delayed_postinsts is None:
-            if os.path.exists(self.d.expand("${IMAGE_ROOTFS}${sysconfdir}/init.d/run-postinsts")):
-                self._exec_shell_cmd(["update-rc.d", "-f", "-r",
-                                      self.d.getVar('IMAGE_ROOTFS'),
-                                      "run-postinsts", "remove"])
+            if os.path.exists(self.d.expand("${IMAGE_ROOTFS}${sysconfdir}/init.d/run-postinsts")) or os.path.exists(self.d.expand("${IMAGE_ROOTFS}${systemd_system_unitdir}/run-postinsts.service")):
+                self.pm.remove(["run-postinsts"])
 
         image_rorfs = bb.utils.contains("IMAGE_FEATURES", "read-only-rootfs",
                                         True, False, self.d)
@@ -307,10 +294,20 @@ class Rootfs(object, metaclass=ABCMeta):
             self._exec_shell_cmd(['ldconfig', '-r', self.image_rootfs, '-c',
                                   'new', '-v', '-X'])
 
+        image_rorfs = bb.utils.contains("IMAGE_FEATURES", "read-only-rootfs",
+                                        True, False, self.d)
+        ldconfig_in_features = bb.utils.contains("DISTRO_FEATURES", "ldconfig",
+                                                 True, False, self.d)
+        if image_rorfs or not ldconfig_in_features:
+            ldconfig_cache_dir = os.path.join(self.image_rootfs, "var/cache/ldconfig")
+            if os.path.exists(ldconfig_cache_dir):
+                bb.note("Removing ldconfig auxiliary cache...")
+                shutil.rmtree(ldconfig_cache_dir)
+
     def _check_for_kernel_modules(self, modules_dir):
         for root, dirs, files in os.walk(modules_dir, topdown=True):
             for name in files:
-                found_ko = name.endswith(".ko")
+                found_ko = name.endswith((".ko", ".ko.gz", ".ko.xz", ".ko.zst"))
                 if found_ko:
                     return found_ko
         return False
@@ -322,17 +319,29 @@ class Rootfs(object, metaclass=ABCMeta):
             bb.note("No Kernel Modules found, not running depmod")
             return
 
-        kernel_abi_ver_file = oe.path.join(self.d.getVar('PKGDATA_DIR'), "kernel-depmod",
-                                           'kernel-abiversion')
-        if not os.path.exists(kernel_abi_ver_file):
-            bb.fatal("No kernel-abiversion file found (%s), cannot run depmod, aborting" % kernel_abi_ver_file)
+        pkgdatadir = self.d.getVar('PKGDATA_DIR')
 
-        kernel_ver = open(kernel_abi_ver_file).read().strip(' \n')
-        versioned_modules_dir = os.path.join(self.image_rootfs, modules_dir, kernel_ver)
+        # PKGDATA_DIR can include multiple kernels so we run depmod for each
+        # one of them.
+        for direntry in os.listdir(pkgdatadir):
+            match = re.match('(.*)-depmod', direntry)
+            if not match:
+                continue
+            kernel_package_name = match.group(1)
 
-        bb.utils.mkdirhier(versioned_modules_dir)
+            kernel_abi_ver_file = oe.path.join(pkgdatadir, direntry, kernel_package_name + '-abiversion')
+            if not os.path.exists(kernel_abi_ver_file):
+                bb.fatal("No kernel-abiversion file found (%s), cannot run depmod, aborting" % kernel_abi_ver_file)
 
-        self._exec_shell_cmd(['depmodwrapper', '-a', '-b', self.image_rootfs, kernel_ver])
+            with open(kernel_abi_ver_file) as f:
+                kernel_ver = f.read().strip(' \n')
+
+            versioned_modules_dir = os.path.join(self.image_rootfs, modules_dir, kernel_ver)
+
+            bb.utils.mkdirhier(versioned_modules_dir)
+
+            bb.note("Running depmodwrapper for %s ..." % versioned_modules_dir)
+            self._exec_shell_cmd(['depmodwrapper', '-a', '-b', self.image_rootfs, kernel_ver, kernel_package_name])
 
     """
     Create devfs:
@@ -360,12 +369,9 @@ class Rootfs(object, metaclass=ABCMeta):
 
 
 def get_class_for_type(imgtype):
-    from oe.package_manager.rpm.rootfs import RpmRootfs
-    from oe.package_manager.ipk.rootfs import OpkgRootfs
-    from oe.package_manager.deb.rootfs import DpkgRootfs
-    return {"rpm": RpmRootfs,
-            "ipk": OpkgRootfs,
-            "deb": DpkgRootfs}[imgtype]
+    import importlib
+    mod = importlib.import_module('oe.package_manager.' + imgtype + '.rootfs')
+    return mod.PkgRootfs
 
 def variable_depends(d, manifest_dir=None):
     img_type = d.getVar('IMAGE_PKGTYPE')
@@ -375,32 +381,27 @@ def variable_depends(d, manifest_dir=None):
 def create_rootfs(d, manifest_dir=None, progress_reporter=None, logcatcher=None):
     env_bkp = os.environ.copy()
 
-    from oe.package_manager.rpm.rootfs import RpmRootfs
-    from oe.package_manager.ipk.rootfs import OpkgRootfs
-    from oe.package_manager.deb.rootfs import DpkgRootfs
     img_type = d.getVar('IMAGE_PKGTYPE')
-    if img_type == "rpm":
-        RpmRootfs(d, manifest_dir, progress_reporter, logcatcher).create()
-    elif img_type == "ipk":
-        OpkgRootfs(d, manifest_dir, progress_reporter, logcatcher).create()
-    elif img_type == "deb":
-        DpkgRootfs(d, manifest_dir, progress_reporter, logcatcher).create()
 
+    cls = get_class_for_type(img_type)
+    cls(d, manifest_dir, progress_reporter, logcatcher).create()
     os.environ.clear()
     os.environ.update(env_bkp)
 
 
 def image_list_installed_packages(d, rootfs_dir=None):
+    # Theres no rootfs for baremetal images
+    if bb.data.inherits_class('baremetal-image', d):
+        return ""
+
     if not rootfs_dir:
         rootfs_dir = d.getVar('IMAGE_ROOTFS')
 
     img_type = d.getVar('IMAGE_PKGTYPE')
-    if img_type == "rpm":
-        return RpmPkgsList(d, rootfs_dir).list_pkgs()
-    elif img_type == "ipk":
-        return OpkgPkgsList(d, rootfs_dir, d.getVar("IPKGCONF_TARGET")).list_pkgs()
-    elif img_type == "deb":
-        return DpkgPkgsList(d, rootfs_dir).list_pkgs()
+
+    import importlib
+    cls = importlib.import_module('oe.package_manager.' + img_type)
+    return cls.PMPkgsList(d, rootfs_dir).list_pkgs()
 
 if __name__ == "__main__":
     """

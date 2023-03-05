@@ -1,6 +1,6 @@
 SUMMARY = "X.Org X cvt"
 HOMEPAGE = "https://linux.die.net/man/1/cvt"
-LICENSE = "MIT-X"
+LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5df87950af51ac2c5822094553ea1880"
 
 DEPENDS += "pixman-native xorgproto-native libxrandr-native"
@@ -14,7 +14,7 @@ SRC_URI[sha256sum] = "977420c082450dc808de301ef56af4856d653eea71519a973c3490a780
 S = "${WORKDIR}/${XORG_PN}-${PV}"
 B = "${WORKDIR}/build"
 
-inherit native pkgconfig
+inherit pkgconfig native
 
 do_configure[noexec] = "1"
 

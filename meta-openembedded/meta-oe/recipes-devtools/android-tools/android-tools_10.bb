@@ -2,7 +2,7 @@ LICENSE = "GPL-2.0"
 LIC_FILES_CHKSUM = "file://NOTICE;md5=9e0b836a755c0780e75388254f9bb2e4"
 
 DEPENDS = "libbsd libpcre zlib libcap"
-DEPENDS_append_class-target = " openssl"
+DEPENDS:append:class-target = " openssl"
 
 SRC_URI = " \
     git://git@gitee.com/thead-yocto/d1_adbd.git;branch=master;protocol=http \
@@ -19,12 +19,12 @@ B = "${WORKDIR}/${BPN}"
 inherit systemd
 
 #SYSTEMD_PACKAGES = "${PN}-adbd"
-#SYSTEMD_SERVICE_${PN}-adbd = "android-tools-adbd.service"
-SYSTEMD_SERVICE_${PN} = "android-tools-adbd.service"
+#SYSTEMD_SERVICE:${PN}-adbd = "android-tools-adbd.service"
+SYSTEMD_SERVICE:${PN} = "android-tools-adbd.service"
 
 # Find libbsd headers during native builds
-CC_append_class-native = " -I${STAGING_INCDIR}"
-CC_append_class-nativesdk = " -I${STAGING_INCDIR}"
+CC:append:class-native = " -I${STAGING_INCDIR}"
+CC:append:class-nativesdk = " -I${STAGING_INCDIR}"
 
 TOOLS = "adbd-new"
 
@@ -86,11 +86,11 @@ do_install() {
 #PACKAGES =+ "${PN}-fstools ${PN}-adbd"
 PACKAGES =+ "${PN}-fstools"
 
-RDEPENDS_${BPN} = "${BPN}-conf"
-#RDEPENDS_${PN}-adbd = "${PN}-conf"
-RDEPENDS_${PN}-fstools = "bash"
+RDEPENDS:${BPN} = "${BPN}-conf"
+#RDEPENDS:${PN}-adbd = "${PN}-conf"
+RDEPENDS:${PN}-fstools = "bash"
 
-#FILES_${PN}-adbd = "\
+#FILES:${PN}-adbd = "\
 #    ${bindir}/adbd \
 #    ${systemd_unitdir}/system/android-tools-adbd.service \
 #"

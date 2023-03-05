@@ -2,7 +2,7 @@ SUMMARY = "pam-ssh-agent-auth"
 DESCRIPTION = "A PAM module which permits authentication via ssh-agent."
 HOMEPAGE = "http://sourceforge.net/projects/pamsshagentauth/"
 SECTION = "libs"
-LICENSE = "openssl & BSD"
+LICENSE = "OpenSSL & BSD-2-Clause & BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE.OpenSSL;md5=8ab01146141ded59b75f8ba7811ed05a \
                     file://OPENSSH_LICENSE;md5=7ae09218173be1643c998a4b71027f9b \
 "
@@ -10,6 +10,7 @@ LIC_FILES_CHKSUM = "file://LICENSE.OpenSSL;md5=8ab01146141ded59b75f8ba7811ed05a 
 SRC_URI = "http://sourceforge.net/projects/pamsshagentauth/files/pam_ssh_agent_auth/v${PV}/pam_ssh_agent_auth-${PV}.tar.bz2 \
            file://0001-Adapt-to-OpenSSL-1.1.1.patch \
            file://0002-Check-against-the-correct-OPENSSL_VERSION_NUMBER.patch \
+           file://0001-configure-Include-stdio.h-for-printf.patch \
            "
 SRC_URI[md5sum] = "8dbe90ab3625e545036333e6f51ccf1d"
 SRC_URI[sha256sum] = "3c53d358d6eaed1b211239df017c27c6f9970995d14102ae67bae16d4f47a763"
@@ -21,7 +22,7 @@ REQUIRED_DISTRO_FEATURES = "pam"
 
 # This gets us ssh-agent, which we are almost certain to want.
 #
-RDEPENDS_${PN} += "openssh-misc"
+RDEPENDS:${PN} += "openssh-misc"
 
 # Kind of unfortunate to have underscores in the name.
 #
@@ -50,5 +51,5 @@ do_compile () {
 
 # This stuff is not any place looked at by default.
 #
-FILES_${PN} += "${base_libdir}/security/pam*"
-FILES_${PN}-dbg += "${base_libdir}/security/.debug"
+FILES:${PN} += "${base_libdir}/security/pam*"
+FILES:${PN}-dbg += "${base_libdir}/security/.debug"

@@ -1,0 +1,13 @@
+diff --git a/backgrounds/meson.build b/backgrounds/meson.build
+index f7f9424..5c2437a 100644
+--- a/backgrounds/meson.build
++++ b/backgrounds/meson.build
+@@ -30,7 +30,7 @@ backgrounds = [
+ install_data([adwaita_timed] + backgrounds, install_dir: backgrounddir)
+ 
+ foreach metadata : ['gnome-backgrounds.xml', 'adwaita.xml']
+-  i18n.merge_file(metadata,
++  i18n.merge_file(
+     input: configure_file(
+       input: metadata + '.in.in',
+       output: metadata + '.in',

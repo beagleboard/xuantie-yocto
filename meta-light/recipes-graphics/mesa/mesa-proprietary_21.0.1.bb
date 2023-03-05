@@ -45,4 +45,4 @@ do_install() {
 }
 do_populate_lic[noexec] = "1"
 
-FILES_${PN} += "${datadir}/mesa/wayland-drm.xml"
+FILES:${PN} += "${datadir}/mesa/wayland-drm.xml"

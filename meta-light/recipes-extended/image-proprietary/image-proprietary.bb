@@ -181,13 +181,13 @@ PRIVATE_LIBS += "\
     libov12870.so\
     libov12870.so.1.0.0"
 
-FILES_${PN} += " ${base_libdir} "
-FILES_${PN} += " ${libdir} "
-FILES_${PN} += " ${includedir} "
-FILES_${PN} += " ${datadir} "
-FILES_${PN} += " /usr/local/bin/ "
+FILES:${PN} += " ${base_libdir} "
+FILES:${PN} += " ${libdir} "
+FILES:${PN} += " ${includedir} "
+FILES:${PN} += " ${datadir} "
+FILES:${PN} += " /usr/local/bin/ "
 
 do_package_qa[noexec] = "1"
 EXCLUDE_FROM_SHLIBS = "1"
 PACKAGES = "${PN}"
-INSANE_SKIP_${PN} += " arch staticdev debug-files already-stripped dev-deps file-rdeps installed-vs-shipped "
+INSANE_SKIP:${PN} += " arch staticdev debug-files already-stripped dev-deps file-rdeps installed-vs-shipped "

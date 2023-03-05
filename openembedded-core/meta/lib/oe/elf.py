@@ -1,4 +1,6 @@
 #
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
@@ -62,6 +64,14 @@ def machine_dict(d):
                         "sparc":      ( 2,     0,    0,          False,         32),
                         "microblaze":  (189,   0,    0,          False,         32),
                         "microblazeel":(189,   0,    0,          True,          32),
+                      },
+            "linux-android" : {
+                        "aarch64" :   (183,    0,    0,          True,          64),
+                        "i686":       ( 3,     0,    0,          True,          32),
+                        "x86_64":     (62,     0,    0,          True,          64),
+                      },
+            "linux-androideabi" : {
+                        "arm" :       (40,    97,    0,          True,          32),
                       },
             "linux-musl" : { 
                         "aarch64" :   (183,    0,    0,            True,          64),

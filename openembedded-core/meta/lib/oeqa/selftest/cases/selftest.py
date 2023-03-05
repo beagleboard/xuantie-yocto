@@ -1,9 +1,10 @@
 #
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: MIT
 #
 
 import importlib
-from oeqa.utils.commands import runCmd
 import oeqa.selftest
 from oeqa.selftest.case import OESelftestTestCase
 

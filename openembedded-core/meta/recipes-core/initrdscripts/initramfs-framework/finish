@@ -12,7 +12,28 @@ finish_run() {
 			fatal "ERROR: There's no '/dev' on rootfs."
 		fi
 
+		# Unmount anything that was automounted by busybox via mdev-mount.sh.
+		# We're about to switch_root, and leaving anything mounted will prevent
+		# the next rootfs from modifying the block device.  Ignore ROOT_DISK,
+		# if it was set by setup-live, because it'll be mounted over loopback
+		# to ROOTFS_DIR.
+		local dev
+		for dev in /run/media/*; do
+			if mountpoint -q "${dev}" && [ "${dev##*/}" != "${ROOT_DISK}" ]; then
+				umount -f "${dev}" || debug "Failed to unmount ${dev}"
+			fi
+		done
+
 		info "Switching root to '$ROOTFS_DIR'..."
+
+		debug "Moving basic mounts onto rootfs"
+		for dir in `awk '/\/dev.* \/run\/media/{print $2}' /proc/mounts`; do
+			# Parse any OCT or HEX encoded chars such as spaces
+			# in the mount points to actual ASCII chars
+			dir=`printf $dir`
+			mkdir -p "${ROOTFS_DIR}/media/${dir##*/}"
+			mount -n --move "$dir" "${ROOTFS_DIR}/media/${dir##*/}"
+		done
 
 		debug "Moving /dev, /proc and /sys onto rootfs..."
 		mount --move /dev $ROOTFS_DIR/dev

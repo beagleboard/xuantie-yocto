@@ -3,4 +3,5 @@ PR = "r1"
 
 inherit packagegroup
 
-RDEPENDS_${PN} = "dropbear"
+RDEPENDS:${PN} = "dropbear"
+RRECOMMENDS:${PN} = "openssh-sftp-server"

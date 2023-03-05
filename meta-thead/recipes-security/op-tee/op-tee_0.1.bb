@@ -4,7 +4,7 @@ LICENSE = "CLOSED"
 PV = "0.1"
 PR = "r0"
 DEPENDS = "e2fsprogs-native linux-thead"
-COMPATIBLE_MACHINE = "light-*"
+COMPATIBLE_MACHINE = "(light-*|fire-*)"
 
 SRC_URI = " \
         git://git@gitee.com/thead-yocto/xuantie-secure-system-image-release.git;branch=master;protocol=http \
@@ -54,14 +54,14 @@ do_install() {
     fi
 }
 
-FILES_${PN} += " ${base_libdir} "
-FILES_${PN} += " ${libdir} "
-FILES_${PN} += " ${includedir} "
-FILES_${PN} += " ${datadir} "
-FILES_${PN} += " ${bindir} "
-FILES_${PN} += " ${sbindir} "
+FILES:${PN} += " ${base_libdir} "
+FILES:${PN} += " ${libdir} "
+FILES:${PN} += " ${includedir} "
+FILES:${PN} += " ${datadir} "
+FILES:${PN} += " ${bindir} "
+FILES:${PN} += " ${sbindir} "
 
 do_install[nostamp] = "1"
 
 PACKAGES = "${PN}"
-INSANE_SKIP_${PN} += " debug-files already-stripped rpaths "
+INSANE_SKIP:${PN} += " debug-files already-stripped rpaths "

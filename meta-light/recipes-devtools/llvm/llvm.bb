@@ -5,9 +5,9 @@ SECTION = "devel"
 LIC_FILES_CHKSUM = "file://LICENSE.TXT;md5=8a15a0759ef07f2682d2ba4b893c9afe"
   
 DEPENDS = "libffi libxml2 zlib libedit libatomic-ops ninja-native"
-DEPENDS_append_class-target = " llvm-native"
+DEPENDS:append:class-target = " llvm-native"
 
-RDEPENDS_${PN}_append_class-target = " ncurses-terminfo"
+RDEPENDS:${PN}:append:class-target = " ncurses-terminfo"
 
 MAJOR_VERSION = "10"
 MINOR_VERSION = "0"
@@ -30,8 +30,8 @@ S = "${WORKDIR}/git/llvm"
 
 inherit cmake pkgconfig
 
-PROVIDES_append_class-target = "llvm"
-PROVIDES_append_class-native = "llvm-native"
+PROVIDES:append:class-target = "llvm"
+PROVIDES:append:class-native = "llvm-native"
 
 SYSROOT_DIRS = " \
     ${includedir} \
@@ -99,7 +99,7 @@ EXTRA_OECMAKE += "-DLLVM_ENABLE_ASSERTIONS=OFF \
                   -DCMAKE_C_FLAGS_RELEASE='${CFLAGS} -DNDEBUG -g0' \
                   -G Ninja"
 
-EXTRA_OECMAKE_append_class-target = "\
+EXTRA_OECMAKE:append:class-target = "\
                   -DCMAKE_CROSSCOMPILING:BOOL=ON \
                   -DLLVM_BUILD_TOOLS:BOOL=ON \
                   -DLLVM_INSTALL_UTILS:BOOL=ON \
@@ -112,7 +112,7 @@ EXTRA_OECMAKE_append_class-target = "\
                   -DLLVM_CONFIG_PATH=${STAGING_BINDIR_NATIVE}/llvm-config \
                  "
 
-EXTRA_OECMAKE_append_class-native = "\
+EXTRA_OECMAKE:append:class-native = "\
                   -DLLVM_BUILD_TOOLS:BOOL=ON \
                   -DLLVM_INSTALL_UTILS:BOOL=ON \
                   -DLLVM_INSTALL_MODULEMAPS:BOOL=ON \
@@ -120,11 +120,11 @@ EXTRA_OECMAKE_append_class-native = "\
                   -DLLVM_INSTALL_CCTOOLS_SYMLINKS:BOOL=ON \
                  "
 
-do_compile_class-target() {
+do_compile:class-target() {
 	ninja -v ${PARALLEL_MAKE} llvm-config llvm-tblgen llvm-link llvm-as clang-tblgen
 }
 
-do_install_class-target() {
+do_install:class-target() {
 	DESTDIR=${D} ninja -v install
 
         # sed -i 's;${_IMPORT_PREFIX}/lib;${_IMPORT_PREFIX_LIBRARY};g' ${D}${libdir}/cmake/llvm/LLVMExports-release.cmake
@@ -133,15 +133,15 @@ do_install_class-target() {
         sed -i "4i set(_IMPORT_PREFIX_BIN \"\${STAGING_DIR_NATIVE}/usr/bin\")\n" ${D}${libdir}/cmake/llvm/LLVMExports-release.cmake
 }
 
-do_configure_prepend() {
+do_configure:prepend() {
         sed -i "s|sys::path::parent_path(CurrentPath))\.str()|sys::path::parent_path(sys::path::parent_path(CurrentPath))).str()|g" ${S}/tools/llvm-config/llvm-config.cpp
 }
 
-do_compile_class-native() {
+do_compile:class-native() {
         ninja -v ${PARALLEL_MAKE} llvm-config llvm-tblgen llvm-link llvm-as clang-tblgen
 }
 
-do_install_class-native() {
+do_install:class-native() {
         DESTDIR=${D} ninja -v install
         mkdir -p ${D}${bindir}/
         cp ${WORKDIR}/build/bin/clang-tblgen ${D}${bindir}/ 
@@ -149,7 +149,7 @@ do_install_class-native() {
 
 PACKAGES =+ "${PN}-libllvm"
 
-FILES_${PN}-libllvm = "\
+FILES:${PN}-libllvm = "\
     	${bindir}/clang* \
     	${bindir}/llvm* \
     	${libdir}/libLLVM*.so \
@@ -162,9 +162,9 @@ FILES_${PN}-libllvm = "\
     	${datadir}/opt-viewer \
 "
 
-FILES_${PN}-staticdev += "\
+FILES:${PN}-staticdev += "\
         ${libdir}/*.a \
  "
-INSANE_SKIP_${PN}-libllvm += "dev-so"
+INSANE_SKIP:${PN}-libllvm += "dev-so"
 
 BBCLASSEXTEND = "native"

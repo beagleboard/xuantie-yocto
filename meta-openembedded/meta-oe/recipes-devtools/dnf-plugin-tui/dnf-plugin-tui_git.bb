@@ -1,19 +1,19 @@
 SUMMARY = "A text-based user interface plugin of dnf for user to manage packages. "
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-SRC_URI = "git://github.com/ubinux/dnf-plugin-tui.git;branch=master "
-SRCREV = "6d3fab9b9559b6a483fe668e39c29126cdbb58d8"
-PV = "1.2"
+SRC_URI = "git://github.com/ubinux/dnf-plugin-tui.git;branch=master;protocol=https"
+SRCREV = "b0d80b7129f1d84cc563a4098d869e7420bcf4bc"
+PV = "1.3"
 
-SRC_URI_append_class-target = " file://oe-remote.repo.sample"
+SRC_URI:append:class-target = " file://oe-remote.repo.sample"
 
-inherit distutils3-base
+inherit setuptools3-base
 
 S = "${WORKDIR}/git"
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${datadir}/dnf
     install -m 0755 ${S}/samples/* ${D}${datadir}/dnf
     install -d ${D}${PYTHON_SITEPACKAGES_DIR}/dnf-plugins/mkimg
@@ -23,18 +23,25 @@ do_install_append() {
     done
 }
 
-do_install_append_class-target() {
+do_install:append:class-target() {
     install -d ${D}${sysconfdir}/yum.repos.d
     install -m 0644 ${WORKDIR}/oe-remote.repo.sample ${D}${sysconfdir}/yum.repos.d
 }
 
-FILES_${PN} += "${datadir}/dnf"
+do_install:append:class-nativesdk() {
+    install -d -p ${D}/${SDKPATH}/postinst-intercepts
+    cp -r ${COREBASE}/scripts/postinst-intercepts/* ${D}/${SDKPATH}/postinst-intercepts/
+    sed -i -e 's/STAGING_DIR_NATIVE/NATIVE_ROOT/g' ${D}/${SDKPATH}/postinst-intercepts/*
+}
 
-RDEPENDS_${PN} += " \
+FILES:${PN} += "${datadir}/dnf"
+FILES:${PN} += "${SDKPATH}/postinst-intercepts"
+
+RDEPENDS:${PN} += " \
     bash \
     dnf \
     libnewt-python \
 "
-
+DEPENDS:append:class-nativesdk = " file-replacement-nativesdk"
 BBCLASSEXTEND = "nativesdk"
-PNBLACKLIST[dnf-plugin-tui] ?= "${@bb.utils.contains('PACKAGE_CLASSES', 'package_rpm', '', 'does not build correctly without package_rpm in PACKAGE_CLASSES', d)}"
+SKIP_RECIPE[dnf-plugin-tui] ?= "${@bb.utils.contains('PACKAGE_CLASSES', 'package_rpm', '', 'does not build correctly without package_rpm in PACKAGE_CLASSES', d)}"

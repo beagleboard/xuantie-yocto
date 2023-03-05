@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 #
+#
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
@@ -94,8 +97,7 @@ print("Gathering file list took %.1fs" % elapsed)
 print('Processing files')
 for f in files:
     sys.stdout.write('Processing %s... ' % f)
-    _, ext = os.path.splitext(f)
-    if not ext in ['.tgz', '.siginfo', '.sig']:
+    if not f.endswith(('.tar.zst', '.siginfo', '.sig')):
         # Most likely a temp file, skip it
         print('skipping')
         continue

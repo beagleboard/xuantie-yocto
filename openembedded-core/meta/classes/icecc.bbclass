@@ -1,40 +1,45 @@
-# IceCream distributed compiling support
+#
+# Copyright OpenEmbedded Contributors
+#
+# SPDX-License-Identifier: MIT
+#
+
+# Icecream distributed compiling support
 #
 # Stages directories with symlinks from gcc/g++ to icecc, for both
 # native and cross compilers. Depending on each configure or compile,
 # the directories are added at the head of the PATH list and ICECC_CXX
-# and ICEC_CC are set.
+# and ICECC_CC are set.
 #
 # For the cross compiler, creates a tar.gz of our toolchain and sets
 # ICECC_VERSION accordingly.
 #
 # The class now handles all 3 different compile 'stages' (i.e native ,cross-kernel and target) creating the
 # necessary environment tar.gz file to be used by the remote machines.
-# It also supports meta-toolchain generation
+# It also supports meta-toolchain generation.
 #
 # If ICECC_PATH is not set in local.conf then the class will try to locate it using 'bb.utils.which'
-# but nothing is sure ;)
+# but nothing is sure. ;)
 #
 # If ICECC_ENV_EXEC is set in local.conf, then it should point to the icecc-create-env script provided by the user
-# or the default one provided by icecc-create-env.bb will be used
-# (NOTE that this is a modified version of the script need it and *not the one that comes with icecc*
+# or the default one provided by icecc-create-env_0.1.bb will be used.
+# (NOTE that this is a modified version of the needed script and *not the one that comes with icecream*).
 #
-# User can specify if specific packages or packages belonging to class should not use icecc to distribute
-# compile jobs to remote machines, but handled locally, by defining ICECC_USER_CLASS_BL and ICECC_USER_PACKAGE_BL
-# with the appropriate values in local.conf. In addition the user can force to enable icecc for packages
-# which set an empty PARALLEL_MAKE variable by defining ICECC_USER_PACKAGE_WL.
+# User can specify if specific recipes or recipes inheriting specific classes should not use icecc to distribute
+# compile jobs to remote machines, but handle them locally by defining ICECC_CLASS_DISABLE and ICECC_RECIPE_DISABLE
+# with the appropriate values in local.conf. In addition the user can force to enable icecc for recipes
+# which set an empty PARALLEL_MAKE variable by defining ICECC_RECIPE_ENABLE.
 #
 #########################################################################################
-#Error checking is kept to minimum so double check any parameters you pass to the class
-###########################################################################################
+# Error checking is kept to minimum so double check any parameters you pass to the class
+#########################################################################################
 
-BB_HASHBASE_WHITELIST += "ICECC_PARALLEL_MAKE ICECC_DISABLED ICECC_USER_PACKAGE_BL \
-    ICECC_USER_CLASS_BL ICECC_USER_PACKAGE_WL ICECC_PATH ICECC_ENV_EXEC \
+BB_BASEHASH_IGNORE_VARS += "ICECC_PARALLEL_MAKE ICECC_DISABLED ICECC_RECIPE_DISABLE \
+    ICECC_CLASS_DISABLE ICECC_RECIPE_ENABLE ICECC_PATH ICECC_ENV_EXEC \
     ICECC_CARET_WORKAROUND ICECC_CFLAGS ICECC_ENV_VERSION \
     ICECC_DEBUG ICECC_LOGFILE ICECC_REPEAT_RATE ICECC_PREFERRED_HOST \
     ICECC_CLANG_REMOTE_CPP ICECC_IGNORE_UNVERIFIED ICECC_TEST_SOCKET \
-    ICECC_ENV_DEBUG ICECC_SYSTEM_PACKAGE_BL ICECC_SYSTEM_CLASS_BL \
-    ICECC_REMOTE_CPP \
+    ICECC_ENV_DEBUG ICECC_REMOTE_CPP \
     "
 
 ICECC_ENV_EXEC ?= "${STAGING_BINDIR_NATIVE}/icecc-create-env"
@@ -45,9 +50,9 @@ HOSTTOOLS_NONFATAL += "icecc patchelf"
 # invalidate the version on the compile nodes. Changing it will cause a new
 # environment to be created.
 #
-# A useful thing to do for testing Icecream changes locally is to add a
+# A useful thing to do for testing icecream changes locally is to add a
 # subversion in local.conf:
-#  ICECC_ENV_VERSION_append = "-my-ver-1"
+#  ICECC_ENV_VERSION:append = "-my-ver-1"
 ICECC_ENV_VERSION = "2"
 
 # Default to disabling the caret workaround, If set to "1" in local.conf, icecc
@@ -66,46 +71,46 @@ CXXFLAGS += "${ICECC_CFLAGS}"
 # Debug flags when generating environments
 ICECC_ENV_DEBUG ??= ""
 
-# "system" recipe blacklist contains a list of packages that can not distribute
-# compile tasks for one reason or the other. When adding new entry, please
+# Disable recipe list contains a list of recipes that can not distribute
+# compile tasks for one reason or the other. When adding a new entry, please
 # document why (how it failed) so that we can re-evaluate it later e.g. when
-# there is new version
+# there is a new version.
 #
 # libgcc-initial - fails with CPP sanity check error if host sysroot contains
-#                  cross gcc built for another target tune/variant
+#                  cross gcc built for another target tune/variant.
 # pixman - prng_state: TLS reference mismatches non-TLS reference, possibly due to
-#          pragma omp threadprivate(prng_state)
+#          pragma omp threadprivate(prng_state).
 # systemtap - _HelperSDT.c undefs macros and uses the identifiers in macros emitting
-#             inline assembly
+#             inline assembly.
 # target-sdk-provides-dummy - ${HOST_PREFIX} is empty which triggers the "NULL
 #                             prefix" error.
-ICECC_SYSTEM_PACKAGE_BL += "\
+ICECC_RECIPE_DISABLE += "\
     libgcc-initial \
     pixman \
     systemtap \
     target-sdk-provides-dummy \
     "
 
-# "system" classes that should be blacklisted. When adding new entry, please
-# document why (how it failed) so that we can re-evaluate it later
+# Classes that should not use icecc. When adding a new entry, please
+# document why (how it failed) so that we can re-evaluate it later.
 #
-# image - Image aren't compiling, but the testing framework for images captures
+# image - images aren't compiling, but the testing framework for images captures
 #         PARALLEL_MAKE as part of the test environment. Many tests won't use
 #         icecream, but leaving the high level of parallelism can cause them to
 #         consume an unnecessary amount of resources.
-ICECC_SYSTEM_CLASS_BL += "\
+ICECC_CLASS_DISABLE += "\
     image \
     "
 
-def icecc_dep_prepend(d):
-    # INHIBIT_DEFAULT_DEPS doesn't apply to the patch command.  Whether or  not
+def get_icecc_dep(d):
+    # INHIBIT_DEFAULT_DEPS doesn't apply to the patch command. Whether or not
     # we need that built is the responsibility of the patch function / class, not
     # the application.
     if not d.getVar('INHIBIT_DEFAULT_DEPS'):
         return "icecc-create-env-native"
     return ""
 
-DEPENDS_prepend = "${@icecc_dep_prepend(d)} "
+DEPENDS:prepend = "${@get_icecc_dep(d)} "
 
 get_cross_kernel_cc[vardepsexclude] += "KERNEL_CC"
 def get_cross_kernel_cc(bb,d):
@@ -138,39 +143,31 @@ def use_icecc(bb,d):
     if icecc_is_cross_canadian(bb, d):
         return "no"
 
-    if d.getVar('INHIBIT_DEFAULT_DEPS', False):
-        # We don't have a compiler, so no icecc
-        return "no"
-
     pn = d.getVar('PN')
     bpn = d.getVar('BPN')
 
-    # Blacklist/whitelist checks are made against BPN, because there is a good
+    # Enable/disable checks are made against BPN, because there is a good
     # chance that if icecc should be skipped for a recipe, it should be skipped
     # for all the variants of that recipe. PN is still checked in case a user
     # specified a more specific recipe.
     check_pn = set([pn, bpn])
 
-    system_class_blacklist = (d.getVar('ICECC_SYSTEM_CLASS_BL') or "").split()
-    user_class_blacklist = (d.getVar('ICECC_USER_CLASS_BL') or "none").split()
-    package_class_blacklist = system_class_blacklist + user_class_blacklist
+    class_disable = (d.getVar('ICECC_CLASS_DISABLE') or "").split()
 
-    for black in package_class_blacklist:
-        if bb.data.inherits_class(black, d):
-            bb.debug(1, "%s: class %s found in blacklist, disable icecc" % (pn, black))
+    for bbclass in class_disable:
+        if bb.data.inherits_class(bbclass, d):
+            bb.debug(1, "%s: bbclass %s found in disable, disable icecc" % (pn, bbclass))
             return "no"
 
-    system_package_blacklist = (d.getVar('ICECC_SYSTEM_PACKAGE_BL') or "").split()
-    user_package_blacklist = (d.getVar('ICECC_USER_PACKAGE_BL') or "").split()
-    user_package_whitelist = (d.getVar('ICECC_USER_PACKAGE_WL') or "").split()
-    package_blacklist = system_package_blacklist + user_package_blacklist
+    disabled_recipes = (d.getVar('ICECC_RECIPE_DISABLE') or "").split()
+    enabled_recipes = (d.getVar('ICECC_RECIPE_ENABLE') or "").split()
 
-    if check_pn & set(package_blacklist):
-        bb.debug(1, "%s: found in blacklist, disable icecc" % pn)
+    if check_pn & set(disabled_recipes):
+        bb.debug(1, "%s: found in disable list, disable icecc" % pn)
         return "no"
 
-    if check_pn & set(user_package_whitelist):
-        bb.debug(1, "%s: found in whitelist, enable icecc" % pn)
+    if check_pn & set(enabled_recipes):
+        bb.debug(1, "%s: found in enabled recipes list, enable icecc" % pn)
         return "yes"
 
     if d.getVar('PARALLEL_MAKE') == "":
@@ -262,7 +259,7 @@ def icecc_get_tool_link(tool, d):
 def icecc_get_path_tool(tool, d):
     # This is a little ugly, but we want to make sure we add an actual
     # compiler to the toolchain, not ccache. Some distros (e.g. Fedora)
-    # have ccache enabled by default using symlinks PATH, meaning ccache
+    # have ccache enabled by default using symlinks in PATH, meaning ccache
     # would be found first when looking for the compiler.
     paths = os.getenv("PATH").split(':')
     while True:
@@ -313,7 +310,7 @@ wait_for_file() {
     local TIMEOUT=$2
     until [ -f "$FILE_TO_TEST" ]
     do
-        TIME_ELAPSED=`expr $TIME_ELAPSED + 1`
+        TIME_ELAPSED=$(expr $TIME_ELAPSED + 1)
         if [ $TIME_ELAPSED -gt $TIMEOUT ]
         then
             return 1
@@ -362,12 +359,12 @@ set_icecc_env() {
     ICECC_WHICH_AS="${@bb.utils.which(os.getenv('PATH'), 'as')}"
     if [ ! -x "${ICECC_CC}" -o ! -x "${ICECC_CXX}" ]
     then
-        bbwarn "Cannot use icecc: could not get ICECC_CC or ICECC_CXX"
+        bbnote "Cannot use icecc: could not get ICECC_CC or ICECC_CXX"
         return
     fi
 
-    ICE_VERSION=`$ICECC_CC -dumpversion`
-    ICECC_VERSION=`echo ${ICECC_VERSION} | sed -e "s/@VERSION@/$ICE_VERSION/g"`
+    ICE_VERSION="$($ICECC_CC -dumpversion)"
+    ICECC_VERSION=$(echo ${ICECC_VERSION} | sed -e "s/@VERSION@/$ICE_VERSION/g")
     if [ ! -x "${ICECC_ENV_EXEC}" ]
     then
         bbwarn "Cannot use icecc: invalid ICECC_ENV_EXEC"
@@ -383,7 +380,6 @@ set_icecc_env() {
     fi
     for compiler in $compilers; do
         ln -sf $ICECC_BIN $ICE_PATH/symlinks/$compiler
-        rm -f $ICE_PATH/$compiler
         cat <<-__EOF__ > $ICE_PATH/$compiler
 		#!/bin/sh -e
 		export ICECC_VERSION=$ICECC_VERSION
@@ -394,18 +390,18 @@ set_icecc_env() {
         chmod 775 $ICE_PATH/$compiler
     done
 
-    ICECC_AS="`${ICECC_CC} -print-prog-name=as`"
+    ICECC_AS="$(${ICECC_CC} -print-prog-name=as)"
     # for target recipes should return something like:
     # /OE/tmp-eglibc/sysroots/x86_64-linux/usr/libexec/arm920tt-oe-linux-gnueabi/gcc/arm-oe-linux-gnueabi/4.8.2/as
     # and just "as" for native, if it returns "as" in current directory (for whatever reason) use "as" from PATH
-    if [ "`dirname "${ICECC_AS}"`" = "." ]
+    if [ "$(dirname "${ICECC_AS}")" = "." ]
     then
         ICECC_AS="${ICECC_WHICH_AS}"
     fi
 
     if [ ! -f "${ICECC_VERSION}.done" ]
     then
-        mkdir -p "`dirname "${ICECC_VERSION}"`"
+        mkdir -p "$(dirname "${ICECC_VERSION}")"
 
         # the ICECC_VERSION generation step must be locked by a mutex
         # in order to prevent race conditions
@@ -432,28 +428,32 @@ set_icecc_env() {
     bbnote "Using icecc tarball: $ICECC_VERSION"
 }
 
-do_configure_prepend() {
+do_configure[network] = "1"
+do_configure:prepend() {
     set_icecc_env
 }
 
-do_compile_prepend() {
+do_compile[network] = "1"
+do_compile:prepend() {
     set_icecc_env
 }
 
-do_compile_kernelmodules_prepend() {
+do_compile_kernelmodules[network] = "1"
+do_compile_kernelmodules:prepend() {
     set_icecc_env
 }
 
-do_install_prepend() {
+do_install[network] = "1"
+do_install:prepend() {
     set_icecc_env
 }
 
-# IceCream is not (currently) supported in the extensible SDK
+# Icecream is not (currently) supported in the extensible SDK
 ICECC_SDK_HOST_TASK = "nativesdk-icecc-toolchain"
-ICECC_SDK_HOST_TASK_task-populate-sdk-ext = ""
+ICECC_SDK_HOST_TASK:task-populate-sdk-ext = ""
 
-# Don't include IceCream in uninative tarball
-ICECC_SDK_HOST_TASK_pn-uninative-tarball = ""
+# Don't include icecream in uninative tarball
+ICECC_SDK_HOST_TASK:pn-uninative-tarball = ""
 
 # Add the toolchain scripts to the SDK
-TOOLCHAIN_HOST_TASK_append = " ${ICECC_SDK_HOST_TASK}"
+TOOLCHAIN_HOST_TASK:append = " ${ICECC_SDK_HOST_TASK}"

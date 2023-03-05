@@ -6,7 +6,6 @@ ConditionPathIsDirectory=/sys/class/bluetooth
 [Service]
 Type=forking
 ExecStart=/etc/bt-init.sh start
-ExecStartPost=bluetoothctl power on
 
 [Install]
 WantedBy=multi-user.target

@@ -1,8 +1,8 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=30503fd321432fc713238f582193b78e"
 
-SRC_URI_append_ice = " \
+SRC_URI:append_ice = " \
              file://tftp-mmc-boot.txt \
             "
 SRC_URI = " \

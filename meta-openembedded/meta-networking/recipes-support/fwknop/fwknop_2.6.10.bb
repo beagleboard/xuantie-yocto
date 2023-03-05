@@ -1,6 +1,6 @@
 SUMMARY = "fwknop - Single Packet Authorization"
 HOMEPAGE = "http://www.cipherdyne.org/fwknop/"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
 		    "
 inherit autotools-brokensep
@@ -30,8 +30,8 @@ do_configure () {
 
 PACKAGES =+ "${PN}-client ${PN}-daemon"
 
-FILES_${PN}-client = "${bindir}/fwknop"
-FILES_${PN}-daemon = "${sbindir}/fwknopd \
+FILES:${PN}-client = "${bindir}/fwknop"
+FILES:${PN}-daemon = "${sbindir}/fwknopd \
                       ${sysconfdir}/fwknop/access.conf \
                       ${sysconfdir}/fwknop/fwknopd.conf"
 

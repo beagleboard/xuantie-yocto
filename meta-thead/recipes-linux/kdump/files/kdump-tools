@@ -9,6 +9,7 @@ LIGHTA_CRASH_SEC_DTB=/boot/light-a-val-sec.dtb
 LIGHTB_CRASH_SEC_DTB=/boot/light-b-product-sec.dtb
 LIGHT_ANT_DISCRETE_CRASH_DTB=/boot/light-ant-discrete-crash.dtb
 LIGHT_ANT_EVT_CRASH_DTB=/boot/light-ant-ref-crash.dts
+FIRE_CRASH_DTB=/boot/fire-crash.dtb
 KDUMP_DTB=/var/lib/kdump/light-crash.dtb
 SEC_DTB_BASE=/proc/device-tree/reserved-memory
 
@@ -92,6 +93,8 @@ else
 			cp "$LIGHT_ANT_DISCRETE_CRASH_DTB" "$KDUMP_DTB"
 		elif [ -f $LIGHT_ANT_EVT_CRASH_DTB ]; then
 			cp "$LIGHT_ANT_EVT_CRASH_DTB" "$KDUMP_DTB"
+		elif [ -f $FIRE_CRASH_DTB ]; then
+			cp "$FIRE_CRASH_DTB" "$KDUMP_DTB"
 		else
 			dtb_ready=0
 		fi
@@ -116,6 +119,8 @@ else
 				cp "$LIGHT_ANT_DISCRETE_CRASH_DTB" "$KDUMP_DTB"
 			elif [ -f $LIGHT_ANT_EVT_CRASH_DTB ]; then
 				cp "$LIGHT_ANT_EVT_CRASH_DTB" "$KDUMP_DTB"
+			elif [ -f $FIRE_CRASH_DTB ]; then
+				cp "$FIRE_CRASH_DTB" "$KDUMP_DTB"
 			else
 				dtb_ready=0
 			fi

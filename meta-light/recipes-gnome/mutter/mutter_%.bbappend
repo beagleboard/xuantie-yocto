@@ -1,5 +1,5 @@
-PACKAGECONFIG_remove = "opengl"
-PACKAGECONFIG_remove = "glx"
-PACKAGECONFIG_append = " glesv2"
+PACKAGECONFIG:remove = "opengl"
+PACKAGECONFIG:remove = "glx"
+PACKAGECONFIG:append = " glesv2"
 PACKAGECONFIG[glesv2] = "-Dgles2=true -Dopengl=false, -Dgles2=false -Dopengl=false, virtual/libgles2"
 PACKAGECONFIG[opengl] = "-Dopengl=true, -Dopengl=false, virtual/libgl"

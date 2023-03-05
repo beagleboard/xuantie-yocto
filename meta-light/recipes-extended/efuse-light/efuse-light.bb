@@ -38,12 +38,12 @@ do_install() {
     install -m 0755 ${S}/lib/src/efuse-api.h                              ${D}${includedir}/efuse
 }
 
-FILES_${PN} += " ${base_libdir} "
-FILES_${PN} += " ${libdir} "
-FILES_${PN} += " ${datadir} "
-FILES_${PN} += " ${includedir} "
+FILES:${PN} += " ${base_libdir} "
+FILES:${PN} += " ${libdir} "
+FILES:${PN} += " ${datadir} "
+FILES:${PN} += " ${includedir} "
 
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " debug-files already-stripped"
+INSANE_SKIP:${PN} += " debug-files already-stripped"
 

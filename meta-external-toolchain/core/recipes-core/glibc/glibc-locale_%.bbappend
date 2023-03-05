@@ -1,15 +1,15 @@
-INHIBIT_PACKAGE_DEBUG_SPLIT_tcmode-external = "1"
+INHIBIT_PACKAGE_DEBUG_SPLIT:tcmode-external = "1"
 
 # Toolchain shipped binaries weren't necessarily built ideally
-WARN_QA_remove = "ldflags textrel"
-ERROR_QA_remove = "ldflags textrel"
+WARN_QA:remove:tcmode-external = "ldflags textrel"
+ERROR_QA:remove:tcmode-external = "ldflags textrel"
 
 # Debug files may well have already been split out, or stripped out
-INSANE_SKIP_${PN} += "already-stripped"
+INSANE_SKIP:${PN}:append:tcmode-external = " already-stripped"
 
 # localedef needs libgcc & libc
 localedef_depends = ""
-localedef_depends_tcmode-external = "${MLPREFIX}libgcc:do_packagedata virtual/${MLPREFIX}libc:do_packagedata"
+localedef_depends:tcmode-external = "${MLPREFIX}libgcc:do_packagedata virtual/${MLPREFIX}libc:do_packagedata"
 
 python () {
     depends = d.getVar('localedef_depends', True)

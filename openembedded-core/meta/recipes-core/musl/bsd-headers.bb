@@ -27,5 +27,5 @@ do_install() {
 #
 
 COMPATIBLE_HOST = ".*-musl.*"
-RDEPENDS_${PN}-dev = ""
-RRECOMMENDS_${PN}-dbg = "${PN}-dev (= ${EXTENDPKGV})"
+DEV_PKG_DEPENDENCY = ""
+RRECOMMENDS:${PN}-dbg = "${PN}-dev (= ${EXTENDPKGV})"

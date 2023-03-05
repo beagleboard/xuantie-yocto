@@ -1,4 +1,8 @@
 SUMMARY = "Apache Portable Runtime (APR) library"
+
+DESCRIPTION = "Create and maintain software libraries that provide a predictable \
+and consistent interface to underlying platform-specific implementations."
+
 HOMEPAGE = "http://apr.apache.org/"
 SECTION = "libs"
 DEPENDS = "util-linux"
@@ -19,6 +23,10 @@ SRC_URI = "${APACHE_MIRROR}/apr/${BPN}-${PV}.tar.bz2 \
            file://0007-explicitly-link-libapr-against-phtread-to-make-gold-.patch \
            file://libtoolize_check.patch \
            file://0001-Add-option-to-disable-timed-dependant-tests.patch \
+           file://autoconf270.patch \
+           file://0001-add-AC_CACHE_CHECK-for-strerror_r-return-type.patch \
+           file://0001-configure-Remove-runtime-test-for-mmap-that-can-map-.patch \
+           file://CVE-2021-35940.patch \
            "
 
 SRC_URI[md5sum] = "7a14a83d664e87599ea25ff4432e48a7"
@@ -30,19 +38,32 @@ OE_BINCONFIG_EXTRA_MANGLE = " -e 's:location=source:location=installed:'"
 
 # Added to fix some issues with cmake. Refer to https://github.com/bmwcarit/meta-ros/issues/68#issuecomment-19896928
 CACHED_CONFIGUREVARS += "apr_cv_mutex_recursive=yes"
-
+# Enable largefile
+CACHED_CONFIGUREVARS += "apr_cv_use_lfs64=yes"
+# Additional AC_TRY_RUN tests which will need to be cached for cross compile
+CACHED_CONFIGUREVARS += "apr_cv_epoll=yes epoll_create1=yes apr_cv_sock_cloexec=yes \
+    ac_cv_struct_rlimit=yes \
+    ac_cv_func_sem_open=yes \
+    apr_cv_process_shared_works=yes \
+    apr_cv_mutex_robust_shared=yes \
+    "
 # Also suppress trying to use sctp.
 #
 CACHED_CONFIGUREVARS += "ac_cv_header_netinet_sctp_h=no ac_cv_header_netinet_sctp_uio_h=no"
 
-CACHED_CONFIGUREVARS += "ac_cv_sizeof_struct_iovec=yes"
+# ac_cv_sizeof_struct_iovec is deduced using runtime check which will fail during cross-compile
+CACHED_CONFIGUREVARS += "${@['ac_cv_sizeof_struct_iovec=16','ac_cv_sizeof_struct_iovec=8'][d.getVar('SITEINFO_BITS') != '32']}"
+
 CACHED_CONFIGUREVARS += "ac_cv_file__dev_zero=yes"
 
+CACHED_CONFIGUREVARS:append:libc-musl = " ac_cv_strerror_r_rc_int=yes"
 PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'ipv6', d)}"
+PACKAGECONFIG:append:libc-musl = " xsi-strerror"
 PACKAGECONFIG[ipv6] = "--enable-ipv6,--disable-ipv6,"
 PACKAGECONFIG[timed-tests] = "--enable-timed-tests,--disable-timed-tests,"
+PACKAGECONFIG[xsi-strerror] = "ac_cv_strerror_r_rc_int=yes,ac_cv_strerror_r_rc_int=no,"
 
-do_configure_prepend() {
+do_configure:prepend() {
 	# Avoid absolute paths for grep since it causes failures
 	# when using sstate between different hosts with different
 	# install paths for grep.
@@ -56,24 +77,26 @@ do_configure_prepend() {
 MULTILIB_SCRIPTS = "${PN}-dev:${bindir}/apr-1-config \
                     ${PN}-dev:${datadir}/build-1/apr_rules.mk"
 
-FILES_${PN}-dev += "${libdir}/apr.exp ${datadir}/build-1/*"
-RDEPENDS_${PN}-dev += "bash"
+FILES:${PN}-dev += "${libdir}/apr.exp ${datadir}/build-1/*"
+RDEPENDS:${PN}-dev += "bash libtool"
 
-RDEPENDS_${PN}-ptest += "libgcc"
+RDEPENDS:${PN}-ptest += "libgcc"
 
 #for some reason, build/libtool.m4 handled by buildconf still be overwritten
 #when autoconf, so handle it again.
-do_configure_append() {
+do_configure:append() {
 	sed -i -e 's/LIBTOOL=\(.*\)top_build/LIBTOOL=\1apr_build/' ${S}/build/libtool.m4
 	sed -i -e 's/LIBTOOL=\(.*\)top_build/LIBTOOL=\1apr_build/' ${S}/build/apr_rules.mk
 }
 
-do_install_append() {
+do_install:append() {
 	oe_multilib_header apr.h
 	install -d ${D}${datadir}/apr
 }
 
-do_install_append_class-target() {
+do_install:append:class-target() {
+	rm -f ${D}${datadir}/build-1/libtool
+	sed -i s,LIBTOOL=.*,LIBTOOL=libtool,g ${D}${datadir}/build-1/apr_rules.mk
 	sed -i -e 's,${DEBUG_PREFIX_MAP},,g' \
 	       -e 's,${STAGING_DIR_HOST},,g' ${D}${datadir}/build-1/apr_rules.mk
 	sed -i -e 's,${STAGING_DIR_HOST},,g' \
@@ -91,12 +114,12 @@ apr_sysroot_preprocess () {
 	cp ${S}/build/apr_rules.mk $d/
 	sed -i s,apr_builddir=.*,apr_builddir=,g $d/apr_rules.mk
 	sed -i s,apr_builders=.*,apr_builders=,g $d/apr_rules.mk
-	sed -i s,LIBTOOL=.*,LIBTOOL=${HOST_SYS}-libtool,g $d/apr_rules.mk
+	sed -i s,LIBTOOL=.*,LIBTOOL=libtool,g $d/apr_rules.mk
 	sed -i s,\$\(apr_builders\),${STAGING_DATADIR}/apr/,g $d/apr_rules.mk
 	cp ${S}/build/mkdir.sh $d/
 	cp ${S}/build/make_exports.awk $d/
 	cp ${S}/build/make_var_export.awk $d/
-	cp ${S}/${HOST_SYS}-libtool ${SYSROOT_DESTDIR}${datadir}/build-1/libtool
+	cp ${S}/libtool ${SYSROOT_DESTDIR}${datadir}/build-1/libtool
 }
 
 do_compile_ptest() {

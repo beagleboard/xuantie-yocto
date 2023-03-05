@@ -15,13 +15,13 @@ EXTERNAL_PROVIDE_PATTERN = "${FILES_${PN}}"
 # We don't copy the static binaries and headers, since they don't belong to the
 # target sysroot, but need to be in the native one (that's the place where compiler
 # and linker are looking for them).
-FILES_${PN} = "${libdir}/libgfortran.so.*"
-FILES_${PN}-dev = "\
+FILES:${PN} = "${libdir}/libgfortran.so.*"
+FILES:${PN}-dev = "\
     ${libdir}/libgfortran*.so \
     ${libdir}/libgfortran.spec \
     ${libdir}/libgfortran.la \
 "
-FILES_${PN}-staticdev = "${libdir}/libgfortran.a"
+FILES:${PN}-staticdev = "${libdir}/libgfortran.a"
 
 do_package_write_ipk[depends] += "virtual/${MLPREFIX}libc:do_packagedata"
 do_package_write_deb[depends] += "virtual/${MLPREFIX}libc:do_packagedata"

@@ -2,7 +2,7 @@ DESCRIPTION = "THead fota service for light"
 LICENSE = "CLOSED"
 
 DEPENDS = " dbus update-rc.d-native "
-RDEPENDS_${PN} += " dbus-lib glib-2.0 bluez5 zlib bash u-boot util-linux-blkid e2fsprogs-mke2fs initscripts-readonly-rootfs-overlay "
+RDEPENDS:${PN} += " dbus-lib glib-2.0 bluez5 zlib bash u-boot util-linux-blkid e2fsprogs-mke2fs initscripts-readonly-rootfs-overlay "
 
 SRC_URI = " \
             git://git@gitee.com/thead-yocto/fota.git;branch=master;protocol=http \
@@ -61,8 +61,8 @@ do_install() {
     fi
 }
 
-FILES_${PN} += " ${bindir} ${sysconfdir} ${systemd_system_unitdir} ${base_sbindir} ${base_libdir} "
+FILES:${PN} += " ${bindir} ${sysconfdir} ${systemd_system_unitdir} ${base_sbindir} ${base_libdir} "
 
 PACKAGES = "${PN}"
 
-SYSTEMD_SERVICE_${PN} = "thead_fota.service"
+SYSTEMD_SERVICE:${PN} = "thead_fota.service"

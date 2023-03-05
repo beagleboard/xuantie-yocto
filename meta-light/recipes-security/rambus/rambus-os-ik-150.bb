@@ -25,8 +25,8 @@ do_install() {
     install -d ${D}${base_libdir}/firmware
     install -d ${D}${libdir}
     install -d ${D}${libdir}/engines-1.1
-    install -d ${D}${libdir}/pkgconfig
-    install -d ${D}${includedir}/openssl
+    install -d ${D}${libdir}/pkgconfig/engines-1.1
+    install -d ${D}${includedir}/openssl/engines-1.1
     install -d ${D}${datadir}/rambus-IP-150
     install -d ${D}${datadir}/rambus-IP-150/bin
     install -d ${D}${datadir}/rambus-IP-150/ssl
@@ -36,17 +36,17 @@ do_install() {
     install -m 0755 ${S}/lib/*.so* ${D}${libdir}/engines-1.1
     install -m 0755 ${S}/lib/*.a* ${D}${libdir}/engines-1.1
     install -m 0755 ${S}/lib/engines-1.1/* ${D}${libdir}/engines-1.1
-    install -m 0755 ${S}/lib/pkgconfig/* ${D}${libdir}/pkgconfig
-    install -m 0755 ${S}/include/openssl/* ${D}${includedir}/openssl
+    install -m 0755 ${S}/lib/pkgconfig/* ${D}${libdir}/pkgconfig/engines-1.1
+    install -m 0755 ${S}/include/openssl/* ${D}${includedir}/openssl/engines-1.1
     cp ${S}/bin/* ${D}${datadir}/rambus-IP-150/bin/ -rf
     install -m 0755 ${S}/ssl/*.cnf ${D}${datadir}/rambus-IP-150/ssl
     install -m 0755 ${S}/ssl/*.dist ${D}${datadir}/rambus-IP-150/ssl
 }
 
-FILES_${PN} += " ${base_libdir} "
-FILES_${PN} += " ${libdir} "
-FILES_${PN} += " ${includedir} "
-FILES_${PN} += " ${datadir} "
+FILES:${PN} += " ${base_libdir} "
+FILES:${PN} += " ${libdir} "
+FILES:${PN} += " ${includedir} "
+FILES:${PN} += " ${datadir} "
 
 PACKAGES = "${PN}"
-INSANE_SKIP_${PN} += " staticdev debug-files already-stripped dev-deps file-rdeps "
+INSANE_SKIP:${PN} += " staticdev debug-files already-stripped dev-deps file-rdeps "

@@ -6,17 +6,19 @@ application code."
 SECTION = "bootloaders"
 DEPENDS += "flex-native bison-native"
 
-LICENSE = "GPLv2+"
-LIC_FILES_CHKSUM = "file://Licenses/README;md5=5a7450c57ffe5ae63fd732446b988025"
+LICENSE = "GPL-2.0-or-later"
+LIC_FILES_CHKSUM = "file://Licenses/README;md5=2ca5f2c35c8cc335f0a19756634782f1"
 PE = "1"
 
 # We use the revision in order to avoid having to fetch it from the
 # repo during parse
-SRCREV = "050acee119b3757fee3bd128f55d720fdd9bb890"
+SRCREV = "e092e3250270a1016c877da7bdd9384f14b1321e"
 
-SRC_URI = "git://git.denx.de/u-boot.git \
-          "
+SRC_URI = "git://source.denx.de/u-boot/u-boot.git;protocol=https;branch=master"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
+
+inherit pkgconfig
+
 do_configure[cleandirs] = "${B}"

@@ -1,4 +1,6 @@
 #
+# Copyright BitBake Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
@@ -50,10 +52,10 @@ class ActionPlugin(LayerPlugin):
             if not (args.force or notadded):
                 try:
                     self.tinfoil.run_command('parseConfiguration')
-                except bb.tinfoil.TinfoilUIException:
+                except (bb.tinfoil.TinfoilUIException, bb.BBHandledException):
                     # Restore the back up copy of bblayers.conf
                     shutil.copy2(backup, bblayers_conf)
-                    bb.fatal("Parse failure with the specified layer added")
+                    bb.fatal("Parse failure with the specified layer added, exiting.")
                 else:
                     for item in notadded:
                         sys.stderr.write("Specified layer %s is already in BBLAYERS\n" % item)

@@ -54,15 +54,9 @@ class Local(FetchMethod):
             return [path]
         filespath = d.getVar('FILESPATH')
         if filespath:
-            logger.debug(2, "Searching for %s in paths:\n    %s" % (path, "\n    ".join(filespath.split(":"))))
+            logger.debug2("Searching for %s in paths:\n    %s" % (path, "\n    ".join(filespath.split(":"))))
             newpath, hist = bb.utils.which(filespath, path, history=True)
             searched.extend(hist)
-        if not os.path.exists(newpath):
-            dldirfile = os.path.join(d.getVar("DL_DIR"), path)
-            logger.debug(2, "Defaulting to %s for %s" % (dldirfile, path))
-            bb.utils.mkdirhier(os.path.dirname(dldirfile))
-            searched.append(dldirfile)
-            return searched
         return searched
 
     def need_update(self, ud, d):
@@ -78,8 +72,6 @@ class Local(FetchMethod):
             filespath = d.getVar('FILESPATH')
             if filespath:
                 locations = filespath.split(":")
-            locations.append(d.getVar("DL_DIR"))
-
             msg = "Unable to find file " + urldata.url + " anywhere. The paths that were searched were:\n    " + "\n    ".join(locations)
             raise FetchError(msg)
 

@@ -1,10 +1,12 @@
 #
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
 from oe.manifest import Manifest
 
-class DpkgManifest(Manifest):
+class PkgManifest(Manifest):
     def create_initial(self):
         with open(self.initial_manifest, "w+") as manifest:
             manifest.write(self.initial_manifest_file_header)

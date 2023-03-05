@@ -1,1 +1,1 @@
-COMPATIBLE_MACHINE_append = "|qemuriscv32"
+COMPATIBLE_MACHINE:append = "|qemuriscv32"

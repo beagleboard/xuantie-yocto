@@ -23,5 +23,5 @@ do_install () {
 	install -m 0755 ${S}/zlibtest ${D}${bindir}/
 }
 
-FILES_${PN} = "${bindir}/helloYocto \
+FILES:${PN} = "${bindir}/helloYocto \
                ${bindir}/zlibtest "

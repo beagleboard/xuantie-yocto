@@ -13,10 +13,10 @@ S = "${WORKDIR}/brotli-${PV}"
 
 inherit setuptools3
 
-RDEPENDS_${PN} = "\
+RDEPENDS:${PN} = "\
   ${PYTHON_PN}-cffi \
 "
 
-WARN_QA_remove = "src-uri-bad"
+WARN_QA:remove = "src-uri-bad"
 
 BBCLASSEXTEND = "native nativesdk"

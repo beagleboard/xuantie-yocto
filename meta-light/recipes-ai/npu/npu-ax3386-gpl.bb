@@ -6,7 +6,7 @@ LICENSE = "CLOSED"
 COMPATIBLE_MACHINE = "light-*"
 
 DEPENDS = " linux-thead "
-RDEPENDS_${PN} += " bash "
+RDEPENDS:${PN} += " bash "
 
 SRC_URI = " \
             git://git@gitee.com/thead-yocto/npu-ax3386-kernel.git;branch=master;protocol=http \
@@ -55,8 +55,8 @@ do_install() {
     install -m 0755 ${WORKDIR}/npu-ax3386.service 				     ${D}/lib/systemd/system
 }
 
-FILES_${PN} += " ${base_libdir} "
+FILES:${PN} += " ${base_libdir} "
 
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " debug-files already-stripped dev-deps file-rdeps "
+INSANE_SKIP:${PN} += " debug-files already-stripped dev-deps file-rdeps "

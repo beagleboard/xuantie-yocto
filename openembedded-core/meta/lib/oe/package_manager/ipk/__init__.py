@@ -1,4 +1,6 @@
 #
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
@@ -59,9 +61,10 @@ class OpkgIndexer(Indexer):
                                    self.d.getVar('PACKAGE_FEED_GPG_PASSPHRASE_FILE'),
                                    armor=is_ascii_sig)
 
-class OpkgPkgsList(PkgsList):
-    def __init__(self, d, rootfs_dir, config_file):
-        super(OpkgPkgsList, self).__init__(d, rootfs_dir)
+class PMPkgsList(PkgsList):
+    def __init__(self, d, rootfs_dir):
+        super(PMPkgsList, self).__init__(d, rootfs_dir)
+        config_file = d.getVar("IPKGCONF_TARGET")
 
         self.opkg_cmd = bb.utils.which(os.getenv('PATH'), "opkg")
         self.opkg_args = "-f %s -o %s " % (config_file, rootfs_dir)
@@ -101,12 +104,14 @@ class OpkgDpkgPM(PackageManager):
         This method extracts the common parts for Opkg and Dpkg
         """
 
-        try:
-            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True).decode("utf-8")
-        except subprocess.CalledProcessError as e:
+        proc = subprocess.run(cmd, capture_output=True, encoding="utf-8", shell=True)
+        if proc.returncode:
             bb.fatal("Unable to list available packages. Command '%s' "
-                     "returned %d:\n%s" % (cmd, e.returncode, e.output.decode("utf-8")))
-        return opkg_query(output)
+                     "returned %d:\n%s" % (cmd, proc.returncode, proc.stderr))
+        elif proc.stderr:
+            bb.note("Command '%s' returned stderr: %s" % (cmd, proc.stderr))
+
+        return opkg_query(proc.stdout)
 
     def extract(self, pkg, pkg_info):
         """
@@ -171,12 +176,7 @@ class OpkgPM(OpkgDpkgPM):
         if prepare_index:
             create_packages_dir(self.d, self.deploy_dir, d.getVar("DEPLOY_DIR_IPK"), "package_write_ipk", filterbydependencies)
 
-        opkg_lib_dir = self.d.getVar('OPKGLIBDIR')
-        if opkg_lib_dir[0] == "/":
-            opkg_lib_dir = opkg_lib_dir[1:]
-
-        self.opkg_dir = os.path.join(target_rootfs, opkg_lib_dir, "opkg")
-
+        self.opkg_dir = oe.path.join(target_rootfs, self.d.getVar('OPKGLIBDIR'), "opkg")
         bb.utils.mkdirhier(self.opkg_dir)
 
         self.saved_opkg_dir = self.d.expand('${T}/saved/%s' % self.task_name)
@@ -217,7 +217,7 @@ class OpkgPM(OpkgDpkgPM):
 
                     tmp_sf.write(status)
 
-        os.rename(status_file + ".tmp", status_file)
+        bb.utils.rename(status_file + ".tmp", status_file)
 
     def _create_custom_config(self):
         bb.note("Building from feeds activated!")
@@ -341,7 +341,7 @@ class OpkgPM(OpkgDpkgPM):
 
         self.deploy_dir_unlock()
 
-    def install(self, pkgs, attempt_only=False):
+    def install(self, pkgs, attempt_only=False, hard_depends_only=False):
         if not pkgs:
             return
 
@@ -350,6 +350,8 @@ class OpkgPM(OpkgDpkgPM):
             cmd += " --add-exclude %s" % exclude
         for bad_recommendation in (self.d.getVar("BAD_RECOMMENDATIONS") or "").split():
             cmd += " --add-ignore-recommends %s" % bad_recommendation
+        if hard_depends_only:
+            cmd += " --no-install-recommends"
         cmd += " install "
         cmd += " ".join(pkgs)
 
@@ -407,16 +409,16 @@ class OpkgPM(OpkgDpkgPM):
             bb.fatal(result)
 
     def remove_packaging_data(self):
+        cachedir = oe.path.join(self.target_rootfs, self.d.getVar("localstatedir"), "cache", "opkg")
         bb.utils.remove(self.opkg_dir, True)
-        # create the directory back, it's needed by PM lock
-        bb.utils.mkdirhier(self.opkg_dir)
+        bb.utils.remove(cachedir, True)
 
     def remove_lists(self):
         if not self.from_feeds:
             bb.utils.remove(os.path.join(self.opkg_dir, "lists"), True)
 
     def list_installed(self):
-        return OpkgPkgsList(self.d, self.target_rootfs, self.config_file).list_pkgs()
+        return PMPkgsList(self.d, self.target_rootfs).list_pkgs()
 
     def dummy_install(self, pkgs):
         """
@@ -447,15 +449,16 @@ class OpkgPM(OpkgDpkgPM):
         cmd = "%s %s --noaction install %s " % (self.opkg_cmd,
                                                 opkg_args,
                                                 ' '.join(pkgs))
-        try:
-            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
-        except subprocess.CalledProcessError as e:
+        proc = subprocess.run(cmd, capture_output=True, encoding="utf-8", shell=True)
+        if proc.returncode:
             bb.fatal("Unable to dummy install packages. Command '%s' "
-                     "returned %d:\n%s" % (cmd, e.returncode, e.output.decode("utf-8")))
+                     "returned %d:\n%s" % (cmd, proc.returncode, proc.stderr))
+        elif proc.stderr:
+            bb.note("Command '%s' returned stderr: %s" % (cmd, proc.stderr))
 
         bb.utils.remove(temp_rootfs, True)
 
-        return output
+        return proc.stdout
 
     def backup_packaging_data(self):
         # Save the opkglib for increment ipk image generation

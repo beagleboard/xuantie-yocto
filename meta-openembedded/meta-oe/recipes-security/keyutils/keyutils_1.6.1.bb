@@ -7,7 +7,7 @@ DESCRIPTION = "\
 HOMEPAGE = "http://people.redhat.com/dhowells/keyutils"
 SECTION = "base"
 
-LICENSE = "LGPLv2.1+ & GPLv2.0+"
+LICENSE = "LGPL-2.1-or-later & GPL-2.0-or-later"
 
 LIC_FILES_CHKSUM = "file://LICENCE.GPL;md5=5f6e72824f5da505c1f4a7197f004b45 \
                     file://LICENCE.LGPL;md5=7d1cacaa3ea752b72ea5e525df54a21f"
@@ -31,6 +31,9 @@ EXTRA_OEMAKE = "'CFLAGS=${CFLAGS} -Wall' \
     LIBDIR=${libdir} \
     USRLIBDIR=${libdir} \
     INCLUDEDIR=${includedir} \
+    ETCDIR=${sysconfdir} \
+    SHAREDIR=${datadir}/keyutils \
+    MANDIR=${datadir}/man \
     BUILDFOR=${SITEINFO_BITS}-bit \
     NO_GLIBC_KEYERR=1 \
     "
@@ -40,26 +43,14 @@ do_install () {
     oe_runmake DESTDIR=${D} install
 }
 
-do_install_append_class-nativesdk() {
-    install -d ${D}${datadir}
-    src_dir="${D}${target_datadir}"
-    mv $src_dir/* ${D}${datadir}
-    par_dir=`dirname $src_dir`
-    rmdir $src_dir $par_dir
-
-    install -d ${D}${sysconfdir}
-    mv ${D}/etc/* ${D}${sysconfdir}/
-    rmdir ${D}/etc
-}
-
 do_install_ptest () {
     cp -r ${S}/tests ${D}${PTEST_PATH}/
     sed -i -e 's/OSDIST=Unknown/OSDIST=${DISTRO}/' ${D}${PTEST_PATH}/tests/prepare.inc.sh
 }
 
 
-RDEPENDS_${PN}-ptest += "lsb-release"
-RDEPENDS_${PN}-ptest_append_libc-glibc = " glibc-utils"
-RDEPENDS_${PN}-ptest_append_libc-musl = " musl-utils"
+RDEPENDS:${PN}-ptest += "lsb-release"
+RDEPENDS:${PN}-ptest:append:libc-glibc = " glibc-utils"
+RDEPENDS:${PN}-ptest:append:libc-musl = " musl-utils"
 
 BBCLASSEXTEND = "native nativesdk"

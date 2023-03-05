@@ -5,7 +5,7 @@ supports all pointer devices and settings provided by this library. Similar \
 software include gpm and jamd."
 HOMEPAGE = "https://salsa.debian.org/consolation-team/consolation"
 SECTION = "console/utils"
-LICENSE = "GPL-2.0+"
+LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=73ca626e1d9048abfc7d599370650827"
 
 DEPENDS = " \
@@ -14,16 +14,16 @@ DEPENDS = " \
     udev \
 "
 
-SRC_URI = "git://salsa.debian.org/consolation-team/consolation.git"
+SRC_URI = "git://salsa.debian.org/consolation-team/consolation.git;branch=master"
 SRCREV = "4581eaece6e49fa2b687efbdbe23b2de452e7902"
 
 S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig systemd
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 644 ${B}/consolation.service ${D}${systemd_system_unitdir}
 }
 
-SYSTEMD_SERVICE_${PN} = "consolation.service"
+SYSTEMD_SERVICE:${PN} = "consolation.service"

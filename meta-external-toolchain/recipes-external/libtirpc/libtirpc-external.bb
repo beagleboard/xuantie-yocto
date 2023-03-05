@@ -9,17 +9,17 @@ PROVIDES = "virtual/librpc"
 
 inherit external-toolchain
 
-FILES_${PN} = "\
+FILES:${PN} = "\
     ${sysconfdir}/bindresvport.blacklist \
     ${sysconfdir}/netconfig \
     ${libdir}/libtirpc${SOLIBS} \
 "
-FILES_${PN}-dev = "\
+FILES:${PN}-dev = "\
     ${libdir}/libtirpc${SOLIBSDEV} \
     ${includedir}/tirpc \
     ${libdir}/pkgconfig/libtirpc.pc \
 "
-FILES_${PN}-staticdev = "${libdir}/libtirpc.a"
+FILES:${PN}-staticdev = "${libdir}/libtirpc.a"
 
 libc_rdep = "${@'${PREFERRED_PROVIDER_virtual/libc}' if '${PREFERRED_PROVIDER_virtual/libc}' else '${TCLIBC}'}"
-RDEPENDS_${PN} += "${libc_rdep}"
+RDEPENDS:${PN} += "${libc_rdep}"

@@ -1,9 +1,9 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/apt:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/apt:"
 
-SRC_URI_append_ice = " \
+SRC_URI:append_ice = " \
             file://sources.list  \
            "
-do_install_append_ice() {
+do_install:append_ice() {
     if [ -f "${WORKDIR}/sources.list" ]; then
         cp -rf ${WORKDIR}/sources.list ${D}/etc/apt/ 
     fi

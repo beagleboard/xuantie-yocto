@@ -3,13 +3,13 @@ SUMMARY = "Simple powerful testing with python"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=81eb9f71d006c6b268cf4388e3c98f7b"
 
-SRC_URI_append = " file://0001-setup.py-remove-the-setup_requires-for-setuptools-scm.patch "
+SRC_URI:append = " file://0001-setup.py-remove-the-setup_requires-for-setuptools-scm.patch "
 
 SRC_URI[sha256sum] = "9d1edf9e7d0b84d72ea3dbcdfd22b35fb543a5e8f2a60092dd578936bf63d7f9"
 
 inherit update-alternatives pypi setuptools3
 
-RDEPENDS_${PN}_class-target += " \
+RDEPENDS:${PN}:class-target += " \
     ${PYTHON_PN}-atomicwrites \
     ${PYTHON_PN}-attrs \
     ${PYTHON_PN}-debugger \
@@ -28,7 +28,7 @@ RDEPENDS_${PN}_class-target += " \
     ${PYTHON_PN}-wcwidth \
 "
 
-ALTERNATIVE_${PN} += "py.test pytest"
+ALTERNATIVE:${PN} += "py.test pytest"
 
 NATIVE_LINK_NAME[pytest] = "${bindir}/pytest"
 ALTERNATIVE_TARGET[pytest] = "${bindir}/pytest"

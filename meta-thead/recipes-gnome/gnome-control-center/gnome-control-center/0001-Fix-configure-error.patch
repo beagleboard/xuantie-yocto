@@ -1,0 +1,440 @@
+diff --git a/.pc/0001-Add-meson-option-to-pass-sysroot.patch/panels/background/meson.build b/.pc/0001-Add-meson-option-to-pass-sysroot.patch/panels/background/meson.build
+index e9fa398..5297731 100644
+--- a/.pc/0001-Add-meson-option-to-pass-sysroot.patch/panels/background/meson.build
++++ b/.pc/0001-Add-meson-option-to-pass-sysroot.patch/panels/background/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/applications/meson.build b/panels/applications/meson.build
+index 4e324c3..8eff323 100644
+--- a/panels/applications/meson.build
++++ b/panels/applications/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-       desktop,
+          type : 'desktop',
+         input : desktop_in,
+        output : desktop,
+diff --git a/panels/background/meson.build b/panels/background/meson.build
+index 5a2efc0..0f8e742 100644
+--- a/panels/background/meson.build
++++ b/panels/background/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/bluetooth/meson.build b/panels/bluetooth/meson.build
+index c3fce74..4bed812 100644
+--- a/panels/bluetooth/meson.build
++++ b/panels/bluetooth/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/camera/meson.build b/panels/camera/meson.build
+index 4f26118..bf2e727 100644
+--- a/panels/camera/meson.build
++++ b/panels/camera/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/color/meson.build b/panels/color/meson.build
+index d21c54a..76e1c43 100644
+--- a/panels/color/meson.build
++++ b/panels/color/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/datetime/meson.build b/panels/datetime/meson.build
+index ec735f3..b491b9a 100644
+--- a/panels/datetime/meson.build
++++ b/panels/datetime/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+@@ -20,7 +19,6 @@ i18n.merge_file(
+ polkit = 'org.gnome.controlcenter.@0@.policy'.format(cappletname)
+ 
+ i18n.merge_file(
+-  polkit,
+   input: polkit + '.in',
+   output: polkit,
+   po_dir: po_dir,
+diff --git a/panels/default-apps/meson.build b/panels/default-apps/meson.build
+index 6855006..2a24321 100644
+--- a/panels/default-apps/meson.build
++++ b/panels/default-apps/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/diagnostics/meson.build b/panels/diagnostics/meson.build
+index fac9b4c..2f25c21 100644
+--- a/panels/diagnostics/meson.build
++++ b/panels/diagnostics/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/display/meson.build b/panels/display/meson.build
+index 12f35cc..57bdfcf 100644
+--- a/panels/display/meson.build
++++ b/panels/display/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/info-overview/meson.build b/panels/info-overview/meson.build
+index abbaf32..c85560f 100644
+--- a/panels/info-overview/meson.build
++++ b/panels/info-overview/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/keyboard/meson.build b/panels/keyboard/meson.build
+index 2f61ed0..6c0ac1a 100644
+--- a/panels/keyboard/meson.build
++++ b/panels/keyboard/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+@@ -45,7 +44,6 @@ xml_files = [
+ 
+ foreach file: xml_files
+   i18n.merge_file(
+-    file,
+     input: file + '.in',
+     output: file,
+     po_dir: po_dir,
+diff --git a/panels/location/meson.build b/panels/location/meson.build
+index bfc6e82..f4c835d 100644
+--- a/panels/location/meson.build
++++ b/panels/location/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/lock/meson.build b/panels/lock/meson.build
+index 0661af4..18dbfb2 100644
+--- a/panels/lock/meson.build
++++ b/panels/lock/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/microphone/meson.build b/panels/microphone/meson.build
+index e0847a4..bc7f73a 100644
+--- a/panels/microphone/meson.build
++++ b/panels/microphone/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/mouse/meson.build b/panels/mouse/meson.build
+index 357aaae..7b46097 100644
+--- a/panels/mouse/meson.build
++++ b/panels/mouse/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/network/meson.build b/panels/network/meson.build
+index 439b2b8..e644a72 100644
+--- a/panels/network/meson.build
++++ b/panels/network/meson.build
+@@ -25,7 +25,6 @@ foreach name: panel_names
+   )
+ 
+   i18n.merge_file(
+-    desktop,
+     type: 'desktop',
+     input: desktop_in,
+     output: desktop,
+diff --git a/panels/notifications/meson.build b/panels/notifications/meson.build
+index df70261..1b04b24 100644
+--- a/panels/notifications/meson.build
++++ b/panels/notifications/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/online-accounts/meson.build b/panels/online-accounts/meson.build
+index 82f1d56..6870977 100644
+--- a/panels/online-accounts/meson.build
++++ b/panels/online-accounts/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/power/meson.build b/panels/power/meson.build
+index 737d868..113cdf6 100644
+--- a/panels/power/meson.build
++++ b/panels/power/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/printers/meson.build b/panels/printers/meson.build
+index f887625..70ec56b 100644
+--- a/panels/printers/meson.build
++++ b/panels/printers/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/region/meson.build b/panels/region/meson.build
+index e709eb6..d84426d 100644
+--- a/panels/region/meson.build
++++ b/panels/region/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/removable-media/meson.build b/panels/removable-media/meson.build
+index b51799a..fc07c48 100644
+--- a/panels/removable-media/meson.build
++++ b/panels/removable-media/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/search/meson.build b/panels/search/meson.build
+index 39b076b..a4dd79d 100644
+--- a/panels/search/meson.build
++++ b/panels/search/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/sharing/meson.build b/panels/sharing/meson.build
+index 1ad1878..935f426 100644
+--- a/panels/sharing/meson.build
++++ b/panels/sharing/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+@@ -29,7 +28,6 @@ polkit_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  polkit,
+   input: polkit_in,
+   output: polkit,
+   po_dir: po_dir,
+diff --git a/panels/sound/meson.build b/panels/sound/meson.build
+index fa0f128..18f75dd 100644
+--- a/panels/sound/meson.build
++++ b/panels/sound/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/thunderbolt/meson.build b/panels/thunderbolt/meson.build
+index 2b1a03a..d7e109d 100644
+--- a/panels/thunderbolt/meson.build
++++ b/panels/thunderbolt/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/universal-access/meson.build b/panels/universal-access/meson.build
+index fbc2581..ca43126 100644
+--- a/panels/universal-access/meson.build
++++ b/panels/universal-access/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/usage/meson.build b/panels/usage/meson.build
+index 74f720e..6047ce0 100644
+--- a/panels/usage/meson.build
++++ b/panels/usage/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+diff --git a/panels/user-accounts/meson.build b/panels/user-accounts/meson.build
+index b1c322a..a545bb7 100644
+--- a/panels/user-accounts/meson.build
++++ b/panels/user-accounts/meson.build
+@@ -8,7 +8,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  desktop,
+   type: 'desktop',
+   input: desktop_in,
+   output: desktop,
+@@ -85,7 +84,6 @@ meson.add_install_script('sh', '-c',
+ polkit = 'org.gnome.controlcenter.@0@.policy'.format(cappletname)
+ 
+ i18n.merge_file(
+-  polkit,
+   input: polkit + '.in',
+   output: polkit,
+   po_dir: po_dir,
+diff --git a/panels/wacom/meson.build b/panels/wacom/meson.build
+index 5f62220..88a9137 100644
+--- a/panels/wacom/meson.build
++++ b/panels/wacom/meson.build
+@@ -30,7 +30,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-       desktop,
+          type : 'desktop',
+         input : desktop_in,
+        output : desktop,
+diff --git a/shell/appdata/meson.build b/shell/appdata/meson.build
+index 3b36171..fdb8279 100644
+--- a/shell/appdata/meson.build
++++ b/shell/appdata/meson.build
+@@ -1,7 +1,6 @@
+ appdata = 'gnome-control-center.appdata.xml'
+ 
+ i18n.merge_file(
+-  appdata,
+   input: appdata + '.in',
+   output: appdata,
+   po_dir: po_dir,
+diff --git a/shell/meson.build b/shell/meson.build
+index 89b9659..4667804 100644
+--- a/shell/meson.build
++++ b/shell/meson.build
+@@ -23,7 +23,6 @@ desktop_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-       desktop,
+          type : 'desktop',
+         input : desktop_in,
+        output : desktop,
+diff --git a/tests/interactive-panels/applications/meson.build b/tests/interactive-panels/applications/meson.build
+index 2657f95..82eed4d 100644
+--- a/tests/interactive-panels/applications/meson.build
++++ b/tests/interactive-panels/applications/meson.build
+@@ -12,7 +12,6 @@ desktop_files = [
+ 
+ foreach desktop_file : desktop_files
+   i18n.merge_file(
+-              desktop,
+                 type : 'desktop',
+                input : 'gtp-@0@.desktop.in'.format(desktop_file),
+               output : 'gnome-@0@-panel.desktop'.format(desktop_file),

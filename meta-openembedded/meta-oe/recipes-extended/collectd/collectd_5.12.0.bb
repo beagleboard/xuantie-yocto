@@ -1,6 +1,6 @@
 SUMMARY = "Collects and summarises system performance statistics"
 DESCRIPTION = "collectd is a daemon which collects system performance statistics periodically and provides mechanisms to store the values in a variety of ways, for example in RRD files."
-LICENSE = "GPLv2 & MIT"
+LICENSE = "GPL-2.0-only & MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1bd21f19f7f0c61a7be8ecacb0e28854"
 
 DEPENDS = "rrdtool curl libpcap libxml2 yajl libgcrypt libtool lvm2"
@@ -20,7 +20,7 @@ SRC_URI[sha256sum] = "5bae043042c19c31f77eb8464e56a01a5454e0b39fa07cf7ad0f1bfc9c
 
 inherit autotools python3native update-rc.d pkgconfig systemd
 
-SYSTEMD_SERVICE_${PN} = "collectd.service"
+SYSTEMD_SERVICE:${PN} = "collectd.service"
 
 # Floatingpoint layout, architecture dependent
 # 'nothing', 'endianflip' or 'intswap'
@@ -51,6 +51,7 @@ PACKAGECONFIG[libatasmart] = "--with-libatasmart,--without-libatasmart,libatasma
 PACKAGECONFIG[ldap] = "--enable-openldap --with-libldap,--disable-openldap --without-libldap, openldap"
 PACKAGECONFIG[rrdtool] = "--enable-rrdtool,--disable-rrdtool,rrdtool"
 PACKAGECONFIG[rrdcached] = "--enable-rrdcached,--disable-rrdcached,rrdcached"
+PACKAGECONFIG[python] = "--enable-python,--disable-python"
 
 EXTRA_OECONF = " \
                 ${FPLAYOUT} \
@@ -59,7 +60,7 @@ EXTRA_OECONF = " \
                 --disable-notify_desktop --disable-werror \
 "
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${sysconfdir}/init.d
     install -m 0755 ${WORKDIR}/collectd.init ${D}${sysconfdir}/init.d/collectd
     sed -i 's!/usr/sbin/!${sbindir}/!g' ${D}${sysconfdir}/init.d/collectd
@@ -70,8 +71,8 @@ do_install_append() {
     # Fix configuration file to allow collectd to start up
     sed -i 's!^#FQDNLookup[ \t]*true!FQDNLookup   false!g' ${D}${sysconfdir}/collectd.conf
 
-    rmdir "${D}${localstatedir}/run"
-    rmdir --ignore-fail-on-non-empty "${D}${localstatedir}"
+    rmdir ${D}${localstatedir}/run ${D}${localstatedir}/log
+    rmdir --ignore-fail-on-non-empty ${D}${localstatedir}
 
     # Install systemd unit files
     install -d ${D}${systemd_unitdir}/system
@@ -80,7 +81,7 @@ do_install_append() {
         ${D}${systemd_unitdir}/system/collectd.service
 }
 
-CONFFILES_${PN} = "${sysconfdir}/collectd.conf"
+CONFFILES:${PN} = "${sysconfdir}/collectd.conf"
 
 INITSCRIPT_NAME = "collectd"
 INITSCRIPT_PARAMS = "defaults"

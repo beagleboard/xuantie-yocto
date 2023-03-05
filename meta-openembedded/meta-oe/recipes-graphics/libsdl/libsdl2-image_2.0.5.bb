@@ -4,7 +4,7 @@ SECTION = "libs"
 LICENSE = "Zlib"
 LIC_FILES_CHKSUM = "file://COPYING.txt;md5=822edb694b20ff16ceef85b27f61c11f"
 
-DEPENDS = "tiff zlib libpng jpeg virtual/libsdl2 libwebp"
+DEPENDS = "tiff zlib libpng jpeg libsdl2 libwebp"
 
 SRC_URI = "http://www.libsdl.org/projects/SDL_image/release/SDL2_image-${PV}.tar.gz"
 SRC_URI[md5sum] = "f26f3a153360a8f09ed5220ef7b07aea"
@@ -17,7 +17,7 @@ inherit autotools pkgconfig
 # Disable the run-time loading of the libs and bring back the soname dependencies.
 EXTRA_OECONF += "--disable-jpg-shared --disable-png-shared -disable-tif-shared"
 
-do_configure_prepend() {
+do_configure:prepend() {
     # make autoreconf happy
     touch ${S}/NEWS ${S}/README ${S}/AUTHORS ${S}/ChangeLog
     # Removing these files fixes a libtool version mismatch.

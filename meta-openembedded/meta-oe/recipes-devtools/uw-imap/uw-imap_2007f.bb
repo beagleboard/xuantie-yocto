@@ -11,6 +11,9 @@ SRC_URI = "https://fossies.org/linux/misc/old/imap-${PV}.tar.gz \
            file://imap-2007e-shared.patch \
            file://imap-2007f-format-security.patch \
            file://0001-Support-OpenSSL-1.1.patch \
+           file://0001-Define-prototype-for-safe_flock.patch \
+           file://0001-Do-not-build-mtest.patch \
+           file://0002-tmail-Include-ctype.h-for-isdigit.patch \
            "
 
 SRC_URI[md5sum] = "2126fd125ea26b73b20f01fcd5940369"
@@ -18,10 +21,14 @@ SRC_URI[sha256sum] = "53e15a2b5c1bc80161d42e9f69792a3fa18332b7b771910131004eb520
 
 S = "${WORKDIR}/imap-${PV}"
 
+CVE_CHECK_IGNORE += "\
+    CVE-2005-0198 \
+"
+
 PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'pam', d)}"
 PACKAGECONFIG[pam] = ",,libpam"
 
-EXTRA_OEMAKE = "CC='${CC}' ARRC='${AR} -rc' RANLIB='${RANLIB}'"
+EXTRA_OEMAKE = "CC='${CC} -std=c99 -D_GNU_SOURCE' ARRC='${AR} -rc' RANLIB='${RANLIB}'"
 
 HEADERS = "src/c-client/*.h src/osdep/unix/*.h c-client/auths.c c-client/linkage.c c-client/linkage.h c-client/osdep.h"
 
@@ -37,9 +44,9 @@ do_install() {
     install c-client/c-client.a ${D}${libdir}/libc-client.a
 }
 
-RPROVIDES_${PN} = "libc-client"
-RREPLACES_${PN} = "libc-client"
-RCONFLICTS_${PN} = "libc-client"
+RPROVIDES:${PN} = "libc-client"
+RREPLACES:${PN} = "libc-client"
+RCONFLICTS:${PN} = "libc-client"
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 

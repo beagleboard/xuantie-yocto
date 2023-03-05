@@ -18,8 +18,8 @@ def get_gdb_license(d):
 LICENSE := "${@get_gdb_license(d)}"
 LICENSE[vardepvalue] = "${LICENSE}"
 
-FILES_${PN} = "${bindir}/gdbserver"
-FILES_${PN}-doc = "${mandir}/man1/gdbserver.1"
+FILES:${PN} = "${bindir}/gdbserver"
+FILES:${PN}-doc = "${mandir}/man1/gdbserver.1"
 
 # Ensure that our rdeps are able to be set by shlibs processing
 do_package[depends] += "\

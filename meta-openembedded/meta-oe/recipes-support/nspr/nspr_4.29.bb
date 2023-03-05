@@ -1,6 +1,6 @@
 SUMMARY = "Netscape Portable Runtime Library"
 HOMEPAGE =  "http://www.mozilla.org/projects/nspr/"
-LICENSE = "GPL-2.0 | MPL-2.0 | LGPL-2.1"
+LICENSE = "GPL-2.0-only | MPL-2.0 | LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://configure.in;beginline=3;endline=6;md5=90c2fdee38e45d6302abcfe475c8b5c5 \
                     file://Makefile.in;beginline=4;endline=38;md5=beda1dbb98a515f557d3e58ef06bca99"
 SECTION = "libs/network"
@@ -12,10 +12,11 @@ SRC_URI = "http://ftp.mozilla.org/pub/nspr/releases/v${PV}/src/nspr-${PV}.tar.gz
            file://0002-Add-nios2-support.patch \
            file://0001-md-Fix-build-with-musl.patch \
            file://Makefile.in-remove-_BUILD_STRING-and-_BUILD_TIME.patch \
+           file://0001-config-nspr-config.in-don-t-pass-LDFLAGS.patch \
            file://nspr.pc.in \
 "
 
-CACHED_CONFIGUREVARS_append_libc-musl = " CFLAGS='${CFLAGS} -D_PR_POLL_AVAILABLE \
+CACHED_CONFIGUREVARS:append:libc-musl = " CFLAGS='${CFLAGS} -D_PR_POLL_AVAILABLE \
                                           -D_PR_HAVE_OFF64_T -D_PR_INET6 -D_PR_HAVE_INET_NTOP \
                                           -D_PR_HAVE_GETHOSTBYNAME2 -D_PR_HAVE_GETADDRINFO \
                                           -D_PR_INET6_PROBE -DNO_DLOPEN_NULL'"
@@ -30,7 +31,7 @@ CVE_PRODUCT = "netscape_portable_runtime"
 
 S = "${WORKDIR}/nspr-${PV}/nspr"
 
-RDEPENDS_${PN}-dev += "perl"
+RDEPENDS:${PN}-dev += "perl"
 TARGET_CC_ARCH += "${LDFLAGS}"
 
 TESTS = " \
@@ -160,15 +161,17 @@ PACKAGECONFIG[ipv6] = "--enable-ipv6,--disable-ipv6,"
 # preferred path upstream.
 EXTRA_OECONF += "--includedir=${includedir}/nspr"
 
-do_compile_prepend() {
+EXTRA_OEMAKE:append:class-native = " EXTRA_LIBS='-lpthread -lrt -ldl'"
+
+do_compile:prepend() {
 	oe_runmake CROSS_COMPILE=1 CFLAGS="-DXP_UNIX ${BUILD_CFLAGS}" LDFLAGS="" CC="${BUILD_CC}" -C config export
 }
 
-do_compile_append() {
+do_compile:append() {
 	oe_runmake -C pr/tests
 }
 
-do_install_append() {
+do_install:append() {
     install -D ${WORKDIR}/nspr.pc.in ${D}${libdir}/pkgconfig/nspr.pc
     sed -i  \
     -e 's:NSPRVERSION:${PV}:g' \
@@ -190,8 +193,8 @@ do_install_append() {
     rm ${D}${bindir}/compile-et.pl ${D}${bindir}/prerr.properties
 }
 
-FILES_${PN} = "${libdir}/lib*.so"
-FILES_${PN}-dev = "${bindir}/* ${libdir}/nspr/tests/* ${libdir}/pkgconfig \
+FILES:${PN} = "${libdir}/lib*.so"
+FILES:${PN}-dev = "${bindir}/* ${libdir}/nspr/tests/* ${libdir}/pkgconfig \
                 ${includedir}/* ${datadir}/aclocal/* "
 
 BBCLASSEXTEND = "native nativesdk"

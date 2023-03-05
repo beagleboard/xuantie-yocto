@@ -26,10 +26,10 @@ SRC_URI = " \
 
 inherit siteinfo update-rc.d useradd systemd
 
-SYSTEMD_SERVICE_${PN} = "nginx.service"
+SYSTEMD_SERVICE:${PN} = "nginx.service"
 
-CFLAGS_append = " -fPIE -pie"
-CXXFLAGS_append = " -fPIE -pie"
+CFLAGS:append = " -fPIE -pie"
+CXXFLAGS:append = " -fPIE -pie"
 
 NGINX_WWWDIR ?= "${localstatedir}/www/localhost"
 NGINX_USER   ?= "www"
@@ -39,6 +39,7 @@ DISABLE_STATIC = ""
 
 PACKAGECONFIG ??= "ssl"
 
+PACKAGECONFIG[gunzip] = "--with-http_gunzip_module,,"
 PACKAGECONFIG[http2] = "--with-http_v2_module,,"
 PACKAGECONFIG[ssl] = "--with-http_ssl_module,,openssl"
 PACKAGECONFIG[http-auth-request] = "--with-http_auth_request_module,,"
@@ -65,7 +66,7 @@ do_configure () {
     --with-ptr-size=${PTRSIZE} \
     --with-sig-atomic-t=${PTRSIZE} \
     --with-size-t=${PTRSIZE} \
-    --with-off-t=${PTRSIZE} \
+    --with-off-t=8 \
     --with-time-t=${PTRSIZE} \
     --with-sys-nerr=132 \
     --conf-path=${sysconfdir}/nginx/nginx.conf \
@@ -94,7 +95,7 @@ do_install () {
             >> ${D}${sysconfdir}/tmpfiles.d/${BPN}.conf
     fi
     install -d ${D}${sysconfdir}/${BPN}
-    lnr ${D}${localstatedir}/run/${BPN} ${D}${sysconfdir}/${BPN}/run
+    ln -rs ${D}${localstatedir}/run/${BPN} ${D}${sysconfdir}/${BPN}/run
     install -d ${D}${NGINX_WWWDIR}
     mv ${D}${exec_prefix}/html ${D}${NGINX_WWWDIR}/
     chown ${NGINX_USER}:www-data -R ${D}${NGINX_WWWDIR}
@@ -143,7 +144,7 @@ do_install () {
     rm -rf ${D}${localstatedir}/log/
 }
 
-pkg_postinst_${PN} () {
+pkg_postinst:${PN} () {
     if [ -z "$D" ]; then
         if type systemd-tmpfiles >/dev/null; then
             systemd-tmpfiles --create
@@ -153,12 +154,12 @@ pkg_postinst_${PN} () {
     fi
 }
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${localstatedir}/ \
     ${systemd_unitdir}/system/nginx.service \
 "
 
-CONFFILES_${PN} = " \
+CONFFILES:${PN} = " \
     ${sysconfdir}/nginx/nginx.conf \
     ${sysconfdir}/nginx/fastcgi.conf \
     ${sysconfdir}/nginx/fastcgi_params \
@@ -174,7 +175,7 @@ INITSCRIPT_NAME = "nginx"
 INITSCRIPT_PARAMS = "defaults 92 20"
 
 USERADD_PACKAGES = "${PN}"
-USERADD_PARAM_${PN} = " \
+USERADD_PARAM:${PN} = " \
     --system --no-create-home \
     --home ${NGINX_WWWDIR} \
     --groups www-data \

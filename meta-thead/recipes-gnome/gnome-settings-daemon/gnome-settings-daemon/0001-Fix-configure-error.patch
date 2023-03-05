@@ -1,0 +1,40 @@
+diff --git a/meson.build b/meson.build
+index 851341d..e0be206 100644
+--- a/meson.build
++++ b/meson.build
+@@ -74,11 +74,6 @@ elif gsd_buildtype.contains('release')
+   common_flags += ['-DG_DISABLE_CAST_CHECKS']
+ endif
+ 
+-# Workaround for meson's bug
+-# https://github.com/mesonbuild/meson/pull/1896
+-if get_option('b_ndebug') == true
+-  common_flags += ['-DG_DISABLE_ASSERT']
+-endif
+ 
+ add_project_arguments(common_flags + compiler_flags, language: 'c')
+ 
+diff --git a/plugins/power/meson.build b/plugins/power/meson.build
+index 69e619f..014bb6d 100644
+--- a/plugins/power/meson.build
++++ b/plugins/power/meson.build
+@@ -76,7 +76,6 @@ if host_is_linux
+   )
+ 
+   i18n.merge_file(
+-    policy,
+     input: policy_in,
+     output: policy,
+     po_dir: po_dir,
+diff --git a/plugins/wacom/meson.build b/plugins/wacom/meson.build
+index 3b1994c..d1431fc 100644
+--- a/plugins/wacom/meson.build
++++ b/plugins/wacom/meson.build
+@@ -7,7 +7,6 @@ policy_in = configure_file(
+ )
+ 
+ i18n.merge_file(
+-  policy,
+   input: policy_in,
+   output: policy,
+   po_dir: po_dir,

@@ -1,3 +1,9 @@
+#
+# Copyright OpenEmbedded Contributors
+#
+# SPDX-License-Identifier: MIT
+#
+
 OE_TERMINAL ?= 'auto'
 OE_TERMINAL[type] = 'choice'
 OE_TERMINAL[choices] = 'auto none \
@@ -26,6 +32,9 @@ def emit_terminal_func(command, envdata, d):
     bb.utils.mkdirhier(os.path.dirname(runfile))
 
     with open(runfile, 'w') as script:
+        # Override the shell shell_trap_code specifies.
+        # If our shell is bash, we might well face silent death.
+        script.write("#!/bin/bash\n")
         script.write(bb.build.shell_trap_code())
         bb.data.emit_func(cmd_func, script, envdata)
         script.write(cmd_func)
@@ -37,7 +46,7 @@ def emit_terminal_func(command, envdata, d):
 def oe_terminal(command, title, d):
     import oe.data
     import oe.terminal
-
+    
     envdata = bb.data.init()
 
     for v in os.environ:

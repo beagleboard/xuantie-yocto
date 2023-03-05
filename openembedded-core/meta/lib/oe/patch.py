@@ -1,9 +1,12 @@
 #
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
 import oe.path
 import oe.types
+import subprocess
 
 class NotFoundError(bb.BBHandledException):
     def __init__(self, path):
@@ -25,7 +28,6 @@ class CmdError(bb.BBHandledException):
 
 def runcmd(args, dir = None):
     import pipes
-    import subprocess
 
     if dir:
         olddir = os.path.abspath(os.curdir)
@@ -38,19 +40,24 @@ def runcmd(args, dir = None):
         args = [ pipes.quote(str(arg)) for arg in args ]
         cmd = " ".join(args)
         # print("cmd: %s" % cmd)
-        (exitstatus, output) = subprocess.getstatusoutput(cmd)
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        stdout, stderr = proc.communicate()
+        stdout = stdout.decode('utf-8')
+        stderr = stderr.decode('utf-8')
+        exitstatus = proc.returncode
         if exitstatus != 0:
-            raise CmdError(cmd, exitstatus >> 8, output)
-        if " fuzz " in output and "Hunk " in output:
+            raise CmdError(cmd, exitstatus >> 8, "stdout: %s\nstderr: %s" % (stdout, stderr))
+        if " fuzz " in stdout and "Hunk " in stdout:
             # Drop patch fuzz info with header and footer to log file so
             # insane.bbclass can handle to throw error/warning
-            bb.note("--- Patch fuzz start ---\n%s\n--- Patch fuzz end ---" % format(output))
+            bb.note("--- Patch fuzz start ---\n%s\n--- Patch fuzz end ---" % format(stdout))
 
-        return output
+        return stdout
 
     finally:
         if dir:
             os.chdir(olddir)
+
 
 class PatchError(Exception):
     def __init__(self, msg):
@@ -294,6 +301,24 @@ class GitApplyTree(PatchTree):
         PatchTree.__init__(self, dir, d)
         self.commituser = d.getVar('PATCH_GIT_USER_NAME')
         self.commitemail = d.getVar('PATCH_GIT_USER_EMAIL')
+        if not self._isInitialized(d):
+            self._initRepo()
+
+    def _isInitialized(self, d):
+        cmd = "git rev-parse --show-toplevel"
+        try:
+            output = runcmd(cmd.split(), self.dir).strip()
+        except CmdError as err:
+            ## runcmd returned non-zero which most likely means 128
+            ## Not a git directory
+            return False
+        ## Make sure repo is in builddir to not break top-level git repos, or under workdir
+        return os.path.samefile(output, self.dir) or oe.path.is_path_parent(d.getVar('WORKDIR'), output)
+
+    def _initRepo(self):
+        runcmd("git init".split(), self.dir)
+        runcmd("git add .".split(), self.dir)
+        runcmd("git commit -a --allow-empty -m bitbake_patching_started".split(), self.dir)
 
     @staticmethod
     def extractPatchHeader(patchfile):
@@ -512,7 +537,7 @@ class GitApplyTree(PatchTree):
             try:
                 shellcmd = [patchfilevar, "git", "--work-tree=%s" % reporoot]
                 self.gitCommandUserOptions(shellcmd, self.commituser, self.commitemail)
-                shellcmd += ["am", "-3", "--keep-cr", "-p%s" % patch['strippath']]
+                shellcmd += ["am", "-3", "--keep-cr", "--no-scissors", "-p%s" % patch['strippath']]
                 return _applypatchhelper(shellcmd, patch, force, reverse, run)
             except CmdError:
                 # Need to abort the git am, or we'll still be within it at the end
@@ -575,6 +600,8 @@ class QuiltTree(PatchSet):
 
     def Clean(self):
         try:
+            # make sure that patches/series file exists before quilt pop to keep quilt-0.67 happy
+            open(os.path.join(self.dir, "patches","series"), 'a').close()
             self._runcmd(["pop", "-a", "-f"])
             oe.path.remove(os.path.join(self.dir, "patches","series"))
         except Exception:

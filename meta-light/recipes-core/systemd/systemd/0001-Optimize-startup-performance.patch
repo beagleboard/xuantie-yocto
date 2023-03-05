@@ -1,0 +1,81 @@
+From d29e7722bbbc9f409045af8a7622c6551d2c16b5 Mon Sep 17 00:00:00 2001
+From: huxin <wb-hx963136@alibaba-inc.com>
+Date: Mon, 6 Feb 2023 20:34:29 +0800
+Subject: [PATCH] Optimize startup performance
+
+---
+ presets/90-systemd.preset           | 3 ++-
+ units/modprobe@.service             | 1 +
+ units/sys-fs-fuse-connections.mount | 5 +++--
+ units/systemd-networkd.service.in   | 2 +-
+ 4 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/presets/90-systemd.preset b/presets/90-systemd.preset
+index 25936d8..10a0f14 100644
+--- a/presets/90-systemd.preset
++++ b/presets/90-systemd.preset
+@@ -18,7 +18,6 @@ enable machines.target
+ enable getty@.service
+ enable systemd-timesyncd.service
+ enable systemd-networkd.service
+-enable systemd-network-generator.service
+ enable systemd-resolved.service
+ enable systemd-homed.service
+ enable systemd-userdbd.socket
+@@ -45,3 +44,5 @@ disable syslog.socket
+ disable systemd-journal-gatewayd.*
+ disable systemd-journal-remote.*
+ disable systemd-journal-upload.*
++
++disable systemd-network-generator.service
+diff --git a/units/modprobe@.service b/units/modprobe@.service
+index 85a2c08..4ab0d42 100644
+--- a/units/modprobe@.service
++++ b/units/modprobe@.service
+@@ -14,6 +14,7 @@ Before=sysinit.target
+ Documentation=man:modprobe(8)
+ ConditionCapability=CAP_SYS_MODULE
+ StartLimitIntervalSec=0
++ConditionPathExists=!/sys/module/%I
+ 
+ [Service]
+ Type=oneshot
+diff --git a/units/sys-fs-fuse-connections.mount b/units/sys-fs-fuse-connections.mount
+index ca48fd5..abe4ef0 100644
+--- a/units/sys-fs-fuse-connections.mount
++++ b/units/sys-fs-fuse-connections.mount
+@@ -15,6 +15,7 @@ DefaultDependencies=no
+ ConditionPathExists=/sys/fs/fuse/connections
+ ConditionCapability=CAP_SYS_ADMIN
+ ConditionVirtualization=!private-users
++After=systemd-modules-load.service
+ Before=sysinit.target
+ 
+ # These dependencies are used to make certain that the module is fully
+@@ -22,8 +23,8 @@ Before=sysinit.target
+ # module but the kernel sends it too early, ie before the init() of the module
+ # is fully operational and /sys/fs/fuse/connections is created, see issue#17586.
+ 
+-After=modprobe@fuse.service
+-Requires=modprobe@fuse.service
++#After=modprobe@fuse.service
++#Requires=modprobe@fuse.service
+ 
+ [Mount]
+ What=fusectl
+diff --git a/units/systemd-networkd.service.in b/units/systemd-networkd.service.in
+index 95dd266..a3aeafc 100644
+--- a/units/systemd-networkd.service.in
++++ b/units/systemd-networkd.service.in
+@@ -58,7 +58,7 @@ Alias=dbus-org.freedesktop.network1.service
+ 
+ # The output from this generator is used by udevd and networkd. Enable it by
+ # default when enabling systemd-networkd.service.
+-Also=systemd-network-generator.service
++#Also=systemd-network-generator.service
+ 
+ # We want to enable systemd-networkd-wait-online.service whenever this service
+ # is enabled. systemd-networkd-wait-online.service has
+-- 
+2.17.1
+

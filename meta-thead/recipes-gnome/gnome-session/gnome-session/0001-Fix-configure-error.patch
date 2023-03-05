@@ -1,0 +1,20 @@
+diff --git a/data/meson.build b/data/meson.build
+index 62f3288..de3685d 100644
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -33,7 +33,6 @@ foreach name: desktops
+   endif
+ 
+   desktop_target = i18n.merge_file(
+-    desktop,
+     type: 'desktop',
+     input: desktop_in,
+     output: desktop,
+@@ -61,7 +60,6 @@ foreach session: sessions
+   )
+ 
+   i18n.merge_file(
+-    session,
+     type: 'desktop',
+     input: desktop_in,
+     output: session,

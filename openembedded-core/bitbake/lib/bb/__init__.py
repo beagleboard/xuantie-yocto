@@ -9,11 +9,11 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
-__version__ = "1.48.0"
+__version__ = "2.2.0"
 
 import sys
-if sys.version_info < (3, 5, 0):
-    raise RuntimeError("Sorry, python 3.5.0 or later is required for this version of bitbake")
+if sys.version_info < (3, 6, 0):
+    raise RuntimeError("Sorry, python 3.6.0 or later is required for this version of bitbake")
 
 
 class BBHandledException(Exception):
@@ -21,8 +21,8 @@ class BBHandledException(Exception):
     The big dilemma for generic bitbake code is what information to give the user
     when an exception occurs. Any exception inheriting this base exception class
     has already provided information to the user via some 'fired' message type such as
-    an explicitly fired event using bb.fire, or a bb.error message. If bitbake 
-    encounters an exception derived from this class, no backtrace or other information 
+    an explicitly fired event using bb.fire, or a bb.error message. If bitbake
+    encounters an exception derived from this class, no backtrace or other information
     will be given to the user, its assumed the earlier event provided the relevant information.
     """
     pass
@@ -42,15 +42,28 @@ class BBLoggerMixin(object):
 
     def setup_bblogger(self, name):
         if name.split(".")[0] == "BitBake":
-            self.debug = self.bbdebug
+            self.debug = self._debug_helper
+
+    def _debug_helper(self, *args, **kwargs):
+        return self.bbdebug(1, *args, **kwargs)
+
+    def debug2(self, *args, **kwargs):
+        return self.bbdebug(2, *args, **kwargs)
+
+    def debug3(self, *args, **kwargs):
+        return self.bbdebug(3, *args, **kwargs)
 
     def bbdebug(self, level, msg, *args, **kwargs):
         loglevel = logging.DEBUG - level + 1
         if not bb.event.worker_pid:
             if self.name in bb.msg.loggerDefaultDomains and loglevel > (bb.msg.loggerDefaultDomains[self.name]):
                 return
-            if loglevel > bb.msg.loggerDefaultLogLevel:
+            if loglevel < bb.msg.loggerDefaultLogLevel:
                 return
+
+        if not isinstance(level, int) or not isinstance(msg, str):
+            mainlogger.warning("Invalid arguments in bbdebug: %s" % repr((level, msg,) + args))
+
         return self.log(loglevel, msg, *args, **kwargs)
 
     def plain(self, msg, *args, **kwargs):
@@ -61,6 +74,13 @@ class BBLoggerMixin(object):
 
     def verbnote(self, msg, *args, **kwargs):
         return self.log(logging.INFO + 2, msg, *args, **kwargs)
+
+    def warnonce(self, msg, *args, **kwargs):
+        return self.log(logging.WARNING - 1, msg, *args, **kwargs)
+
+    def erroronce(self, msg, *args, **kwargs):
+        return self.log(logging.ERROR - 1, msg, *args, **kwargs)
+
 
 Logger = logging.getLoggerClass()
 class BBLogger(Logger, BBLoggerMixin):
@@ -128,7 +148,7 @@ def debug(lvl, *args):
         mainlogger.warning("Passed invalid debug level '%s' to bb.debug", lvl)
         args = (lvl,) + args
         lvl = 1
-    mainlogger.debug(lvl, ''.join(args))
+    mainlogger.bbdebug(lvl, ''.join(args))
 
 def note(*args):
     mainlogger.info(''.join(args))
@@ -148,8 +168,14 @@ def verbnote(*args):
 def warn(*args):
     mainlogger.warning(''.join(args))
 
+def warnonce(*args):
+    mainlogger.warnonce(''.join(args))
+
 def error(*args, **kwargs):
     mainlogger.error(''.join(args), extra=kwargs)
+
+def erroronce(*args):
+    mainlogger.erroronce(''.join(args))
 
 def fatal(*args, **kwargs):
     mainlogger.critical(''.join(args), extra=kwargs)

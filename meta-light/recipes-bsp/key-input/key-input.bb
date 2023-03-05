@@ -22,5 +22,5 @@ do_install () {
     install -m0755 ${S}/ts-send ${D}${bindir}
 }
 
-FILES_${PN} += " ${bindir} "
-FILES_${PN}-dbg += " ${bindir}/.debug "
+FILES:${PN} += " ${bindir} "
+FILES:${PN}-dbg += " ${bindir}/.debug "

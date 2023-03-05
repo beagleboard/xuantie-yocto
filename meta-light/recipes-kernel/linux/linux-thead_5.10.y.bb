@@ -6,13 +6,13 @@ SRC_URI = " \
             git://git@gitee.com/thead-yocto/kernel.git;branch=master;protocol=http \
 "
 # crop the kernel based on the defconfig
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-SRC_URI_light-b-product-release = " \
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+SRC_URI:light-b-product-release = " \
             git://git@gitee.com/thead-yocto/kernel.git;branch=master;protocol=http \
 "
-SRC_URI_light-b-product-release += "file://cvl1.cfg"
-SRC_URI_light-b-product-release += "file://cvl2.cfg"
-# SRC_URI_light-b-product-release += "file://cvl3.cfg"
+SRC_URI:light-b-product-release += "file://cvl1.cfg"
+SRC_URI:light-b-product-release += "file://cvl2.cfg"
+# SRC_URI:light-b-product-release += "file://cvl3.cfg"
 
 KERNEL_VERSION_SANITY_SKIP="1"
 
@@ -27,14 +27,13 @@ COMPATIBLE_MACHINE = "light-*"
 
 S = "${WORKDIR}/linux-${PV}"
 
-do_configure_append() {
+do_configure:append() {
    [ -d ${STAGING_KERNEL_DIR} ] && rm -rf ${STAGING_KERNEL_DIR}
    [ -f ${STAGING_KERNEL_DIR} ] && rm -rf ${STAGING_KERNEL_DIR}
 
    ln -s ${S}  ${STAGING_KERNEL_DIR}
-
 }
-do_install_append() {
+do_install:append() {
 
    [ -f ${STAGING_KERNEL_BUILDDIR} ] && rm -rf ${STAGING_KERNEL_BUILDDIR}
    [ -d ${STAGING_KERNEL_BUILDDIR} ] && rm -rf ${STAGING_KERNEL_BUILDDIR}
@@ -56,8 +55,12 @@ do_install_append() {
          cp ${i} ${DEPLOY_DIR_IMAGE}/.boot
       fi
    done
+   install -d ${D}${sysconfdir}
+   head=$(git --git-dir=${S}/.git rev-parse --verify HEAD 2>/dev/null)
+   echo "commit-id:"${head} > ${DEPLOY_DIR_IMAGE}/.boot/kernel-release
+   cp ${DEPLOY_DIR_IMAGE}/.boot/kernel-release ${D}${sysconfdir}
    dd if=/dev/zero of=${DEPLOY_DIR_IMAGE}/boot.ext4 count=10000 bs=4096
-   ${COMPONENTS_DIR}/x86_64/e2fsprogs-native/sbin/mkfs.ext4 -F  ${DEPLOY_DIR_IMAGE}/boot.ext4 -d ${DEPLOY_DIR_IMAGE}/.boot
+   mkfs.ext4 -F  ${DEPLOY_DIR_IMAGE}/boot.ext4 -d ${DEPLOY_DIR_IMAGE}/.boot
 
    rm -f ${BASE_WROKDIR}/kernel_version
    touch ${BASE_WORKDIR}/kernel_version
@@ -66,3 +69,5 @@ do_install_append() {
 
 do_install[nostamp] = "1"
 KCONFIG_MODE="--alldefconfig"
+
+FILES:${KERNEL_PACKAGE_NAME}-base += "${sysconfdir}"

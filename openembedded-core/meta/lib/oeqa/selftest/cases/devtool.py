@@ -1,4 +1,6 @@
 #
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: MIT
 #
 
@@ -9,10 +11,10 @@ import tempfile
 import glob
 import fnmatch
 
-import oeqa.utils.ftools as ftools
 from oeqa.selftest.case import OESelftestTestCase
 from oeqa.utils.commands import runCmd, bitbake, get_bb_var, create_temp_layer
 from oeqa.utils.commands import get_bb_vars, runqemu, get_test_layer
+from oeqa.core.decorator import OETestTag
 
 oldmetapath = None
 
@@ -57,7 +59,7 @@ def setUpModule():
                         if relpth.endswith('/'):
                             destdir = os.path.join(corecopydir, relpth)
                             # avoid race condition by not copying .pyc files YPBZ#13421,13803
-                            shutil.copytree(pth, destdir, ignore=ignore_patterns('*.pyc', '__pycache__'))
+                            shutil.copytree(pth, destdir, ignore=shutil.ignore_patterns('*.pyc', '__pycache__'))
                         else:
                             destdir = os.path.join(corecopydir, os.path.dirname(relpth))
                             bb.utils.mkdirhier(destdir)
@@ -80,32 +82,15 @@ def tearDownModule():
         bb.utils.edit_bblayers_conf(bblayers_conf, None, None, bblayers_edit_cb)
     shutil.rmtree(templayerdir)
 
-class DevtoolBase(OESelftestTestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        super(DevtoolBase, cls).setUpClass()
-        bb_vars = get_bb_vars(['TOPDIR', 'SSTATE_DIR'])
-        cls.original_sstate = bb_vars['SSTATE_DIR']
-        cls.devtool_sstate = os.path.join(bb_vars['TOPDIR'], 'sstate_devtool')
-        cls.sstate_conf  = 'SSTATE_DIR = "%s"\n' % cls.devtool_sstate
-        cls.sstate_conf += ('SSTATE_MIRRORS += "file://.* file:///%s/PATH"\n'
-                            % cls.original_sstate)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.logger.debug('Deleting devtool sstate cache on %s' % cls.devtool_sstate)
-        runCmd('rm -rf %s' % cls.devtool_sstate)
-        super(DevtoolBase, cls).tearDownClass()
+class DevtoolTestCase(OESelftestTestCase):
 
     def setUp(self):
         """Test case setup function"""
-        super(DevtoolBase, self).setUp()
+        super(DevtoolTestCase, self).setUp()
         self.workspacedir = os.path.join(self.builddir, 'workspace')
         self.assertTrue(not os.path.exists(self.workspacedir),
                         'This test cannot be run with a workspace directory '
                         'under the build directory')
-        self.append_config(self.sstate_conf)
 
     def _check_src_repo(self, repo_dir):
         """Check srctree git repository"""
@@ -235,6 +220,74 @@ class DevtoolBase(OESelftestTestCase):
             filelist.append(' '.join(splitline))
         return filelist
 
+    def _check_diff(self, diffoutput, addlines, removelines):
+        """Check output from 'git diff' matches expectation"""
+        remaining_addlines = addlines[:]
+        remaining_removelines = removelines[:]
+        for line in diffoutput.splitlines():
+            if line.startswith('+++') or line.startswith('---'):
+                continue
+            elif line.startswith('+'):
+                matched = False
+                for item in addlines:
+                    if re.match(item, line[1:].strip()):
+                        matched = True
+                        remaining_addlines.remove(item)
+                        break
+                self.assertTrue(matched, 'Unexpected diff add line: %s' % line)
+            elif line.startswith('-'):
+                matched = False
+                for item in removelines:
+                    if re.match(item, line[1:].strip()):
+                        matched = True
+                        remaining_removelines.remove(item)
+                        break
+                self.assertTrue(matched, 'Unexpected diff remove line: %s' % line)
+        if remaining_addlines:
+            self.fail('Expected added lines not found: %s' % remaining_addlines)
+        if remaining_removelines:
+            self.fail('Expected removed lines not found: %s' % remaining_removelines)
+
+    def _test_devtool_add_git_url(self, git_url, version, pn, resulting_src_uri):
+        self.track_for_cleanup(self.workspacedir)
+        self.add_command_to_tearDown('bitbake-layers remove-layer */workspace')
+        result = runCmd('devtool add --version %s %s %s' % (version, pn, git_url))
+        self.assertExists(os.path.join(self.workspacedir, 'conf', 'layer.conf'), 'Workspace directory not created')
+        # Check the recipe name is correct
+        recipefile = get_bb_var('FILE', pn)
+        self.assertIn('%s_git.bb' % pn, recipefile, 'Recipe file incorrectly named')
+        self.assertIn(recipefile, result.output)
+        # Test devtool status
+        result = runCmd('devtool status')
+        self.assertIn(pn, result.output)
+        self.assertIn(recipefile, result.output)
+        checkvars = {}
+        checkvars['SRC_URI'] = resulting_src_uri
+        self._test_recipe_contents(recipefile, checkvars, [])
+
+class DevtoolBase(DevtoolTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super(DevtoolBase, cls).setUpClass()
+        bb_vars = get_bb_vars(['TOPDIR', 'SSTATE_DIR'])
+        cls.original_sstate = bb_vars['SSTATE_DIR']
+        cls.devtool_sstate = os.path.join(bb_vars['TOPDIR'], 'sstate_devtool')
+        cls.sstate_conf  = 'SSTATE_DIR = "%s"\n' % cls.devtool_sstate
+        cls.sstate_conf += ('SSTATE_MIRRORS += "file://.* file:///%s/PATH"\n'
+                            % cls.original_sstate)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.logger.debug('Deleting devtool sstate cache on %s' % cls.devtool_sstate)
+        runCmd('rm -rf %s' % cls.devtool_sstate)
+        super(DevtoolBase, cls).tearDownClass()
+
+    def setUp(self):
+        """Test case setup function"""
+        super(DevtoolBase, self).setUp()
+        self.append_config(self.sstate_conf)
+
 
 class DevtoolTests(DevtoolBase):
 
@@ -269,7 +322,7 @@ class DevtoolAddTests(DevtoolBase):
         self.track_for_cleanup(tempdir)
         pn = 'pv'
         pv = '1.5.3'
-        url = 'http://www.ivarch.com/programs/sources/pv-1.5.3.tar.bz2'
+        url = 'http://downloads.yoctoproject.org/mirror/sources/pv-1.5.3.tar.bz2'
         result = runCmd('wget %s' % url, cwd=tempdir)
         result = runCmd('tar xfv %s' % os.path.basename(url), cwd=tempdir)
         srcdir = os.path.join(tempdir, '%s-%s' % (pn, pv))
@@ -336,14 +389,30 @@ class DevtoolAddTests(DevtoolBase):
         self.assertIn(srcdir, result.output)
         self.assertIn(recipefile, result.output)
         checkvars = {}
-        checkvars['LICENSE'] = 'GPLv2'
+        checkvars['LICENSE'] = 'GPL-2.0-only'
         checkvars['LIC_FILES_CHKSUM'] = 'file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263'
         checkvars['S'] = '${WORKDIR}/git'
         checkvars['PV'] = '0.1+git${SRCPV}'
-        checkvars['SRC_URI'] = 'git://git.yoctoproject.org/git/dbus-wait;protocol=https'
+        checkvars['SRC_URI'] = 'git://git.yoctoproject.org/git/dbus-wait;protocol=https;branch=master'
         checkvars['SRCREV'] = srcrev
         checkvars['DEPENDS'] = set(['dbus'])
         self._test_recipe_contents(recipefile, checkvars, [])
+
+    def test_devtool_add_git_style1(self):
+        version = 'v3.1.0'
+        pn = 'mbedtls'
+        # this will trigger reformat_git_uri with branch parameter in url
+        git_url = "'git://git@github.com/ARMmbed/mbedtls.git;branch=mbedtls-2.28;protocol=https'"
+        resulting_src_uri = "git://git@github.com/ARMmbed/mbedtls.git;branch=mbedtls-2.28;protocol=https"
+        self._test_devtool_add_git_url(git_url, version, pn, resulting_src_uri)
+
+    def test_devtool_add_git_style2(self):
+        version = 'v3.1.0'
+        pn = 'mbedtls'
+        # this will trigger reformat_git_uri with branch parameter in url
+        git_url = "'git://git@github.com/ARMmbed/mbedtls.git;protocol=https'"
+        resulting_src_uri = "git://git@github.com/ARMmbed/mbedtls.git;protocol=https;branch=master"
+        self._test_devtool_add_git_url(git_url, version, pn, resulting_src_uri)
 
     def test_devtool_add_library(self):
         # Fetch source
@@ -373,7 +442,7 @@ class DevtoolAddTests(DevtoolBase):
         recipefile = '%s/recipes/libftdi/libftdi_%s.bb' % (self.workspacedir, version)
         result = runCmd('recipetool setvar %s EXTRA_OECMAKE -- \'-DPYTHON_BINDINGS=OFF -DLIBFTDI_CMAKE_CONFIG_DIR=${datadir}/cmake/Modules\'' % recipefile)
         with open(recipefile, 'a') as f:
-            f.write('\nFILES_${PN}-dev += "${datadir}/cmake/Modules"\n')
+            f.write('\nFILES:${PN}-dev += "${datadir}/cmake/Modules"\n')
             # We don't have the ability to pick up this dependency automatically yet...
             f.write('\nDEPENDS += "libusb1"\n')
             f.write('\nTESTLIBOUTPUT = "${COMPONENTS_DIR}/${TUNE_PKGARCH}/${PN}/${libdir}"\n')
@@ -437,11 +506,12 @@ class DevtoolAddTests(DevtoolBase):
         checkvars['S'] = '${WORKDIR}/MarkupSafe-%s' % testver
         checkvars['SRC_URI'] = url
         self._test_recipe_contents(recipefile, checkvars, [])
-
+     
     def test_devtool_add_fetch_git(self):
         tempdir = tempfile.mkdtemp(prefix='devtoolqa')
         self.track_for_cleanup(tempdir)
         url = 'gitsm://git.yoctoproject.org/mraa'
+        url_branch = '%s;branch=master' % url
         checkrev = 'ae127b19a50aa54255e4330ccfdd9a5d058e581d'
         testrecipe = 'mraa'
         srcdir = os.path.join(tempdir, testrecipe)
@@ -462,7 +532,7 @@ class DevtoolAddTests(DevtoolBase):
         checkvars = {}
         checkvars['S'] = '${WORKDIR}/git'
         checkvars['PV'] = '1.0+git${SRCPV}'
-        checkvars['SRC_URI'] = url
+        checkvars['SRC_URI'] = url_branch
         checkvars['SRCREV'] = '${AUTOREV}'
         self._test_recipe_contents(recipefile, checkvars, [])
         # Try with revision and version specified
@@ -481,7 +551,7 @@ class DevtoolAddTests(DevtoolBase):
         checkvars = {}
         checkvars['S'] = '${WORKDIR}/git'
         checkvars['PV'] = '1.5+git${SRCPV}'
-        checkvars['SRC_URI'] = url
+        checkvars['SRC_URI'] = url_branch
         checkvars['SRCREV'] = checkrev
         self._test_recipe_contents(recipefile, checkvars, [])
 
@@ -504,7 +574,7 @@ class DevtoolAddTests(DevtoolBase):
         result = runCmd('devtool status')
         self.assertIn(testrecipe, result.output)
         self.assertIn(srcdir, result.output)
-        # Check recipe
+        # Check recipedevtool add
         recipefile = get_bb_var('FILE', testrecipe)
         self.assertIn('%s_%s.bb' % (testrecipe, testver), recipefile, 'Recipe file incorrectly named')
         checkvars = {}
@@ -535,6 +605,19 @@ class DevtoolAddTests(DevtoolBase):
         bitbake('%s -c cleansstate' % pn)
         # Test devtool build
         result = runCmd('devtool build %s' % pn)
+
+    def test_devtool_add_python_egg_requires(self):
+        # Fetch source
+        tempdir = tempfile.mkdtemp(prefix='devtoolqa')
+        self.track_for_cleanup(tempdir)
+        testver = '0.14.0'
+        url = 'https://files.pythonhosted.org/packages/e9/9e/25d59f5043cf763833b2581c8027fa92342c4cf8ee523b498ecdf460c16d/uvicorn-%s.tar.gz' % testver
+        testrecipe = 'python3-uvicorn'
+        srcdir = os.path.join(tempdir, testrecipe)
+        # Test devtool add
+        self.track_for_cleanup(self.workspacedir)
+        self.add_command_to_tearDown('bitbake-layers remove-layer */workspace')
+        result = runCmd('devtool add %s %s -f %s' % (testrecipe, srcdir, url))
 
 class DevtoolModifyTests(DevtoolBase):
 
@@ -649,7 +732,7 @@ class DevtoolModifyTests(DevtoolBase):
         self.track_for_cleanup(self.workspacedir)
         self.add_command_to_tearDown('bitbake-layers remove-layer */workspace')
 
-        testrecipes = 'perf kernel-devsrc package-index core-image-minimal meta-toolchain packagegroup-core-sdk meta-ide-support'.split()
+        testrecipes = 'perf kernel-devsrc package-index core-image-minimal meta-toolchain packagegroup-core-sdk'.split()
         # Find actual name of gcc-source since it now includes the version - crude, but good enough for this purpose
         result = runCmd('bitbake-layers show-recipes gcc-source*')
         for line in result.output.splitlines():
@@ -698,6 +781,44 @@ class DevtoolModifyTests(DevtoolBase):
         self.assertTrue(bbclassextended, 'None of these recipes are BBCLASSEXTENDed to native - need to adjust testrecipes list: %s' % ', '.join(testrecipes))
         self.assertTrue(inheritnative, 'None of these recipes do "inherit native" - need to adjust testrecipes list: %s' % ', '.join(testrecipes))
 
+    def test_devtool_modify_localfiles_only(self):
+        # Check preconditions
+        testrecipe = 'base-files'
+        src_uri = (get_bb_var('SRC_URI', testrecipe) or '').split()
+        foundlocalonly = False
+        correct_symlink = False
+        for item in src_uri:
+            if item.startswith('file://'):
+                if '.patch' not in item:
+                    foundlocalonly = True
+            else:
+                foundlocalonly = False
+                break
+        self.assertTrue(foundlocalonly, 'This test expects the %s recipe to fetch local files only and it seems that it no longer does' % testrecipe)
+        # Clean up anything in the workdir/sysroot/sstate cache
+        bitbake('%s -c cleansstate' % testrecipe)
+        # Try modifying a recipe
+        tempdir = tempfile.mkdtemp(prefix='devtoolqa')
+        self.track_for_cleanup(tempdir)
+        self.track_for_cleanup(self.workspacedir)
+        self.add_command_to_tearDown('bitbake -c clean %s' % testrecipe)
+        self.add_command_to_tearDown('bitbake-layers remove-layer */workspace')
+        result = runCmd('devtool modify %s -x %s' % (testrecipe, tempdir))
+        srcfile = os.path.join(tempdir, 'oe-local-files/share/dot.bashrc')
+        srclink = os.path.join(tempdir, 'share/dot.bashrc')
+        self.assertExists(srcfile, 'Extracted source could not be found')
+        if os.path.islink(srclink) and os.path.exists(srclink) and os.path.samefile(srcfile, srclink):
+            correct_symlink = True
+        self.assertTrue(correct_symlink, 'Source symlink to oe-local-files is broken')
+
+        matches = glob.glob(os.path.join(self.workspacedir, 'appends', '%s_*.bbappend' % testrecipe))
+        self.assertTrue(matches, 'bbappend not created')
+        # Test devtool status
+        result = runCmd('devtool status')
+        self.assertIn(testrecipe, result.output)
+        self.assertIn(tempdir, result.output)
+        # Try building
+        bitbake(testrecipe)
 
     def test_devtool_modify_git(self):
         # Check preconditions
@@ -867,28 +988,12 @@ class DevtoolUpdateTests(DevtoolBase):
         self._check_repo_status(os.path.dirname(recipefile), expected_status)
 
         result = runCmd('git diff %s' % os.path.basename(recipefile), cwd=os.path.dirname(recipefile))
-        addlines = ['SRCREV = ".*"', 'SRC_URI = "git://git.infradead.org/mtd-utils.git"']
+        addlines = ['SRCREV = ".*"', 'SRC_URI = "git://git.infradead.org/mtd-utils.git;branch=master"']
         srcurilines = src_uri.split()
         srcurilines[0] = 'SRC_URI = "' + srcurilines[0]
         srcurilines.append('"')
         removelines = ['SRCREV = ".*"'] + srcurilines
-        for line in result.output.splitlines():
-            if line.startswith('+++') or line.startswith('---'):
-                continue
-            elif line.startswith('+'):
-                matched = False
-                for item in addlines:
-                    if re.match(item, line[1:].strip()):
-                        matched = True
-                        break
-                self.assertTrue(matched, 'Unexpected diff add line: %s' % line)
-            elif line.startswith('-'):
-                matched = False
-                for item in removelines:
-                    if re.match(item, line[1:].strip()):
-                        matched = True
-                        break
-                self.assertTrue(matched, 'Unexpected diff remove line: %s' % line)
+        self._check_diff(result.output, addlines, removelines)
         # Now try with auto mode
         runCmd('cd %s; git checkout %s %s' % (os.path.dirname(recipefile), testrecipe, os.path.basename(recipefile)))
         result = runCmd('devtool update-recipe %s' % testrecipe)
@@ -938,7 +1043,7 @@ class DevtoolUpdateTests(DevtoolBase):
         self.assertExists(patchfile, 'Patch file not created')
 
         # Check bbappend contents
-        expectedlines = ['FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"\n',
+        expectedlines = ['FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"\n',
                          '\n',
                          'SRC_URI += "file://0001-Add-our-custom-version.patch"\n',
                          '\n']
@@ -953,7 +1058,7 @@ class DevtoolUpdateTests(DevtoolBase):
         result = runCmd('git reset HEAD^', cwd=tempsrcdir)
         result = runCmd('devtool update-recipe %s -a %s' % (testrecipe, templayerdir))
         self.assertNotExists(patchfile, 'Patch file not deleted')
-        expectedlines2 = ['FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"\n',
+        expectedlines2 = ['FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"\n',
                          '\n']
         with open(bbappendfile, 'r') as f:
             self.assertEqual(expectedlines2, f.readlines())
@@ -1258,6 +1363,73 @@ class DevtoolUpdateTests(DevtoolBase):
         expected_status = []
         self._check_repo_status(os.path.dirname(recipefile), expected_status)
 
+    def test_devtool_finish_modify_git_subdir(self):
+        # Check preconditions
+        testrecipe = 'dos2unix'
+        bb_vars = get_bb_vars(['SRC_URI', 'S', 'WORKDIR', 'FILE'], testrecipe)
+        self.assertIn('git://', bb_vars['SRC_URI'], 'This test expects the %s recipe to be a git recipe' % testrecipe)
+        workdir_git = '%s/git/' % bb_vars['WORKDIR']
+        if not bb_vars['S'].startswith(workdir_git):
+            self.fail('This test expects the %s recipe to be building from a subdirectory of the git repo' % testrecipe)
+        subdir = bb_vars['S'].split(workdir_git, 1)[1]
+        # Clean up anything in the workdir/sysroot/sstate cache
+        bitbake('%s -c cleansstate' % testrecipe)
+        # Try modifying a recipe
+        tempdir = tempfile.mkdtemp(prefix='devtoolqa')
+        self.track_for_cleanup(tempdir)
+        self.track_for_cleanup(self.workspacedir)
+        self.add_command_to_tearDown('bitbake -c clean %s' % testrecipe)
+        self.add_command_to_tearDown('bitbake-layers remove-layer */workspace')
+        result = runCmd('devtool modify %s -x %s' % (testrecipe, tempdir))
+        testsrcfile = os.path.join(tempdir, subdir, 'dos2unix.c')
+        self.assertExists(testsrcfile, 'Extracted source could not be found')
+        self.assertExists(os.path.join(self.workspacedir, 'conf', 'layer.conf'), 'Workspace directory not created. devtool output: %s' % result.output)
+        self.assertNotExists(os.path.join(tempdir, subdir, '.git'), 'Subdirectory has been initialised as a git repo')
+        # Check git repo
+        self._check_src_repo(tempdir)
+        # Modify file
+        runCmd("sed -i '1s:^:/* Add a comment */\\n:' %s" % testsrcfile)
+        result = runCmd('git commit -a -m "Add a comment"', cwd=tempdir)
+        # Now try updating original recipe
+        recipefile = bb_vars['FILE']
+        recipedir = os.path.dirname(recipefile)
+        self.add_command_to_tearDown('cd %s; rm -f %s/*.patch; git checkout .' % (recipedir, testrecipe))
+        result = runCmd('devtool update-recipe %s' % testrecipe)
+        expected_status = [(' M', '.*/%s$' % os.path.basename(recipefile)),
+                           ('??', '.*/%s/%s/$' % (testrecipe, testrecipe))]
+        self._check_repo_status(os.path.dirname(recipefile), expected_status)
+        result = runCmd('git diff %s' % os.path.basename(recipefile), cwd=os.path.dirname(recipefile))
+        removelines = ['SRC_URI = "git://.*"']
+        addlines = [
+            'SRC_URI = "git://.* \\\\',
+            'file://0001-Add-a-comment.patch;patchdir=.. \\\\',
+            '"'
+        ]
+        self._check_diff(result.output, addlines, removelines)
+        # Put things back so we can run devtool finish on a different layer
+        runCmd('cd %s; rm -f %s/*.patch; git checkout .' % (recipedir, testrecipe))
+        # Run devtool finish
+        res = re.search('recipes-.*', recipedir)
+        self.assertTrue(res, 'Unable to find recipe subdirectory')
+        recipesubdir = res[0]
+        self.add_command_to_tearDown('rm -rf %s' % os.path.join(self.testlayer_path, recipesubdir))
+        result = runCmd('devtool finish %s meta-selftest' % testrecipe)
+        # Check bbappend file contents
+        appendfn = os.path.join(self.testlayer_path, recipesubdir, '%s_%%.bbappend' % testrecipe)
+        with open(appendfn, 'r') as f:
+            appendlines = f.readlines()
+        expected_appendlines = [
+            'FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"\n',
+            '\n',
+            'SRC_URI += "file://0001-Add-a-comment.patch;patchdir=.."\n',
+            '\n'
+        ]
+        self.assertEqual(appendlines, expected_appendlines)
+        self.assertExists(os.path.join(os.path.dirname(appendfn), testrecipe, '0001-Add-a-comment.patch'))
+        # Try building
+        bitbake('%s -c patch' % testrecipe)
+
+
 class DevtoolExtractTests(DevtoolBase):
 
     def test_devtool_extract(self):
@@ -1306,6 +1478,7 @@ class DevtoolExtractTests(DevtoolBase):
         matches2 = glob.glob(stampprefix2 + '*')
         self.assertFalse(matches2, 'Stamp files exist for recipe %s that should have been cleaned' % testrecipe2)
 
+    @OETestTag("runqemu")
     def test_devtool_deploy_target(self):
         # NOTE: Whilst this test would seemingly be better placed as a runtime test,
         # unfortunately the runtime tests run under bitbake and you can't run
@@ -1425,6 +1598,14 @@ class DevtoolExtractTests(DevtoolBase):
             self.fail('The following packages were not present in the image as expected: %s' % ', '.join(reqpkgs))
 
 class DevtoolUpgradeTests(DevtoolBase):
+
+    def setUp(self):
+        super().setUp()
+        try:
+            runCmd("git config --global user.name")
+            runCmd("git config --global user.email")
+        except:
+            self.skip("Git user.name and user.email must be set")
 
     def test_devtool_upgrade(self):
         # Check preconditions
@@ -1776,7 +1957,6 @@ class DevtoolUpgradeTests(DevtoolBase):
         self._test_recipe_contents(newrecipefile, checkvars, [])
         # Try again - change just name this time
         result = runCmd('devtool reset -n %s' % newrecipename)
-        shutil.rmtree(newsrctree)
         add_recipe()
         newrecipefile = os.path.join(self.workspacedir, 'recipes', newrecipename, '%s_%s.bb' % (newrecipename, recipever))
         result = runCmd('devtool rename %s %s' % (recipename, newrecipename))
@@ -1789,7 +1969,6 @@ class DevtoolUpgradeTests(DevtoolBase):
         self._test_recipe_contents(newrecipefile, checkvars, [])
         # Try again - change just version this time
         result = runCmd('devtool reset -n %s' % newrecipename)
-        shutil.rmtree(newsrctree)
         add_recipe()
         newrecipefile = os.path.join(self.workspacedir, 'recipes', recipename, '%s_%s.bb' % (recipename, newrecipever))
         result = runCmd('devtool rename %s -V %s' % (recipename, newrecipever))
@@ -1821,8 +2000,9 @@ class DevtoolUpgradeTests(DevtoolBase):
          Expected:       devtool modify is able to checkout the source of the kernel
                          and modification to the source and configurations are reflected
                          when building the kernel.
-         """
-        kernel_provider = get_bb_var('PREFERRED_PROVIDER_virtual/kernel')
+        """
+        kernel_provider = self.td['PREFERRED_PROVIDER_virtual/kernel']
+
         # Clean up the environment
         bitbake('%s -c clean' % kernel_provider)
         tempdir = tempfile.mkdtemp(prefix='devtoolqa')
@@ -1849,33 +2029,28 @@ class DevtoolUpgradeTests(DevtoolBase):
         self.assertExists(os.path.join(tempdir, 'Makefile'), 'Extracted source could not be found')
         #Step 4.2
         configfile = os.path.join(tempdir,'.config')
-        diff = runCmd('diff %s %s' % (tmpconfig, configfile))
-        self.assertEqual(0,diff.status,'Kernel .config file is not the same using bitbake and devtool')
+        runCmd('diff %s %s' % (tmpconfig, configfile))
+
         #Step 4.3
         #NOTE: virtual/kernel is mapped to kernel_provider
-        result = runCmd('devtool build %s' % kernel_provider)
-        self.assertEqual(0,result.status,'Cannot build kernel using `devtool build`')
+        runCmd('devtool build %s' % kernel_provider)
         kernelfile = os.path.join(get_bb_var('KBUILD_OUTPUT', kernel_provider), 'vmlinux')
         self.assertExists(kernelfile, 'Kernel was not build correctly')
 
         #Modify the kernel source
-        modfile = os.path.join(tempdir,'arch/x86/boot/header.S')
-        modstring = "Use a boot loader. Devtool testing."
-        modapplied = runCmd("sed -i 's/Use a boot loader./%s/' %s" % (modstring, modfile))
-        self.assertEqual(0,modapplied.status,'Modification to %s on kernel source failed' % modfile)
+        modfile = os.path.join(tempdir, 'init/version.c')
+        runCmd("sed -i 's/Linux/LiNuX/g' %s" % (modfile))
+
         #Modify the configuration
-        codeconfigfile = os.path.join(tempdir,'.config.new')
+        codeconfigfile = os.path.join(tempdir, '.config.new')
         modconfopt = "CONFIG_SG_POOL=n"
-        modconf = runCmd("sed -i 's/CONFIG_SG_POOL=y/%s/' %s" % (modconfopt, codeconfigfile))
-        self.assertEqual(0,modconf.status,'Modification to %s failed' % codeconfigfile)
+        runCmd("sed -i 's/CONFIG_SG_POOL=y/%s/' %s" % (modconfopt, codeconfigfile))
+
         #Build again kernel with devtool
-        rebuild = runCmd('devtool build %s' % kernel_provider)
-        self.assertEqual(0,rebuild.status,'Fail to build kernel after modification of source and config')
+        runCmd('devtool build %s' % kernel_provider)
+
         #Step 4.4
-        bzimagename = 'bzImage-' + get_bb_var('KERNEL_VERSION_NAME', kernel_provider)
-        bzimagefile = os.path.join(get_bb_var('D', kernel_provider),'boot', bzimagename)
-        checkmodcode = runCmd("grep '%s' %s" % (modstring, bzimagefile))
-        self.assertEqual(0,checkmodcode.status,'Modification on kernel source failed')
+        runCmd("grep '%s' %s" % ('LiNuX', kernelfile))
+
         #Step 4.5
-        checkmodconfg = runCmd("grep %s %s" % (modconfopt, codeconfigfile))
-        self.assertEqual(0,checkmodconfg.status,'Modification to configuration file failed')
+        runCmd("grep %s %s" % (modconfopt, codeconfigfile))

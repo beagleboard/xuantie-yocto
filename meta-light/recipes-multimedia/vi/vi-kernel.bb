@@ -99,11 +99,11 @@ do_install() {
 
 #do_package_qa[noexec] = "1"
 
-FILES_${PN} += " ${base_libdir} "
-#FILES_${PN} += " ${libdir} "
-FILES_${PN} += " ${datadir} "
+FILES:${PN} += " ${base_libdir} "
+#FILES:${PN} += " ${libdir} "
+FILES:${PN} += " ${datadir} "
 
 PACKAGES = "${PN}"
 
-# RDEPENDS_${PN} = " "
-INSANE_SKIP_${PN} += " installed-vs-shipped "
+# RDEPENDS:${PN} = " "
+INSANE_SKIP:${PN} += " installed-vs-shipped "

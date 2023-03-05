@@ -1,4 +1,6 @@
 require conf/machine/include/riscv/tune-riscv.inc
+#enable for public release
+require conf/machine/include/thead-proprietary.inc
 
 EXTERNAL_TOOLCHAIN ?= "${TOPDIR}/../../riscv-toolchain"
 TCMODE="external"
@@ -9,7 +11,7 @@ QEMU_TOOLCHAIN_PATH="${TOPDIR}/../../riscv-toolchain/csky-qemu/bin/"
 SYSROOT_PREFIX ??= " riscv64-buildroot-linux-gnu"
 EXTERNAL_TOOLCHAIN_SYSROOT="${EXTERNAL_TOOLCHAIN}/${SYSROOT_PREFIX}/sysroot"
 
-INSANE_SKIP_${PN} += "glibc-so gobject-introspection-so glibc-external"
+INSANE_SKIP:${PN} += "glibc-so gobject-introspection-so glibc-external"
 
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-thead"
 PREFERRED_PROVIDER_virtual/bootloader ?= "u-boot"
@@ -65,3 +67,8 @@ ASSUME_PROVIDED += "\
     compiler-rt-dev \
     compiler-rt-staticdev \
 "
+
+WARN_QA:remove = " buildpaths "
+
+__BBSEENSRCREV = "1"
+do_cleanall[network] = "1"

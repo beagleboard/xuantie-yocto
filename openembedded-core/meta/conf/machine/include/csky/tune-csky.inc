@@ -7,8 +7,8 @@ TUNEVALID[bigendian] = "Big endian mode"
 AVAILTUNES += "csky"
 
 # Default
-TUNE_FEATURES_tune-csky32 = "csky32"
-TUNE_ARCH_tune-csky32 = "csky32"
-TUNE_PKGARCH_tune-csky32 = "csky32"
-PACKAGE_EXTRA_ARCHS_tune-csky32 = "csky32"
+TUNE_FEATURES:tune-csky32 = "csky32"
+TUNE_ARCH:tune-csky32 = "csky32"
+TUNE_PKGARCH:tune-csky32 = "csky32"
+PACKAGE_EXTRA_ARCHS:tune-csky32 = "csky32"
 

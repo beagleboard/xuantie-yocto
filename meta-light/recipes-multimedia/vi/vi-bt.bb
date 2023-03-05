@@ -49,11 +49,11 @@ do_install() {
   install -m 0644 ${S}/driver/csi/bm_csi_ioctl.h                                              ${D}${includedir}/vvcam/csi
 }
 
-FILES_${PN} += " ${base_libdir} "
-FILES_${PN} += " ${libdir} "
-FILES_${PN} += " ${datadir} "
-FILES_${PN} += " ${includedir} "
+FILES:${PN} += " ${base_libdir} "
+FILES:${PN} += " ${libdir} "
+FILES:${PN} += " ${datadir} "
+FILES:${PN} += " ${includedir} "
 
 PACKAGES = "${PN}"
 
-# RDEPENDS_${PN} = " "
+# RDEPENDS:${PN} = " "

@@ -2,6 +2,6 @@
 # the default for the toolchain, which isn't necessarily correct for an
 # external toolchain.
 EFI_TUNE_ARCH = "-m32"
-EFI_TUNE_ARCH_x86-64 = "-m64"
-EFI_CC_tcmode-external = "${@'${CC}'.split()[0]} ${EFI_TUNE_ARCH}"
-EXTRA_OECONF_append_tcmode-external = " 'EFI_CC=${EFI_CC}'"
+EFI_TUNE_ARCH:x86-64 = "-m64"
+EFI_CC:tcmode-external = "${CCACHE}${HOST_PREFIX}gcc ${EFI_TUNE_ARCH}"
+EXTRA_OECONF:append:tcmode-external = " 'EFI_CC=${EFI_CC}'"

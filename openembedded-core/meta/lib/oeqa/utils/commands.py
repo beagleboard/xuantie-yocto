@@ -125,11 +125,11 @@ class Command(object):
 
     def stop(self):
         for thread in self.threads:
-            if thread.isAlive():
+            if thread.is_alive():
                 self.process.terminate()
             # let's give it more time to terminate gracefully before killing it
             thread.join(5)
-            if thread.isAlive():
+            if thread.is_alive():
                 self.process.kill()
                 thread.join()
 
@@ -168,18 +168,22 @@ class Result(object):
 
 
 def runCmd(command, ignore_status=False, timeout=None, assert_error=True, sync=True,
-          native_sysroot=None, limit_exc_output=0, output_log=None, **options):
+          native_sysroot=None, target_sys=None, limit_exc_output=0, output_log=None, **options):
     result = Result()
 
     if native_sysroot:
-        extra_paths = "%s/sbin:%s/usr/sbin:%s/usr/bin" % \
-                      (native_sysroot, native_sysroot, native_sysroot)
-        extra_libpaths = "%s/lib:%s/usr/lib" % \
-                         (native_sysroot, native_sysroot)
-        nenv = dict(options.get('env', os.environ))
-        nenv['PATH'] = extra_paths + ':' + nenv.get('PATH', '')
-        nenv['LD_LIBRARY_PATH'] = extra_libpaths + ':' + nenv.get('LD_LIBRARY_PATH', '')
-        options['env'] = nenv
+        new_env = dict(options.get('env', os.environ))
+        paths = new_env["PATH"].split(":")
+        paths = [
+            os.path.join(native_sysroot, "bin"),
+            os.path.join(native_sysroot, "sbin"),
+            os.path.join(native_sysroot, "usr", "bin"),
+            os.path.join(native_sysroot, "usr", "sbin"),
+        ] + paths
+        if target_sys:
+            paths = [os.path.join(native_sysroot, "usr", "bin", target_sys)] + paths
+        new_env["PATH"] = ":".join(paths)
+        options['env'] = new_env
 
     cmd = Command(command, timeout=timeout, output_log=output_log, **options)
     cmd.run()
@@ -188,7 +192,10 @@ def runCmd(command, ignore_status=False, timeout=None, assert_error=True, sync=T
     # call sync around the tests to ensure the IO queue doesn't get too large, taking any IO
     # hit here rather than in bitbake shutdown.
     if sync:
+        p = os.environ['PATH']
+        os.environ['PATH'] = "/usr/bin:/bin:/usr/sbin:/sbin:" + p
         os.system("sync")
+        os.environ['PATH'] = p
 
     result.command = command
     result.status = cmd.status

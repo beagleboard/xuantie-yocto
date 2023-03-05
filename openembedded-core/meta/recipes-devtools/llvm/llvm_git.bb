@@ -10,30 +10,28 @@ LIC_FILES_CHKSUM = "file://LICENSE.TXT;md5=8a15a0759ef07f2682d2ba4b893c9afe"
 
 DEPENDS = "libffi libxml2 zlib libedit ninja-native llvm-native"
 
-COMPATIBLE_HOST_riscv64 = "null"
-COMPATIBLE_HOST_riscv32 = "null"
+COMPATIBLE_HOST:riscv64 = "null"
+COMPATIBLE_HOST:riscv32 = "null"
 
-RDEPENDS_${PN}_append_class-target = " ncurses-terminfo"
+RDEPENDS:${PN}:append:class-target = " ncurses-terminfo"
 
 inherit cmake pkgconfig
 
 PROVIDES += "llvm${PV}"
 
-MAJOR_VERSION = "10"
-MINOR_VERSION = "0"
-PATCH_VERSION = "1"
+PV = "14.0.6"
 
-PV = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
+MAJOR_VERSION = "${@oe.utils.trim_version("${PV}", 1)}"
 
 LLVM_RELEASE = "${PV}"
-LLVM_DIR = "llvm${LLVM_RELEASE}"
 
 BRANCH = "release/${MAJOR_VERSION}.x"
-SRCREV = "ef32c611aa214dea855364efd7ba451ec5ec3f74"
-SRC_URI = "git://github.com/llvm/llvm-project.git;branch=${BRANCH} \
-           file://0006-llvm-TargetLibraryInfo-Undefine-libc-functions-if-th.patch;striplevel=2 \
+SRCREV = "f28c006a5895fc0e329fe15fead81e37457cb1d1"
+SRC_URI = "git://github.com/llvm/llvm-project.git;branch=${BRANCH};protocol=https \
            file://0007-llvm-allow-env-override-of-exe-path.patch;striplevel=2 \
-          "
+           file://0001-AsmMatcherEmitter-sort-ClassInfo-lists-by-name-as-we.patch;striplevel=2 \
+           file://llvm-config \
+           "
 
 UPSTREAM_CHECK_GITTAGREGEX = "llvmorg-(?P<pver>\d+(\.\d+)+)"
 
@@ -58,13 +56,17 @@ def get_llvm_arch(bb, d, arch_var):
 def get_llvm_host_arch(bb, d):
     return get_llvm_arch(bb, d, 'HOST_ARCH')
 
+PACKAGECONFIG ??= ""
+# if optviewer OFF, force the modules to be not found or the ones on the host would be found
+PACKAGECONFIG[optviewer] = ",-DPY_PYGMENTS_FOUND=OFF -DPY_PYGMENTS_LEXERS_C_CPP_FOUND=OFF -DPY_YAML_FOUND=OFF,python3-pygments python3-pyyaml,python3-pygments python3-pyyaml"
+
 #
 # Default to build all OE-Core supported target arches (user overridable).
 #
 LLVM_TARGETS ?= "AMDGPU;${@get_llvm_host_arch(bb, d)}"
 
-ARM_INSTRUCTION_SET_armv5 = "arm"
-ARM_INSTRUCTION_SET_armv4t = "arm"
+ARM_INSTRUCTION_SET:armv5 = "arm"
+ARM_INSTRUCTION_SET:armv4t = "arm"
 
 EXTRA_OECMAKE += "-DLLVM_ENABLE_ASSERTIONS=OFF \
                   -DLLVM_ENABLE_EXPENSIVE_CHECKS=OFF \
@@ -80,105 +82,93 @@ EXTRA_OECMAKE += "-DLLVM_ENABLE_ASSERTIONS=OFF \
                   -DPYTHON_EXECUTABLE=${HOSTTOOLS_DIR}/python3 \
                   -G Ninja"
 
-EXTRA_OECMAKE_append_class-target = "\
+EXTRA_OECMAKE:append:class-target = "\
                   -DCMAKE_CROSSCOMPILING:BOOL=ON \
                   -DLLVM_TABLEGEN=${STAGING_BINDIR_NATIVE}/llvm-tblgen${PV} \
                   -DLLVM_CONFIG_PATH=${STAGING_BINDIR_NATIVE}/llvm-config${PV} \
                  "
 
-EXTRA_OECMAKE_append_class-nativesdk = "\
+EXTRA_OECMAKE:append:class-nativesdk = "\
                   -DCMAKE_CROSSCOMPILING:BOOL=ON \
                   -DLLVM_TABLEGEN=${STAGING_BINDIR_NATIVE}/llvm-tblgen \
                   -DLLVM_CONFIG_PATH=${STAGING_BINDIR_NATIVE}/llvm-config${PV} \
                  "
 
-do_configure_prepend() {
-# Fix paths in llvm-config
-	sed -i "s|sys::path::parent_path(CurrentPath))\.str()|sys::path::parent_path(sys::path::parent_path(CurrentPath))).str()|g" ${S}/tools/llvm-config/llvm-config.cpp
-	sed -ri "s#/(bin|include|lib)(/?\")#/\1/${LLVM_DIR}\2#g" ${S}/tools/llvm-config/llvm-config.cpp
-	sed -ri "s#lib/${LLVM_DIR}#${baselib}/${LLVM_DIR}#g" ${S}/tools/llvm-config/llvm-config.cpp
+# patch out build host paths for reproducibility
+do_compile:prepend:class-target() {
+        sed -i -e "s,${WORKDIR},,g" ${B}/tools/llvm-config/BuildVariables.inc
 }
 
 do_compile() {
 	ninja -v ${PARALLEL_MAKE}
 }
 
-do_compile_class-native() {
+do_compile:class-native() {
 	ninja -v ${PARALLEL_MAKE} llvm-config llvm-tblgen
 }
 
 do_install() {
-	DESTDIR=${LLVM_INSTALL_DIR} ninja -v install
-	install -D -m 0755 ${B}/bin/llvm-config ${D}${libdir}/${LLVM_DIR}/llvm-config
+	DESTDIR=${D} ninja -v install
 
-	install -d ${D}${bindir}/${LLVM_DIR}
-	cp -r ${LLVM_INSTALL_DIR}${bindir}/* ${D}${bindir}/${LLVM_DIR}/
+        # llvm harcodes usr/lib as install path, so this corrects it to actual libdir
+        mv -T -n ${D}/${prefix}/lib ${D}/${libdir} || true
 
-	install -d ${D}${includedir}/${LLVM_DIR}
-	cp -r ${LLVM_INSTALL_DIR}${includedir}/* ${D}${includedir}/${LLVM_DIR}/
+        # Remove opt-viewer: https://llvm.org/docs/Remarks.html
+        rm -rf ${D}${datadir}/opt-viewer
+        rmdir ${D}${datadir}
 
-	install -d ${D}${libdir}/${LLVM_DIR}
-
-	# The LLVM sources have "/lib" embedded and so we cannot completely rely on the ${libdir} variable
-	if [ -d ${LLVM_INSTALL_DIR}${libdir}/ ]; then
-		cp -r ${LLVM_INSTALL_DIR}${libdir}/* ${D}${libdir}/${LLVM_DIR}/
-	elif [ -d ${LLVM_INSTALL_DIR}${prefix}/lib ]; then
-		cp -r ${LLVM_INSTALL_DIR}${prefix}/lib/* ${D}${libdir}/${LLVM_DIR}/
-	elif [ -d ${LLVM_INSTALL_DIR}${prefix}/lib64 ]; then
-		cp -r ${LLVM_INSTALL_DIR}${prefix}/lib64/* ${D}${libdir}/${LLVM_DIR}/
-	fi
-
-	# Remove unnecessary cmake files
-	rm -rf ${D}${libdir}/${LLVM_DIR}/cmake
-
-	ln -s ${LLVM_DIR}/libLLVM-${MAJOR_VERSION}${SOLIBSDEV} ${D}${libdir}/libLLVM-${MAJOR_VERSION}${SOLIBSDEV}
-
-	# We'll have to delete the libLLVM.so due to multiple reasons...
-	rm -rf ${D}${libdir}/${LLVM_DIR}/libLLVM.so
-	rm -rf ${D}${libdir}/${LLVM_DIR}/libLTO.so
+        # reproducibility
+        sed -i -e 's,${WORKDIR},,g' ${D}/${libdir}/cmake/llvm/LLVMConfig.cmake
 }
 
-do_install_class-native() {
+do_install:class-native() {
 	install -D -m 0755 ${B}/bin/llvm-tblgen ${D}${bindir}/llvm-tblgen${PV}
 	install -D -m 0755 ${B}/bin/llvm-config ${D}${bindir}/llvm-config${PV}
-	install -D -m 0755 ${B}/lib/libLLVM-${MAJOR_VERSION}.so ${D}${libdir}/libLLVM-${MAJOR_VERSION}.so
+	ln -sf llvm-config${PV} ${D}${bindir}/llvm-config
+}
+
+SYSROOT_PREPROCESS_FUNCS:append:class-target = " llvm_sysroot_preprocess"
+
+llvm_sysroot_preprocess() {
+	install -d ${SYSROOT_DESTDIR}${bindir_crossscripts}/
+	install -m 0755 ${WORKDIR}/llvm-config ${SYSROOT_DESTDIR}${bindir_crossscripts}/
+	ln -sf llvm-config ${SYSROOT_DESTDIR}${bindir_crossscripts}/llvm-config${PV}
 }
 
 PACKAGES =+ "${PN}-bugpointpasses ${PN}-llvmhello ${PN}-libllvm ${PN}-liboptremarks ${PN}-liblto"
 
-RRECOMMENDS_${PN}-dev += "${PN}-bugpointpasses ${PN}-llvmhello ${PN}-liboptremarks"
+RRECOMMENDS:${PN}-dev += "${PN}-bugpointpasses ${PN}-llvmhello ${PN}-liboptremarks"
 
-FILES_${PN}-bugpointpasses = "\
-    ${libdir}/${LLVM_DIR}/BugpointPasses.so \
+FILES:${PN}-bugpointpasses = "\
+    ${libdir}/BugpointPasses.so \
 "
 
-FILES_${PN}-libllvm = "\
-    ${libdir}/${LLVM_DIR}/libLLVM-${MAJOR_VERSION}.so \
+FILES:${PN}-libllvm = "\
     ${libdir}/libLLVM-${MAJOR_VERSION}.so \
 "
 
-FILES_${PN}-liblto += "\
-    ${libdir}/${LLVM_DIR}/libLTO.so.* \
+FILES:${PN}-liblto += "\
+    ${libdir}/libLTO.so.* \
 "
 
-FILES_${PN}-liboptremarks += "\
-    ${libdir}/${LLVM_DIR}/libRemarks.so.* \
+FILES:${PN}-liboptremarks += "\
+    ${libdir}/libRemarks.so.* \
 "
 
-FILES_${PN}-llvmhello = "\
-    ${libdir}/${LLVM_DIR}/LLVMHello.so \
+FILES:${PN}-llvmhello = "\
+    ${libdir}/LLVMHello.so \
 "
 
-FILES_${PN}-dev += " \
-    ${libdir}/${LLVM_DIR}/llvm-config \
-    ${libdir}/${LLVM_DIR}/libRemarks.so \
-    ${libdir}/${LLVM_DIR}/libLLVM-${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}.so \
+FILES:${PN}-dev += " \
+    ${libdir}/llvm-config \
+    ${libdir}/libRemarks.so \
+    ${libdir}/libLLVM-${PV}.so \
 "
 
-FILES_${PN}-staticdev += "\
-    ${libdir}/${LLVM_DIR}/*.a \
+FILES:${PN}-staticdev += "\
+    ${libdir}/*.a \
 "
 
-INSANE_SKIP_${PN}-libllvm += "dev-so"
+INSANE_SKIP:${PN}-libllvm += "dev-so"
 
 BBCLASSEXTEND = "native nativesdk"

@@ -1,0 +1,11 @@
+--- a/data/meson.build	2022-12-09 00:28:58.716295667 +0800
++++ b/data/meson.build	2022-12-09 00:30:16.823296802 +0800
+@@ -4,7 +4,7 @@
+ ]
+ foreach s : sessions
+   name_array = s[0].split('.')
+-  i18n.merge_file('',
++  i18n.merge_file(
+     input:  s[0],
+     output: '.'.join([name_array[0], name_array[1]]),
+     po_dir: '../po',

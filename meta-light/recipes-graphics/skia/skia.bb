@@ -22,7 +22,7 @@ EXTRA_OECMAKE += " \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DGR_GL_LOG_CALLS=0 -DGR_GL_CHECK_ERROR=0 "
 
-OECMAKE_CXX_FLAGS_append = " \
+OECMAKE_CXX_FLAGS:append = " \
 	-Wno-error=stringop-overflow \
 	-Wno-error=sizeof-pointer-memaccess \
 	-Wno-error=stringop-truncation \
@@ -93,9 +93,9 @@ do_install() {
         cp ${WORKDIR}/build/libskia.a ${D}${libdir}/
 }
 
-FILES_${PN} = "\
+FILES:${PN} = "\
         ${bindir}/* \
         ${libdir}/libskia.a \
 "
 
-INSANE_SKIP_${PN} += "dev-so"
+INSANE_SKIP:${PN} += "dev-so"

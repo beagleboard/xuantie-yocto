@@ -6,7 +6,7 @@ LICENSE = "CLOSED"
 COMPATIBLE_MACHINE = "light-*"
 
 DEPENDS = " process-linker video-memory pnna "
-RDEPENDS_${PN} += " process-linker video-memory pnna "
+RDEPENDS:${PN} += " process-linker video-memory pnna "
 
 SRC_URI = " \
             git://git@gitee.com/thead-yocto/plink_AI.git;branch=master;protocol=http \
@@ -54,9 +54,9 @@ do_install() {
     install -m 0755 ${S}/output/rootfs/plink_AI/input/face_detect/*          ${D}${datadir}/scene/plink_AI/input/face_detect
 }
 
-FILES_${PN} += " ${datadir} "
+FILES:${PN} += " ${datadir} "
 
 PACKAGES = "${PN}"
 
-INSANE_SKIP_${PN} += " debug-files already-stripped"
+INSANE_SKIP:${PN} += " debug-files already-stripped"
 

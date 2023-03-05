@@ -1,4 +1,6 @@
 #
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
@@ -53,6 +55,7 @@ class DpkgIndexer(Indexer):
 
         index_cmds = []
         deb_dirs_found = False
+        index_sign_files = set()
         for arch in arch_list:
             arch_dir = os.path.join(self.deploy_dir, arch)
             if not os.path.isdir(arch_dir):
@@ -62,7 +65,10 @@ class DpkgIndexer(Indexer):
 
             cmd += "%s -fcn Packages > Packages.gz;" % gzip
 
-            with open(os.path.join(arch_dir, "Release"), "w+") as release:
+            release_file = os.path.join(arch_dir, "Release")
+            index_sign_files.add(release_file)
+
+            with open(release_file, "w+") as release:
                 release.write("Label: %s\n" % arch)
 
             cmd += "PSEUDO_UNLOAD=1 %s release . >> Release" % apt_ftparchive
@@ -76,10 +82,19 @@ class DpkgIndexer(Indexer):
             return
 
         oe.utils.multiprocess_launch(create_index, index_cmds, self.d)
-        if self.d.getVar('PACKAGE_FEED_SIGN') == '1':
-            raise NotImplementedError('Package feed signing not implementd for dpkg')
+        if self.d.getVar('PACKAGE_FEED_SIGN', True) == '1':
+            signer = get_signer(self.d, self.d.getVar('PACKAGE_FEED_GPG_BACKEND', True))
+        else:
+            signer = None
+        if signer:
+            for f in index_sign_files:
+                signer.detach_sign(f,
+                                   self.d.getVar('PACKAGE_FEED_GPG_NAME', True),
+                                   self.d.getVar('PACKAGE_FEED_GPG_PASSPHRASE_FILE', True),
+                                   output_suffix="gpg",
+                                   use_sha256=True)
 
-class DpkgPkgsList(PkgsList):
+class PMPkgsList(PkgsList):
 
     def list_pkgs(self):
         cmd = [bb.utils.which(os.getenv('PATH'), "dpkg-query"),
@@ -214,7 +229,7 @@ class DpkgPM(OpkgDpkgPM):
 
                     tmp_sf.write(status)
 
-        os.rename(status_file + ".tmp", status_file)
+        bb.utils.rename(status_file + ".tmp", status_file)
 
     def run_pre_post_installs(self, package_name=None):
         """
@@ -276,18 +291,23 @@ class DpkgPM(OpkgDpkgPM):
 
         self.deploy_dir_unlock()
 
-    def install(self, pkgs, attempt_only=False):
+    def install(self, pkgs, attempt_only=False, hard_depends_only=False):
         if attempt_only and len(pkgs) == 0:
             return
 
         os.environ['APT_CONFIG'] = self.apt_conf_file
 
-        cmd = "%s %s install --allow-downgrades --allow-remove-essential --allow-change-held-packages --allow-unauthenticated --no-remove %s" % \
-              (self.apt_get_cmd, self.apt_args, ' '.join(pkgs))
+        extra_args = ""
+        if hard_depends_only:
+            extra_args = "--no-install-recommends"
+
+        cmd = "%s %s install --allow-downgrades --allow-remove-essential --allow-change-held-packages --allow-unauthenticated --no-remove %s %s" % \
+              (self.apt_get_cmd, self.apt_args, extra_args, ' '.join(pkgs))
 
         try:
             bb.note("Installing the following packages: %s" % ' '.join(pkgs))
-            subprocess.check_output(cmd.split(), stderr=subprocess.STDOUT)
+            output = subprocess.check_output(cmd.split(), stderr=subprocess.STDOUT)
+            bb.note(output.decode("utf-8"))
         except subprocess.CalledProcessError as e:
             (bb.fatal, bb.warn)[attempt_only]("Unable to install packages. "
                                               "Command '%s' returned %d:\n%s" %
@@ -298,13 +318,13 @@ class DpkgPM(OpkgDpkgPM):
             for dir in dirs:
                 new_dir = re.sub(r"\.dpkg-new", "", dir)
                 if dir != new_dir:
-                    os.rename(os.path.join(root, dir),
+                    bb.utils.rename(os.path.join(root, dir),
                               os.path.join(root, new_dir))
 
             for file in files:
                 new_file = re.sub(r"\.dpkg-new", "", file)
                 if file != new_file:
-                    os.rename(os.path.join(root, file),
+                    bb.utils.rename(os.path.join(root, file),
                               os.path.join(root, new_file))
 
 
@@ -312,6 +332,10 @@ class DpkgPM(OpkgDpkgPM):
         if not pkgs:
             return
 
+        os.environ['D'] = self.target_rootfs
+        os.environ['OFFLINE_ROOT'] = self.target_rootfs
+        os.environ['IPKG_OFFLINE_ROOT'] = self.target_rootfs
+        os.environ['OPKG_OFFLINE_ROOT'] = self.target_rootfs
         os.environ['INTERCEPT_DIR'] = self.intercepts_dir
 
         if with_dependencies:
@@ -343,8 +367,12 @@ class DpkgPM(OpkgDpkgPM):
         if feed_uris == "":
             return
 
+
         sources_conf = os.path.join("%s/etc/apt/sources.list"
                                     % self.target_rootfs)
+        if not os.path.exists(os.path.dirname(sources_conf)):
+            return
+
         arch_list = []
 
         if feed_archs is None:
@@ -362,11 +390,11 @@ class DpkgPM(OpkgDpkgPM):
                 if arch_list:
                     for arch in arch_list:
                         bb.note('Adding dpkg channel at (%s)' % uri)
-                        sources_file.write("deb %s/%s ./\n" %
+                        sources_file.write("deb [trusted=yes] %s/%s ./\n" %
                                            (uri, arch))
                 else:
                     bb.note('Adding dpkg channel at (%s)' % uri)
-                    sources_file.write("deb %s ./\n" % uri)
+                    sources_file.write("deb [trusted=yes] %s ./\n" % uri)
 
     def _create_configs(self, archs, base_archs):
         base_archs = re.sub(r"_", r"-", base_archs)
@@ -406,14 +434,14 @@ class DpkgPM(OpkgDpkgPM):
 
         with open(os.path.join(self.apt_conf_dir, "sources.list"), "w+") as sources_file:
             for arch in arch_list:
-                sources_file.write("deb file:%s/ ./\n" %
+                sources_file.write("deb [trusted=yes] file:%s/ ./\n" %
                                    os.path.join(self.deploy_dir, arch))
 
         base_arch_list = base_archs.split()
         multilib_variants = self.d.getVar("MULTILIB_VARIANTS");
         for variant in multilib_variants.split():
             localdata = bb.data.createCopy(self.d)
-            variant_tune = localdata.getVar("DEFAULTTUNE_virtclass-multilib-" + variant, False)
+            variant_tune = localdata.getVar("DEFAULTTUNE:virtclass-multilib-" + variant, False)
             orig_arch = localdata.getVar("DPKG_ARCH")
             localdata.setVar("DEFAULTTUNE", variant_tune)
             variant_arch = localdata.getVar("DPKG_ARCH")
@@ -461,7 +489,7 @@ class DpkgPM(OpkgDpkgPM):
                      "returned %d:\n%s" % (cmd, e.returncode, e.output.decode("utf-8")))
 
     def list_installed(self):
-        return DpkgPkgsList(self.d, self.target_rootfs).list_pkgs()
+        return PMPkgsList(self.d, self.target_rootfs).list_pkgs()
 
     def package_info(self, pkg):
         """

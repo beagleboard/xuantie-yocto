@@ -1,8 +1,7 @@
 # Author:       Patrick Ohly <patrick.ohly@intel.com>
 # Copyright:    Copyright (C) 2015 Intel Corporation
 #
-# This file is licensed under the MIT license, see COPYING.MIT in
-# this source distribution for the terms.
+# SPDX-License-Identifier: MIT
 
 # This class is used like rm_work:
 # INHERIT += "rm_work_and_downloads"
@@ -28,6 +27,6 @@ inherit rm_work
 
 # Instead go up one level and remove ourself.
 DL_DIR = "${BASE_WORKDIR}/${MULTIMACH_TARGET_SYS}/${PN}/downloads"
-do_rm_work_append () {
+do_rm_work:append () {
     rm -rf ${DL_DIR}
 }

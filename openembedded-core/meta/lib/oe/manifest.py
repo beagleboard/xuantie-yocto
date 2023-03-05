@@ -1,4 +1,6 @@
 #
+# Copyright OpenEmbedded Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
@@ -191,14 +193,8 @@ class Manifest(object, metaclass=ABCMeta):
 
 def create_manifest(d, final_manifest=False, manifest_dir=None,
                     manifest_type=Manifest.MANIFEST_TYPE_IMAGE):
-    from oe.package_manager.rpm.manifest import RpmManifest
-    from oe.package_manager.ipk.manifest import OpkgManifest
-    from oe.package_manager.deb.manifest import DpkgManifest
-    manifest_map = {'rpm': RpmManifest,
-                    'ipk': OpkgManifest,
-                    'deb': DpkgManifest}
-
-    manifest = manifest_map[d.getVar('IMAGE_PKGTYPE')](d, manifest_dir, manifest_type)
+    import importlib
+    manifest = importlib.import_module('oe.package_manager.' + d.getVar('IMAGE_PKGTYPE') + '.manifest').PkgManifest(d, manifest_dir, manifest_type)
 
     if final_manifest:
         manifest.create_final()

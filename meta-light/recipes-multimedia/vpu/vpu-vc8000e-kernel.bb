@@ -49,6 +49,6 @@ do_install() {
 }
 
 PACKAGES = "${PN}"
-FILES_${PN} = "${base_libdir} ${includedir} ${sysconfdir} ${datadir} "
+FILES:${PN} = "${base_libdir} ${includedir} ${sysconfdir} ${datadir} "
 
-INSANE_SKIP_${PN} += " debug-files staticdev "
+INSANE_SKIP:${PN} += " debug-files staticdev "

@@ -3,7 +3,7 @@ DESCRIPTION = "LFTP is a sophisticated file transfer program with \
                FISH, SFTP, HTTPS and FTPS protocols"
 HOMEPAGE = "http://lftp.yar.ru/"
 SECTION = "console/network"
-LICENSE = "GPLv3"
+LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
 
 SRC_URI = "http://lftp.yar.ru/ftp/lftp-${PV}.tar.bz2"
@@ -23,9 +23,9 @@ PACKAGECONFIG[gnutls] = "--with-gnutls, --without-gnutls, gnutls"
 PACKAGECONFIG[readline] = "--with-readline=${STAGING_INCDIR}/.. --with-readline-inc=${STAGING_INCDIR} --with-readline-lib=-lreadline, --with-readline=no, readline"
 PACKAGECONFIG[expat] = "--with-expat=${STAGING_INCDIR}/.. --with-expat-inc=${STAGING_INCDIR} --with-expat-lib=-lexpat, , expat"
 
-do_install_append() {
+do_install:append() {
 	rm -rf ${D}${libdir}/charset.alias
 }
-FILES_${PN} += "${datadir}/icons/hicolor"
-FILES_${PN}-dbg += "${libdir}/lftp/${PV}/.debug"
-RDEPENDS_${PN} = "perl bash readline"
+FILES:${PN} += "${datadir}/icons/hicolor"
+FILES:${PN}-dbg += "${libdir}/lftp/${PV}/.debug"
+RDEPENDS:${PN} = "perl bash readline"

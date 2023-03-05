@@ -46,14 +46,14 @@ do_install() {
   cp memtool ${D}${bindir}
 }
 
-FILES_${PN} += " ${base_libdir} "
-FILES_${PN} += " ${libdir} "
-FILES_${PN} += " ${datadir} "
-FILES_${PN} += " ${bindir} "
+FILES:${PN} += " ${base_libdir} "
+FILES:${PN} += " ${libdir} "
+FILES:${PN} += " ${datadir} "
+FILES:${PN} += " ${bindir} "
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 
 PACKAGES = "${PN}"
 
-# RDEPENDS_${PN} = " "
+# RDEPENDS:${PN} = " "

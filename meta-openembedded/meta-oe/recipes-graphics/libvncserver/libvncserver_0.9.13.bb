@@ -2,13 +2,13 @@ DESCRIPTION = "library for easy implementation of a RDP/VNC server"
 HOMEPAGE = "https://libvnc.github.io"
 SECTION = "libs"
 PRIORITY = "optional"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=361b6b837cad26c6900a926b62aada5f"
 
+# ffmpeg support is not currently compatible with ffmpeg 5.0
 PACKAGECONFIG ??= " \
     24bpp \
     filetransfer \
-    ${@bb.utils.contains('LICENSE_FLAGS_WHITELIST','commercial','ffmpeg','',d)} \
     gcrypt \
     gnutls \
     jpeg \
@@ -40,11 +40,11 @@ PACKAGECONFIG[websockets] = "-DWITH_WEBSOCKETS=ON,-DWITH_WEBSOCKETS=OFF,"
 PACKAGECONFIG[zlib] = "-DWITH_ZLIB=ON,-DWITH_ZLIB=OFF,zlib"
 
 PACKAGE_BEFORE_PN = "libvncclient"
-FILES_libvncclient = "${libdir}/libvncclient.*"
+FILES:libvncclient = "${libdir}/libvncclient.*"
 
 inherit cmake
 
-SRC_URI = "git://github.com/LibVNC/libvncserver"
+SRC_URI = "git://github.com/LibVNC/libvncserver;branch=master;protocol=https"
 SRCREV = "2aa20dad4c23c18948d3f63b33f9dfec1f837729"
 
 S = "${WORKDIR}/git"

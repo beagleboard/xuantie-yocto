@@ -7,6 +7,6 @@ SECTION = "devel"
 
 inherit external-toolchain
 
-FILES_${PN} = "${bindir}/op* ${datadir}/oprofile"
-FILES_${PN}-doc = "${docdir}/oprofile ${mandir}/man1/op*"
-FILES_${PN}-staticdev = "${libdir}/oprofile/*.a"
+FILES:${PN} = "${bindir}/op* ${datadir}/oprofile"
+FILES:${PN}-doc = "${docdir}/oprofile ${mandir}/man1/op*"
+FILES:${PN}-staticdev = "${libdir}/oprofile/*.a"

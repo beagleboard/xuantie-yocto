@@ -1,4 +1,6 @@
 #
+# Copyright BitBake Contributors
+#
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
@@ -60,7 +62,7 @@ class Popen(subprocess.Popen):
         "close_fds": True,
         "preexec_fn": subprocess_setup,
         "stdout": subprocess.PIPE,
-        "stderr": subprocess.STDOUT,
+        "stderr": subprocess.PIPE,
         "stdin": subprocess.PIPE,
         "shell": False,
     }
@@ -142,7 +144,7 @@ def _logged_communicate(pipe, log, input, extrafiles):
         while pipe.poll() is None:
             read_all_pipes(log, rin, outdata, errdata)
 
-        # Pocess closed, drain all pipes...
+        # Process closed, drain all pipes...
         read_all_pipes(log, rin, outdata, errdata)
     finally:
         log.flush()
@@ -181,5 +183,8 @@ def run(cmd, input=None, log=None, extrafiles=None, **options):
             stderr = stderr.decode("utf-8")
 
     if pipe.returncode != 0:
+        if log:
+            # Don't duplicate the output in the exception if logging it
+            raise ExecutionError(cmd, pipe.returncode, None, None)
         raise ExecutionError(cmd, pipe.returncode, stdout, stderr)
     return stdout, stderr

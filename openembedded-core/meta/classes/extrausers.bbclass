@@ -1,3 +1,9 @@
+#
+# Copyright OpenEmbedded Contributors
+#
+# SPDX-License-Identifier: MIT
+#
+
 # This bbclass is used for image level user/group configuration.
 # Inherit this class if you want to make EXTRA_USERS_PARAMS effective.
 
@@ -14,10 +20,10 @@
 
 inherit useradd_base
 
-PACKAGE_INSTALL_append = " ${@['', 'base-passwd shadow'][bool(d.getVar('EXTRA_USERS_PARAMS'))]}"
+PACKAGE_INSTALL:append = " ${@['', 'base-passwd shadow'][bool(d.getVar('EXTRA_USERS_PARAMS'))]}"
 
 # Image level user / group settings
-ROOTFS_POSTPROCESS_COMMAND_append = " set_user_group;"
+ROOTFS_POSTPROCESS_COMMAND:append = " set_user_group;"
 
 # Image level user / group settings
 set_user_group () {
@@ -45,6 +51,9 @@ set_user_group () {
 				;;
 			usermod)
 				perform_usermod "${IMAGE_ROOTFS}" "-R ${IMAGE_ROOTFS} $opts"
+				;;
+			passwd-expire)
+				perform_passwd_expire "${IMAGE_ROOTFS}" "$opts"
 				;;
 			groupmod)
 				perform_groupmod "${IMAGE_ROOTFS}" "-R ${IMAGE_ROOTFS} $opts"

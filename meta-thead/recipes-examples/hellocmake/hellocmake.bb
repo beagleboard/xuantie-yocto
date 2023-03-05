@@ -36,6 +36,6 @@ do_install() {
 }
 
 
-INSANE_SKIP_${PN} += "debug-files file-rdeps dev-deps"
-INSANE_SKIP_${PN}-dev += "dev-elf"
+INSANE_SKIP:${PN} += "debug-files file-rdeps dev-deps"
+INSANE_SKIP:${PN}-dev += "dev-elf"
 

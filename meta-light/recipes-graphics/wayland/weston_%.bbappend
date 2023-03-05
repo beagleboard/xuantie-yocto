@@ -1,6 +1,6 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-SRC_URI_append = " \
+SRC_URI:append = " \
                   file://0001-Backporting-for-upstream-patch-to-support-app_ids-of.patch \
                   file://0002-Backporting-upstream-patch-to-fix-input-segment-faul.patch \
                   file://0001-Reset-all-planes-state-due-to-hotplug-dirty-state.patch \

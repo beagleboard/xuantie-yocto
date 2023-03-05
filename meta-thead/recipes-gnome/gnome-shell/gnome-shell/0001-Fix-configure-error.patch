@@ -1,0 +1,26 @@
+diff --git a/data/meson.build b/data/meson.build
+index 88a6176..453a6b6 100644
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -17,7 +17,7 @@ desktopconf.set('VERSION', meson.project_version())
+ desktopconf.set('systemd_hidden', have_systemd ? 'true' : 'false')
+ 
+ foreach desktop_file : desktop_files
+-  i18n.merge_file('desktop',
++  i18n.merge_file(
+     input: configure_file(
+       input: desktop_file + '.in.in',
+       output: desktop_file + '.in',
+diff --git a/src/calendar-server/meson.build b/src/calendar-server/meson.build
+index 7363282..8b4ef41 100644
+--- a/src/calendar-server/meson.build
++++ b/src/calendar-server/meson.build
+@@ -27,7 +27,7 @@ configure_file(
+   install_dir: servicedir
+ )
+ 
+-i18n.merge_file('evolution-calendar.desktop',
++i18n.merge_file(
+   input: 'evolution-calendar.desktop.in',
+   output: 'evolution-calendar.desktop',
+   po_dir: po_dir,
