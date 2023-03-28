@@ -71,3 +71,16 @@ MACHINE=light-beagle bitbake -k thead-image-linux
 rsync -av ../sstate-cache/ /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/sstate-cache/ --delete
 ```
 #
+
+# Flashing Board
+
+```
+sudo fastboot flash ram ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin
+sudo fastboot reboot
+sudo fastboot oem format
+sudo fastboot flash uboot ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin
+sudo fastboot flash boot ./tmp-glibc/deploy/images/light-beagle/boot.ext4
+sudo fastboot flash root ./tmp-glibc/deploy/images/light-beagle/thead-image-linux-light-beagle-*.rootfs.ext4
+sudo fastboot reboot
+```
+#
