@@ -8,14 +8,17 @@ before_script:
     - ssh-keyscan git.beagleboard.org >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
 
+cache:
+  key: "$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+  paths:
+    - thead-build/downloads/*.tar.*
+
 build:
   tags:
     - docker-amd64
   stage: build
   script:
-    - pwd
     - source openembedded-core/oe-init-build-env thead-build/light-fm
-    - pwd
     - mkdir ../downloads ; rsync -a /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/ ../downloads/
     - MACHINE=light-beagle bitbake -k thead-image-linux
     - cp -v ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin ../../deploy/ || true
