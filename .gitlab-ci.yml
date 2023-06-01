@@ -12,6 +12,7 @@ cache:
   key: "$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
   paths:
     - thead-build/downloads/*.tar.*
+    - thead-build/sstate-cache/*
 
 build:
   tags:
