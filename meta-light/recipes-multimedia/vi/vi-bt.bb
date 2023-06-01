@@ -8,8 +8,9 @@ COMPATIBLE_MACHINE = "light-*"
 #DEPENDS = " openssl cmake-native python3 zlib boost"
 DEPENDS = " openssl cmake-native python3 zlib boost linux-thead"
 
+#git://git@gitee.com/thead-yocto/baremetal-drivers.git;branch=master;protocol=http \
 SRC_URI = " \
-            git://git@gitee.com/thead-yocto/baremetal-drivers.git;branch=master;protocol=http \
+            git://beaglev-ahead-yocto:glpat-P8ZtJQxXeS8pvmjYLTdW@git.beagleboard.org/beaglev-ahead/baremetal-drivers;branch=master;protocol=https \
           "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"
