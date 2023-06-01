@@ -5,7 +5,8 @@ LICENSE = "CLOSED"
 
 COMPATIBLE_MACHINE = "light-*"
 
-SRC_URI = "git://git@gitee.com/thead-yocto/mesa3d-proprietary.git;branch=master;protocol=http"
+#SRC_URI = "git://git@gitee.com/thead-yocto/mesa3d-proprietary.git;branch=master;protocol=http"
+SRC_URI = "git://github.com/thead-yocto-mirror/mesa3d-proprietary.git;branch=master;protocol=https"
 
 do_compile[noexec] = "1"
 do_configure[noexec] = "1"
