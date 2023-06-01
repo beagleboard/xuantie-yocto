@@ -29,6 +29,7 @@ build:
     - cp -v ./tmp-glibc/deploy/images/light-beagle/light-fm-image-linux-light-beagle.ext4 ../../deploy/root.ext4 || true
     - xz -vT8 deploy/boot.ext4 || true
     - xz -vT8 deploy/root.ext4 || true
+    - cat /builds/beaglev-ahead/xuantie-yocto/thead-build/light-fm/tmp-glibc/work/riscv64-oe-linux/vi-sensor/1.0-r0/temp/log.do_compile.* || true
   artifacts:
     expire_in: 5 days
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
