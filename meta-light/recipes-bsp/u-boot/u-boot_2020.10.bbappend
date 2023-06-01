@@ -2,11 +2,12 @@ COMPATIBLE_MACHINE = "light-*"
 
 SRC_URI = " \
      git://git@git.beagleboard.org/beaglev-ahead/beaglev-ahead-u-boot.git;branch=beaglev-v2020.01-1.1.2;protocol=ssh \
+     file://fw_env.config \
 "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"
 THEAD_LINUX_TAG ?= "${THEAD_BSP_TAG}"
-SRCREV = "${THEAD_LINUX_TAG}"
+SRCREV = "beaglev-v2020.01-1.1.2"
 LICENSE = "CLOSED"
 
 do_configure:append() {
