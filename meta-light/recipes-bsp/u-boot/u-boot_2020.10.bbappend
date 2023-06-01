@@ -1,9 +1,7 @@
 COMPATIBLE_MACHINE = "light-*"
 
 SRC_URI = " \
-     git://git@gitee.com/thead-yocto/u-boot.git;branch=master;protocol=http \ 
-     file://fw_env.config \
-     file://0001-no-strip-fw_printenv.patch \
+     git://git@git.beagleboard.org/beaglev-ahead/beaglev-ahead-u-boot.git;branch=beaglev-v2020.01-1.1.2;protocol=ssh \
 "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"
