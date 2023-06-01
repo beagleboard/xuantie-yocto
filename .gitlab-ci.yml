@@ -18,6 +18,7 @@ build:
     - docker-amd64
   stage: build
   script:
+    - curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/bin/repo ; chmod a+rx /usr/bin/repo
     - source openembedded-core/oe-init-build-env thead-build/light-fm
     - mkdir ../downloads ; rsync -a /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/ ../downloads/
     - MACHINE=light-beagle bitbake -k thead-image-linux
