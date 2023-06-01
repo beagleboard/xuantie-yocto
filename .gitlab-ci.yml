@@ -1,0 +1,8 @@
+image: robertcnelson/ubuntu-2004-yocto:latest
+build:
+  tags:
+    - docker-amd64
+  stage: build
+  script:
+    - source openembedded-core/oe-init-build-env thead-build/light-fm
+    - MACHINE=light-beagle bitbake -k thead-image-linux
