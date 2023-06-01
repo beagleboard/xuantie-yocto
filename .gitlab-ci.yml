@@ -1,10 +1,25 @@
 image: robertcnelson/ubuntu-2004-yocto:latest
 
+before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan git.beagleboard.org >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+
 build:
   tags:
     - docker-amd64
   stage: build
   script:
     - source openembedded-core/oe-init-build-env thead-build/light-fm
-    - mkdir ../downloads ; rsync -av /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/ ../downloads/
+    - mkdir ../downloads ; rsync -a /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/ ../downloads/
     - MACHINE=light-beagle bitbake -k thead-image-linux
+    - cp -v ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin ../../deploy/ || true
+    - cp -v ./tmp-glibc/deploy/images/light-beagle/boot.ext4 ../../deploy/ || true
+    - cp -v ./tmp-glibc/deploy/images/light-beagle/light-fm-image-linux-light-beagle.ext4 ../../deploy/ || true
+  artifacts:
+    paths:
+      - "./deploy/"
+
