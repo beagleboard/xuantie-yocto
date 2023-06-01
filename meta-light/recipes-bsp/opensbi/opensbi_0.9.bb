@@ -148,6 +148,13 @@ do_deploy () {
        mkdir -p ${DEPLOY_DIR_IMAGE}/.boot
     fi
 
+    mkdir -p ${DEPLOY_DIR_IMAGE}/.boot/extlinux/ || true
+    echo "label Linux eMMC" > ${DEPLOY_DIR_IMAGE}/.boot/extlinux/extlinux.conf
+    echo "    kernel /Image" >> ${DEPLOY_DIR_IMAGE}/.boot/extlinux/extlinux.conf
+    echo "    append root=/dev/mmcblk0p3 ro rootfstype=ext4 rootwait console=ttyS0,115200 earlycon clk_ignore_unused net.ifnames=0" >> ${DEPLOY_DIR_IMAGE}/.boot/extlinux/extlinux.conf
+    echo "    fdtdir /" >> ${DEPLOY_DIR_IMAGE}/.boot/extlinux/extlinux.conf
+    echo "    #fdtoverlays /overlays/<file>.dtbo" >> ${DEPLOY_DIR_IMAGE}/.boot/extlinux/extlinux.conf
+
     if [ -f ${DEPLOYDIR}/fw_dynamic.bin ]; then
        cp -f ${DEPLOYDIR}/fw_dynamic.bin ${DEPLOY_DIR_IMAGE}/.boot
     fi
