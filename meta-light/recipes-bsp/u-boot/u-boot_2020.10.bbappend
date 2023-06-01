@@ -2,6 +2,7 @@ COMPATIBLE_MACHINE = "light-*"
 
 SRC_URI = " \
      git://git@git.beagleboard.org/beaglev-ahead/beaglev-ahead-u-boot.git;branch=beaglev-v2020.01-1.1.2;protocol=ssh \
+     file://fw_env.config \
 "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"
@@ -19,9 +20,14 @@ do_compile:append () {
 	oe_runmake envtools
 }
 
+SRC_URI += "file://fw_env.config"
+
 do_install:append() {
     install -d ${D}${sysconfdir}
     install -d ${D}${bindir}
+    install -m 0644 ${WORKDIR}/fw_env.config ${D}${sysconfdir}
+    install -m 0755 ${B}/tools/env/fw_printenv ${D}${bindir}
+    ln -rsf ${D}${bindir}/fw_printenv ${D}${bindir}/fw_setenv
 }
 
 FILES:${PN} += " ${bindir} "
