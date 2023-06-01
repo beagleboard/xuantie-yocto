@@ -3,8 +3,11 @@ require recipes-kernel/linux/linux-yocto.inc
 DEPENDS = "e2fsprogs-native opensbi"
 
 SRC_URI = " \
-            git://git@gitee.com/thead-yocto/kernel.git;branch=master;protocol=http \
+            git://git@git.beagleboard.org/beaglev-ahead/beaglev-ahead-linux.git;branch=beaglev-v5.10.113-1.1.2;protocol=ssh \
 "
+
+KERNEL_DEFCONFIG = "arch/riscv/configs/beaglev_defconfig"
+
 # crop the kernel based on the defconfig
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI:light-b-product-release = " \
