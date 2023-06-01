@@ -7,7 +7,7 @@ COMPATIBLE_MACHINE = "light-*"
 DEPENDS += " linux-thead xtensa-dsp "
 
 SRC_URI = " \
-            git://git@gitee.com/thead-yocto/light-images-proprietary.git;branch=master;protocol=http \
+            git://github.com/thead-yocto-mirror/light-images-proprietary.git;branch=master;protocol=https \
           "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"
