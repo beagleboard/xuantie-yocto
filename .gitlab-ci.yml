@@ -11,7 +11,9 @@ before_script:
 cache:
   key: "$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
   paths:
-    - thead-build/downloads/*.tar.*
+    - thead-build/downloads/*.tar.bz2
+    - thead-build/downloads/*.tar.gz
+    - thead-build/downloads/*.tar.xz
     - thead-build/sstate-cache/*
 
 build:
@@ -20,7 +22,7 @@ build:
   stage: build
   script:
     - source openembedded-core/oe-init-build-env thead-build/light-fm
-    - mkdir -p ../downloads ; rsync -a /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/ ../downloads/
+    - mkdir -p ../downloads ; rsync -av /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/ ../downloads/
     - BB_NUMBER_THREADS=8 MACHINE=light-beagle bitbake -k thead-image-linux || BB_NUMBER_THREADS=2 MACHINE=light-beagle bitbake -k thead-image-linux || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin ../../deploy/ || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/boot.ext4 ../../deploy/ || true
