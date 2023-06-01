@@ -13,6 +13,7 @@ build:
     - docker-amd64
   stage: build
   script:
+    - pwd
     - source openembedded-core/oe-init-build-env thead-build/light-fm
     - pwd
     - mkdir ../downloads ; rsync -a /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/ ../downloads/
