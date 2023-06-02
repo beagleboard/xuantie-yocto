@@ -6,7 +6,8 @@ HOMEPAGE = "https://gitee.com/thead-yocto/thead-linux/"
 THEAD_LINUX_TAG ?= "${AUTOREV}"
 SRCREV = "${THEAD_LINUX_TAG}"
 
-SRC_URI = "git://git@gitee.com/thead-yocto/prd-utils.git;branch=master;protocol=http"
+#SRC_URI = "git://git@gitee.com/thead-yocto/prd-utils.git;branch=master;protocol=http"
+SRC_URI = "git://github.com/thead-yocto-mirror/prd-utils.git;branch=master;protocol=https"
 
 S = "${WORKDIR}/git"
 
