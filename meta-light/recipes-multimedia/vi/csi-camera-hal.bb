@@ -8,7 +8,7 @@ COMPATIBLE_MACHINE = "light-*"
 DEPENDS += " openssl cmake python3 zlib linux-thead process-linker image-proprietary video-memory"
 DEPENDS += "virtual/kernel linux-libc-headers"
 SRC_URI = " \
-            git://git@gitee.com/thead-yocto/csi_hal.git;branch=master;protocol=http \
+            git://github.com/thead-yocto-mirror/csi_hal.git;branch=master;protocol=https \
           "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"
