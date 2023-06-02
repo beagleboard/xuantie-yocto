@@ -19,7 +19,7 @@ UPSTREAM_CHECK_GITTAGREGEX = "llvmorg-(?P<pver>\d+(\.\d+)+)"
 
 BRANCH = "release/${MAJOR_VERSION}.x"
 SRCREV = "ef32c611aa214dea855364efd7ba451ec5ec3f74"
-SRC_URI = "git://github.com/llvm/llvm-project.git;branch=${BRANCH} \
+SRC_URI = "git://github.com/llvm/llvm-project.git;branch=${BRANCH};protocol=https \
            file://0006-llvm-TargetLibraryInfo-Undefine-libc-functions-if-th.patch;striplevel=2 \
            file://0007-llvm-allow-env-override-of-exe-path.patch;striplevel=2 \
            file://0001-fix-the-atomic-build-failure.patch;patchdir=.. \
