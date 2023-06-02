@@ -1,7 +1,7 @@
 #inherit light bsp related packages
 inherit thead-image-bsp
 #inherit grapic related packages
-# inherit thead-image-weston
+inherit thead-image-weston
 #inherit security related packages
 inherit thead-image-security
 #inherit vidio related packages, disable for public release
