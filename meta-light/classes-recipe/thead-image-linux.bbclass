@@ -33,6 +33,6 @@ IMAGE_INSTALL += " image-proprietary "
 IMAGE_INSTALL += " ap6203 "
 
 # BeagleBoard.org Release stuff
-IMAGE_INSTALL += " apache2 iperf3 libgpiod libgpiod-tools nano python3-crcmod python3-cryptography python3-evdev python3-idna python3-jmespath python3-pip python3-requests python3-setuptools python3-six python3-urllib3 "
+IMAGE_INSTALL += " apache2 iperf3 libgpiod libgpiod-tools nano python3-crcmod python3-cryptography python3-evdev python3-idna python3-jmespath python3-pip python3-requests python3-setuptools python3-six python3-urllib3 python3-wheel "
 
 #IMAGE_FSTYPES:remove = "cpio.gz cpio cpio.gz.u-boot cpio.bz2"
