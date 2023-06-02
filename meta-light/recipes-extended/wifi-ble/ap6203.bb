@@ -15,17 +15,26 @@ SRC_URI = " \
 
 S = "${WORKDIR}"
 
-do_install() {
-    echo "install wifi/ble dependent file"
-    install -d ${D}/lib/firmware
+inherit allarch
 
-    install -m 0755 BCM43013A0_001.001.006.1073.1102.hcd     ${D}/lib/firmware
-    install -m 0755 nvram_ap6203bm.txt                       ${D}/lib/firmware
-    install -m 0755 clm_bcm43013c1_ag.blob                   ${D}/lib/firmware
-    install -m 0755 nvram_ap6203bm-edg-trigger.txt           ${D}/lib/firmware
-    install -m 0755 fw_bcm43013c1_ag.bin                     ${D}/lib/firmware
-    install -m 0755 nvram_ap6203bm-offical.txt               ${D}/lib/firmware
+CLEANBROKEN = "1"
+
+do_configure () {
+    :
 }
 
-FILES_${PN} += " lib/firmware/* "
+do_install() {
+    echo "install wifi/ble dependent file"
+    install -d ${D}${nonarch_base_libdir}/firmware
+
+    install -m 0755 BCM43013A0_001.001.006.1073.1102.hcd     ${D}${nonarch_base_libdir}/firmware
+    install -m 0755 nvram_ap6203bm.txt                       ${D}${nonarch_base_libdir}/firmware
+    install -m 0755 clm_bcm43013c1_ag.blob                   ${D}${nonarch_base_libdir}/firmware
+    install -m 0755 nvram_ap6203bm-edg-trigger.txt           ${D}${nonarch_base_libdir}/firmware
+    install -m 0755 fw_bcm43013c1_ag.bin                     ${D}${nonarch_base_libdir}/firmware
+    install -m 0755 nvram_ap6203bm-offical.txt               ${D}${nonarch_base_libdir}/firmware
+}
+
+FILES:${PN} += "${nonarch_base_libdir}/firmware/"
+
 PACKAGES = "${PN}"
