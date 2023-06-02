@@ -31,4 +31,7 @@ IMAGE_INSTALL:remove = "csi-hal-vcodec rambus-os-ik-150 gpu-bxm-4-64 npu-ax3386 
 IMAGE_INSTALL:remove = "thead-ddr-pmu isp-isp8000l libgal-viv libcsi-g2d vpu-omxil "
 IMAGE_INSTALL += " image-proprietary "
 
+# BeagleBoard.org Release stuff
+IMAGE_INSTALL += " cockpit libgpiod nano "
+
 #IMAGE_FSTYPES:remove = "cpio.gz cpio cpio.gz.u-boot cpio.bz2"
