@@ -47,6 +47,10 @@ do_install:append() {
       mkdir -p ${DEPLOY_DIR_IMAGE}/.boot
    fi
 
+   if [ ! -d ${DEPLOY_DIR_IMAGE}/.boot/overlays ]; then
+      mkdir -p ${DEPLOY_DIR_IMAGE}/.boot/overlays
+   fi
+
    if [ -f ${B}/arch/riscv/boot/Image ]; then
       cp -f ${B}/arch/riscv/boot/Image ${DEPLOY_DIR_IMAGE}/.boot
    fi
@@ -58,11 +62,20 @@ do_install:append() {
          cp ${i} ${DEPLOY_DIR_IMAGE}/.boot
       fi
    done
+
+   overlayfiles=`ls -lt ${B}/arch/riscv/boot/dts/thead/overlays/*.dtbo | awk '{print $9}'`
+   for i in $overlayfiles;
+   do
+      if [ -f $i ]; then
+         cp ${i} ${DEPLOY_DIR_IMAGE}/.boot/overlays
+      fi
+   done
+
    install -d ${D}${sysconfdir}
    head=$(git --git-dir=${S}/.git rev-parse --verify HEAD 2>/dev/null)
    echo "commit-id:"${head} > ${DEPLOY_DIR_IMAGE}/.boot/kernel-release
    cp ${DEPLOY_DIR_IMAGE}/.boot/kernel-release ${D}${sysconfdir}
-   dd if=/dev/zero of=${DEPLOY_DIR_IMAGE}/boot.ext4 count=10000 bs=4096
+   dd if=/dev/zero of=${DEPLOY_DIR_IMAGE}/boot.ext4 bs=1 count=0 seek=190M
    mkfs.ext4 -F  ${DEPLOY_DIR_IMAGE}/boot.ext4 -d ${DEPLOY_DIR_IMAGE}/.boot
 
    rm -f ${BASE_WROKDIR}/kernel_version
