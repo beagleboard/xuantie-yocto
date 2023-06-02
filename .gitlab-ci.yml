@@ -19,7 +19,7 @@ build:
   stage: build
   script:
     - source openembedded-core/oe-init-build-env thead-build/light-fm
-    - mkdir -p ../downloads ; rsync -av /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/ ../downloads/ || true
+    - mkdir -p ../downloads ; rsync -a /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/ ../downloads/ || true
     - du -sh ../downloads
     - BB_NUMBER_THREADS=4 MACHINE=light-beagle bitbake thead-image-linux --runall=fetch || true
     - du -sh ../downloads
@@ -30,6 +30,8 @@ build:
     - cd /builds/beaglev-ahead/xuantie-yocto/
     - xz -vT8 deploy/boot.ext4 || true
     - xz -vT8 deploy/root.ext4 || true
+    - cmake --version || true
+    - cat /builds/beaglev-ahead/xuantie-yocto/thead-build/light-fm/tmp-glibc/work/riscv64-oe-linux/vi-sensor/1.0-r0/temp/log.do_compile*
   artifacts:
     expire_in: 5 days
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
