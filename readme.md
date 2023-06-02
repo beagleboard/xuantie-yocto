@@ -56,7 +56,7 @@ mkdir ../sstate-cache ; rsync -av /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.
 
 ```
 MACHINE=light-beagle bitbake thead-image-linux --runall=fetch
-rsync -av ../downloads/ /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/
+rsync -av ../downloads/ /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/ --delete
 ```
 
 # Start Build
