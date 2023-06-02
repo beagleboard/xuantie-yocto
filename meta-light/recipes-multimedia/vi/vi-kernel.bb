@@ -6,7 +6,7 @@ COMPATIBLE_MACHINE = "light-*"
 DEPENDS = "linux-thead"
 
 SRC_URI = " \
-            git://git.beagleboard.org/beaglev-ahead/vi-kernel;branch=master;protocol=https;user=beaglev-ahead-yocto:glpat-6faKgByZ2SHRzmsxBzvz \
+            git://github.com/thead-yocto-mirror/vi-kernel.git;branch=master;protocol=https \
             file://vi-kernel.service \
             file://98-vi-kernel.preset\
           "
