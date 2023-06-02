@@ -30,6 +30,7 @@ IMAGE_INSTALL += " sqlite3 "
 IMAGE_INSTALL:remove = "csi-hal-vcodec rambus-os-ik-150 gpu-bxm-4-64 npu-ax3386 thead-fce "
 IMAGE_INSTALL:remove = "thead-ddr-pmu isp-isp8000l libgal-viv libcsi-g2d vpu-omxil "
 IMAGE_INSTALL += " image-proprietary "
+IMAGE_INSTALL += " ap6203 "
 
 # BeagleBoard.org Release stuff
 IMAGE_INSTALL += " apache2 cockpit cockpit-ws iperf3 libgpiod libgpiod-tools nano python3-cryptography python3-evdev python3-pip python3-setuptools python3-six "
