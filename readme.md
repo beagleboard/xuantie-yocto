@@ -55,14 +55,14 @@ mkdir ../sstate-cache ; rsync -av /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.
 # Download missing files:
 
 ```
-MACHINE=light-beagle bitbake thead-image-linux --runall=fetch
+BB_NUMBER_THREADS=4 MACHINE=light-beagle bitbake thead-image-linux --runall=fetch
 rsync -av ../downloads/ /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/ --delete
 ```
 
 # Start Build
 
 ```
-MACHINE=light-beagle bitbake -k thead-image-linux
+BB_NUMBER_THREADS=4 MACHINE=light-beagle bitbake -k thead-image-linux
 ```
 
 # Save cache
