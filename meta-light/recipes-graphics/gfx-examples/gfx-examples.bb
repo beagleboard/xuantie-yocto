@@ -9,7 +9,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=3ec9956c919ff2e84914fcefc443760b"
 THEAD_LINUX_TAG ?= "${AUTOREV}"
 SRCREV = "${THEAD_LINUX_TAG}"
 
-SRC_URI = "git://git@gitee.com/thead-yocto/gfx-examples.git;branch=master;protocol=http"
+#SRC_URI = "git://git@gitee.com/thead-yocto/gfx-examples.git;branch=master;protocol=http"
+SRC_URI = "git://github.com/thead-yocto-mirror/gfx-examples.git;branch=master;protocol=https"
 S = "${WORKDIR}/git"
 
 DEPENDS = "gtk+3 wayland wayland-protocols wayland-native libdrm"
