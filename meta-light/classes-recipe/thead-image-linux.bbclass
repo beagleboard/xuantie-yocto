@@ -37,6 +37,6 @@ IMAGE_INSTALL += " apache2 iperf3 libgpiod libgpiod-tools nano "
 IMAGE_INSTALL += " python3-charset-normalizer python3-crcmod python3-cryptography python3-evdev python3-idna python3-pip python3-pycryptodome python3-requests python3-setuptools python3-six python3-urllib3 python3-wheel "
 
 #Custom diverge from yocto...
-IMAGE_INSTALL += " python3-jmespath python3-aliyun-python-sdk-core python3-aliyun-python-sdk-kms "
+IMAGE_INSTALL += " python3-jmespath python3-aliyun-python-sdk-core python3-aliyun-python-sdk-kms python3-oss2 "
 
 #IMAGE_FSTYPES:remove = "cpio.gz cpio cpio.gz.u-boot cpio.bz2"
