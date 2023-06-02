@@ -26,12 +26,10 @@ build:
     - BB_NUMBER_THREADS=4 MACHINE=light-beagle bitbake -k thead-image-linux || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin ../../deploy/ || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/boot.ext4 ../../deploy/ || true
-    - cp -v ./tmp-glibc/deploy/images/light-beagle/light-fm-image-linux-light-beagle.ext4 ../../deploy/root.ext4 || true
-    - ls -lh ./tmp-glibc/deploy/images/light-beagle/
+    - cp -v ./tmp-glibc/deploy/images/light-beagle/thead-image-linux-light-beagle-*.rootfs.ext4 ../../deploy/root.ext4 || true
     - cd /builds/beaglev-ahead/xuantie-yocto/
     - xz -vT8 deploy/boot.ext4 || true
     - xz -vT8 deploy/root.ext4 || true
-    - cat /builds/beaglev-ahead/xuantie-yocto/thead-build/light-fm/tmp-glibc/work/riscv64-oe-linux/vi-sensor/1.0-r0/temp/log.do_compile*
   artifacts:
     expire_in: 5 days
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
