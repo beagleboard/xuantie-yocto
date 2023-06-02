@@ -27,6 +27,7 @@ build:
     - cp -v ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin ../../deploy/ || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/boot.ext4 ../../deploy/ || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/light-fm-image-linux-light-beagle.ext4 ../../deploy/root.ext4 || true
+    - ls -lh ./tmp-glibc/deploy/images/light-beagle/
     - cd /builds/beaglev-ahead/xuantie-yocto/
     - xz -vT8 deploy/boot.ext4 || true
     - xz -vT8 deploy/root.ext4 || true
