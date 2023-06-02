@@ -30,7 +30,6 @@ build:
     - cd /builds/beaglev-ahead/xuantie-yocto/
     - xz -vT8 deploy/boot.ext4 || true
     - xz -vT8 deploy/root.ext4 || true
-    - cmake --version || true
     - cat /builds/beaglev-ahead/xuantie-yocto/thead-build/light-fm/tmp-glibc/work/riscv64-oe-linux/vi-sensor/1.0-r0/temp/log.do_compile*
   artifacts:
     expire_in: 5 days
