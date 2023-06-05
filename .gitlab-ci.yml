@@ -9,7 +9,7 @@ before_script:
     - chmod 644 ~/.ssh/known_hosts
 
 cache:
-  key: "$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+  key: "$CI_PROJECT_NAME-Linux_SDK_V1.1.2-light-beagle"
   paths:
     - thead-build/sstate-cache/*
 
