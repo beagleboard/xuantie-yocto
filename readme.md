@@ -3,7 +3,12 @@
 # Install
 
 ```
-sudo apt install bison build-essential cmake chrpath diffstat flex gawk git git-lfs python3-distutils python-is-python3 rsync zstd
+sudo apt install bison build-essential cmake chrpath diffstat flex gawk git git-lfs python3-distutils python-is-python3 rsync zstd lz4
+```
+
+# Install repo
+```
+sudo apt install repo
 ```
 
 # No Dash...
