@@ -24,7 +24,7 @@ sudo apt install autoconf bison build-essential cmake chrpath diffstat flex gawk
 # Install
 
 ```
-sudo apt install autoconf bison build-essential cmake chrpath diffstat flex gawk git git-lfs lz4python3-distutils python-is-python2 repo rsync zstd
+sudo apt install autoconf bison build-essential cmake chrpath diffstat flex gawk git git-lfs lz4 python3-distutils python-is-python2 repo rsync zstd
 ```
 
 # No Dash...
