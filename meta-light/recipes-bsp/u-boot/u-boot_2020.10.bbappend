@@ -8,6 +8,9 @@ SRC_URI = " \
 THEAD_BSP_TAG ?= "${AUTOREV}"
 THEAD_LINUX_TAG ?= "${THEAD_BSP_TAG}"
 SRCREV = "beaglev-v2020.01-1.1.2"
+
+SSTATE_SKIP_CREATION = "1"
+
 LICENSE = "CLOSED"
 
 do_configure:append() {

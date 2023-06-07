@@ -26,6 +26,8 @@ THEAD_LINUX_TAG ?= "${THEAD_BSP_TAG}"
 #https://git.beagleboard.org/beaglev-ahead/beaglev-ahead-linux/-/commits/beaglev-v5.10.113-1.1.2
 SRCREV = "f71c5b67f112dd8c8a9b75c107361f9738dcd596"
 
+SSTATE_SKIP_CREATION = "1"
+
 LICENSE = "CLOSED"
 
 DEPENDS += "elfutils-native"

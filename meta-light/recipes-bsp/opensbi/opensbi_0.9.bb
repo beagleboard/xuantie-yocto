@@ -53,6 +53,8 @@ SRC_URI = " \
 THEAD_BSP_TAG ?= "${AUTOREV}"
 SRCREV = "0.9-1.1.2"
 
+SSTATE_SKIP_CREATION = "1"
+
 S = "${WORKDIR}/git"
 
 export ARCH?="riscv"
