@@ -1,4 +1,4 @@
-image: robertcnelson/ubuntu-2004-yocto:latest
+image: robertcnelson/debian-bullseye-slim-yocto:latest
 
 before_script:
     - eval $(ssh-agent -s)
