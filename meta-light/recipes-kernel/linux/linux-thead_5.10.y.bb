@@ -21,10 +21,7 @@ KERNEL_VERSION_SANITY_SKIP="1"
 
 THEAD_BSP_TAG ?= "${AUTOREV}"
 THEAD_LINUX_TAG ?= "${THEAD_BSP_TAG}"
-#SRCREV = "beaglev-v5.10.113-1.1.2"
-
-#https://git.beagleboard.org/beaglev-ahead/beaglev-ahead-linux/-/commits/beaglev-v5.10.113-1.1.2
-SRCREV = "f71c5b67f112dd8c8a9b75c107361f9738dcd596"
+SRCREV = "beaglev-v5.10.113-1.1.2"
 
 SSTATE_SKIP_CREATION = "1"
 
