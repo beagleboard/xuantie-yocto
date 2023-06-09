@@ -23,7 +23,7 @@ build:
     - du -sh ../downloads/
     - MACHINE=light-beagle bitbake -c cleansstate opensbi u-boot linux-thead || true
     - BB_NUMBER_THREADS=4 MACHINE=light-beagle bitbake thead-image-linux --runall=fetch || true
-    - BB_NUMBER_THREADS=4 PARALLEL_MAKE=8 MACHINE=light-beagle bitbake -k thead-image-linux || true
+    - BB_NUMBER_THREADS=4 MACHINE=light-beagle bitbake -k thead-image-linux || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin ../../deploy/ || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/boot.ext4 ../../deploy/ || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/thead-image-linux-light-beagle-*.rootfs.ext4 ../../deploy/root.ext4 || true
