@@ -20,10 +20,9 @@ build:
   script:
     - source openembedded-core/oe-init-build-env thead-build/light-fm
     - mkdir -p ../downloads ; rsync -a /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/downloads/ ../downloads/ || true
-    - rm -rfv ../downloads/git2/git.beagleboard.org.beaglev-ahead.beaglev* || true
-    - rm -rfv ../downloads/git2_git.beagleboard.org.beaglev-ahead.beaglev* || true
     - du -sh ../downloads/
     - MACHINE=light-beagle bitbake -c cleansstate opensbi u-boot linux-thead || true
+    - BB_NUMBER_THREADS=4 MACHINE=light-beagle bitbake thead-image-linux --runall=fetch || true
     - BB_NUMBER_THREADS=4 PARALLEL_MAKE=8 MACHINE=light-beagle bitbake -k thead-image-linux || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin ../../deploy/ || true
     - cp -v ./tmp-glibc/deploy/images/light-beagle/boot.ext4 ../../deploy/ || true
