@@ -2,3 +2,7 @@
 	path = meta-riscv
 	url = https://github.com/thead-yocto-mirror/meta-riscv.git
 	branch = langdale-thead-V1.1.2
+[submodule "meta-external-toolchain"]
+	path = meta-external-toolchain
+	url = https://github.com/thead-yocto-mirror/meta-external-toolchain.git
+	branch = thead-V1.1.2
