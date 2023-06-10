@@ -1,0 +1,4 @@
+[submodule "meta-riscv"]
+	path = meta-riscv
+	url = https://github.com/thead-yocto-mirror/meta-riscv.git
+	branch = langdale-thead-V1.1.2
