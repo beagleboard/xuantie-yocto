@@ -6,3 +6,7 @@
 	path = meta-external-toolchain
 	url = https://github.com/thead-yocto-mirror/meta-external-toolchain.git
 	branch = thead-V1.1.2
+[submodule "meta-openembedded"]
+	path = meta-openembedded
+	url = https://github.com/thead-yocto-mirror/meta-openembedded.git
+	branch = langdale-20221022-thead-V1.1.2
