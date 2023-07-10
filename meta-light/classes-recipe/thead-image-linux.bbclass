@@ -26,6 +26,20 @@ IMAGE_INSTALL += " ffmpeg "
 IMAGE_INSTALL += " prd-utils "
 IMAGE_INSTALL += " sqlite3 "
 
+# gstreamer
+IMAGE_INSTALL += " \
+    memtool \
+"
+IMAGE_INSTALL += " \
+   gstreamer1.0 \
+   gstreamer1.0-plugins-base \
+   gstreamer1.0-plugins-bad \
+   gstreamer1.0-plugins-good \
+   gstreamer1.0-plugins-ugly \
+   gstreamer1.0-omx \
+   gstreamer-plugin-private-proprietary \
+"
+
 # enable for public release
 IMAGE_INSTALL:remove = "csi-hal-vcodec rambus-os-ik-150 gpu-bxm-4-64 npu-ax3386 thead-fce "
 IMAGE_INSTALL:remove = "thead-ddr-pmu isp-isp8000l libgal-viv libcsi-g2d vpu-omxil "
