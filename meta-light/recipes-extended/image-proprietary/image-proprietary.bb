@@ -7,7 +7,7 @@ COMPATIBLE_MACHINE = "light-*"
 DEPENDS += " linux-thead xtensa-dsp "
 
 SRC_URI = " \
-            git://git@git.beagleboard.org/beaglev-ahead/light-images-proprietary.git;branch=master;protocol=ssh \
+            git://git.beagleboard.org/beaglev-ahead/light-images-proprietary;branch=master;protocol=https \
           "
 
 THEAD_BSP_TAG ?= "${AUTOREV}"

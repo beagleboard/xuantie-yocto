@@ -3,7 +3,7 @@ require recipes-kernel/linux/linux-yocto.inc
 DEPENDS = "e2fsprogs-native opensbi"
 
 SRC_URI = " \
-            git://git@git.beagleboard.org/beaglev-ahead/beaglev-ahead-linux.git;branch=beaglev-v5.10.113-1.1.2;protocol=ssh \
+            git://git.beagleboard.org/beaglev-ahead/beaglev-ahead-linux.git;branch=beaglev-v5.10.113-1.1.2;protocol=https \
 "
 
 KERNEL_DEFCONFIG = "arch/riscv/configs/beaglev_defconfig"

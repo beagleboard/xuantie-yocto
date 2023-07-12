@@ -1,7 +1,7 @@
 COMPATIBLE_MACHINE = "light-*"
 
 SRC_URI = " \
-     git://git@git.beagleboard.org/beaglev-ahead/beaglev-ahead-u-boot.git;branch=beaglev-v2020.01-1.1.2;protocol=ssh \
+     git://git.beagleboard.org/beaglev-ahead/beaglev-ahead-u-boot.git;branch=beaglev-v2020.01-1.1.2;protocol=https \
      file://fw_env.config \
 "
 

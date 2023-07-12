@@ -7,7 +7,7 @@ DEPENDS = "e2fsprogs-native"
 COMPATIBLE_MACHINE = "light-*"
 
 SRC_URI = " \
-            git://git@git.beagleboard.org/beaglev-ahead/beaglev-ahead-opensbi.git;branch=0.9-1.1.2;protocol=ssh \
+            git://git.beagleboard.org/beaglev-ahead/beaglev-ahead-opensbi.git;branch=0.9-1.1.2;protocol=https \
             file://light_aon_fpga.bin;md5=9f0d26a65b54d7f72a21be519c1c09b4 \
             file://light_aon_fpga.elf;md5=447b37b51877dce013b21d845c6c602a \
             file://light_c906_audio.bin;md5=d11d1c42e6cbe432279286eac1eae940 \

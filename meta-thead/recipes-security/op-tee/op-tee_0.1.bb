@@ -7,7 +7,7 @@ DEPENDS = "e2fsprogs-native linux-thead"
 COMPATIBLE_MACHINE = "(light-*|fire-*)"
 
 SRC_URI = " \
-        git://git@git.beagleboard.org/beaglev-ahead/xuantie-secure-system-image-release.git;branch=master;protocol=ssh \
+        git://git.beagleboard.org/beaglev-ahead/xuantie-secure-system-image-release.git;branch=master;protocol=https \
           "
 THEAD_LINUX_TAG ?= "${AUTOREV}"
 SRCREV = "${THEAD_LINUX_TAG}"
