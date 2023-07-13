@@ -35,7 +35,7 @@ sudo dpkg-reconfigure dash
 # Yocto
 
 ```
-git clone --recurse-submodules -b Linux_SDK_V1.1.2-light-beagle https://git.beagleboard.org/beaglev-ahead/xuantie-yocto.git xuantie-yocto ; cd ./xuantie-yocto
+git clone --recurse-submodules -b Linux_SDK_V1.1.2-light-beagle https://github.com/beagleboard/xuantie-yocto.git xuantie-yocto ; cd ./xuantie-yocto
 ```
 
 # Configure Build
