@@ -95,6 +95,10 @@ rsync -av ../sstate-cache/ /mnt/yocto-cache/beaglev-ahead/Linux_SDK_V1.1.2/sstat
 
 # Flashing Board
 
+1. Connect board to PC with your USB3 cable.
+2. Press the `USB` button near SD card holder and toggle the `RESET` button near the Ethernet Jack.
+3. Now, Execute the command below and you should see the board flashing.
+
 ```
 sudo fastboot flash ram ./tmp-glibc/deploy/images/light-beagle/u-boot-with-spl.bin
 sudo fastboot reboot
