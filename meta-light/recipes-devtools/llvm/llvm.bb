@@ -23,6 +23,7 @@ SRC_URI = "git://github.com/llvm/llvm-project.git;branch=${BRANCH};protocol=http
            file://0006-llvm-TargetLibraryInfo-Undefine-libc-functions-if-th.patch;striplevel=2 \
            file://0007-llvm-allow-env-override-of-exe-path.patch;striplevel=2 \
            file://0001-fix-the-atomic-build-failure.patch;patchdir=.. \
+           file://0008-missing-import.patch;patchdir=.. \
            file://0001-Force-to-link-the-dl-to-wa-the-find-dl-lib-issue.patch;patchdir=.. \
           "
 
